@@ -13,6 +13,7 @@ export interface App {
   slug: string;
   name: string;
   color: string;
+  logoUrl?: string;
   description: string;
   shortDescription: string;
   earningsMin?: number;

@@ -8,6 +8,7 @@ import { siteConfig } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
 import { useAdmin } from "@/context/AdminContext";
+import { useLenis } from "@/context/LenisContext";
 import { SearchBar } from "@/components/shared/SearchBar";
 import { MoneyHouseLogo } from "@/components/icons/MoneyHouseLogo";
 
@@ -49,8 +50,11 @@ function NavLink({
 
 export function Header() {
   const headerRef = useRef<HTMLElement>(null);
+  const lenis = useLenis();
+  const lastScrollY = useRef(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [visible, setVisible] = useState(true);
   const { user, notifications } = useUser();
   const { isAdmin, ready: adminReady } = useAdmin();
   const unread = notifications.filter((n) => !n.read).length;
@@ -68,10 +72,54 @@ export function Header() {
   }, []);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    const updateFromScroll = (scrollY: number, direction: number) => {
+      setScrolled(scrollY > 40);
+
+      if (scrollY < 16) {
+        setVisible(true);
+      } else if (direction > 0 && scrollY > 72) {
+        setVisible(false);
+        setMobileOpen(false);
+      } else if (direction < 0) {
+        setVisible(true);
+      }
+
+      lastScrollY.current = scrollY;
+    };
+
+    if (lenis) {
+      const onLenisScroll = (instance: typeof lenis) => {
+        const scrollY = instance.scroll;
+        const direction =
+          instance.direction !== 0
+            ? instance.direction
+            : scrollY > lastScrollY.current
+              ? 1
+              : scrollY < lastScrollY.current
+                ? -1
+                : 0;
+        updateFromScroll(scrollY, direction);
+      };
+
+      lenis.on("scroll", onLenisScroll);
+      updateFromScroll(lenis.scroll, 0);
+
+      return () => {
+        lenis.off("scroll", onLenisScroll);
+      };
+    }
+
+    const onWindowScroll = () => {
+      const scrollY = window.scrollY;
+      const direction =
+        scrollY > lastScrollY.current ? 1 : scrollY < lastScrollY.current ? -1 : 0;
+      updateFromScroll(scrollY, direction);
+    };
+
+    window.addEventListener("scroll", onWindowScroll, { passive: true });
+    onWindowScroll();
+    return () => window.removeEventListener("scroll", onWindowScroll);
+  }, [lenis]);
 
   const linkClass =
     "px-4 py-2 rounded-full text-phantom-dark hover:bg-phantom-lavender/50 transition-colors text-sm font-medium";
@@ -79,7 +127,9 @@ export function Header() {
   return (
     <header
       ref={headerRef}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ease-out will-change-transform ${
+        visible ? "translate-y-0" : "-translate-y-full pointer-events-none"
+      } ${
         scrolled
           ? "bg-phantom-surface/90 backdrop-blur-xl border-b border-phantom-dark/8 shadow-sm py-3"
           : "bg-transparent py-4"
@@ -140,13 +190,15 @@ export function Header() {
           <button
             className="lg:hidden p-2 rounded-full hover:bg-phantom-lavender/50"
             onClick={() => setMobileOpen(!mobileOpen)}
+            aria-expanded={mobileOpen}
+            aria-label="Menu"
           >
             {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
       </div>
 
-      {mobileOpen && (
+      {mobileOpen && visible && (
         <div className="lg:hidden border-t border-phantom-dark/5 bg-phantom-surface px-6 py-4 space-y-2">
           <SearchBar className="mb-4" />
           {navLinks.map((link) => (
