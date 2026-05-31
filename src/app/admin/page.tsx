@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { PageShell } from "@/components/layout/PageShell";
+import { AdminProofsSection } from "@/components/admin/AdminProofsSection";
 
 export default function AdminPage() {
   const { user } = useUser();
@@ -462,6 +463,12 @@ export default function AdminPage() {
               Actualiser depuis le serveur
             </Button>
           </section>
+        </GsapScrollReveal>
+
+        <GsapScrollReveal>
+          <div className="mb-12">
+            <AdminProofsSection userEmail={user.email} />
+          </div>
         </GsapScrollReveal>
 
         <div className="mt-8 text-center">

@@ -7,6 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { UserProvider } from "@/context/UserContext";
 import { AdminProvider } from "@/context/AdminContext";
 import { ReferralProvider } from "@/context/ReferralContext";
+import { ProofProvider } from "@/context/ProofContext";
 import { SmoothScrollProvider } from "@/components/animations/SmoothScrollProvider";
 
 const inter = Inter({
@@ -80,11 +81,13 @@ export default function RootLayout({
         <UserProvider>
           <AdminProvider>
             <ReferralProvider>
-              <SmoothScrollProvider>
-                <Header />
-                <main className="min-h-screen">{children}</main>
-                <Footer />
-              </SmoothScrollProvider>
+              <ProofProvider>
+                <SmoothScrollProvider>
+                  <Header />
+                  <main className="min-h-screen">{children}</main>
+                  <Footer />
+                </SmoothScrollProvider>
+              </ProofProvider>
             </ReferralProvider>
           </AdminProvider>
         </UserProvider>

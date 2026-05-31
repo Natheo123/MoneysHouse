@@ -39,7 +39,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "icons.duckduckgo.com",
+        hostname: "raw.githubusercontent.com",
       },
     ],
   },

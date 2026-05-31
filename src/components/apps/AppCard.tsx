@@ -12,6 +12,7 @@ import { formatEarnings } from "@/lib/utils";
 import { useUser } from "@/context/UserContext";
 import { AppLogo } from "@/components/icons/AppLogo";
 import { ReferralBonusBadge } from "@/components/apps/ReferralBonusBadge";
+import { useProofs } from "@/context/ProofContext";
 import { useAppReviews } from "@/hooks/useAppReviews";
 
 const platformLabels: Record<string, string> = {
@@ -31,6 +32,8 @@ export function AppCard({ app, showFavorite = true }: AppCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const { isFavorite, toggleFavorite } = useUser();
   const { stats } = useAppReviews(app.id);
+  const { getProofCount } = useProofs();
+  const proofCount = getProofCount(app.id);
   const favorite = isFavorite(app.id);
 
   useLayoutEffect(() => {
@@ -85,6 +88,11 @@ export function AppCard({ app, showFavorite = true }: AppCardProps) {
               {app.earningsLabel || formatEarnings(app.earningsMin, app.earningsMax)}
             </Badge>
             <Badge variant="outline">{app.difficultyLabel}</Badge>
+            {proofCount > 0 && (
+              <Badge variant="outline" className="border-green-500/30 text-green-700">
+                {proofCount} preuve{proofCount > 1 ? "s" : ""}
+              </Badge>
+            )}
           </div>
           <div className="flex flex-wrap gap-1 mb-4">
             {app.platforms.map((p) => (

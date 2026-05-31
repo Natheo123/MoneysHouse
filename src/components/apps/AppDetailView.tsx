@@ -25,6 +25,8 @@ import { formatEarnings } from "@/lib/utils";
 import { useUser } from "@/context/UserContext";
 import { AppLogo } from "@/components/icons/AppLogo";
 import { AppDownloadLinks } from "@/components/apps/AppDownloadLinks";
+import { AppProofsGallery } from "@/components/apps/AppProofsGallery";
+import { useProofs } from "@/context/ProofContext";
 import { useAppReviews } from "@/hooks/useAppReviews";
 
 const platformLabels: Record<string, string> = {
@@ -44,6 +46,8 @@ export function AppDetailView({ app }: { app: App }) {
   const [newRating, setNewRating] = useState(5);
   const [newComment, setNewComment] = useState("");
   const [submitError, setSubmitError] = useState("");
+  const { ready: proofsReady, getProofCount } = useProofs();
+  const hasProofs = proofsReady && getProofCount(app.id) > 0;
 
   useEffect(() => {
     addToHistory(app.id);
@@ -131,6 +135,12 @@ export function AppDetailView({ app }: { app: App }) {
           <GsapScrollReveal>
             <AppDownloadLinks app={app} />
           </GsapScrollReveal>
+
+          {hasProofs && (
+            <GsapScrollReveal>
+              <AppProofsGallery app={app} />
+            </GsapScrollReveal>
+          )}
 
           {app.hasReferral !== false && (
             <GsapScrollReveal>
