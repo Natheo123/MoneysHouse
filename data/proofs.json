@@ -20,5 +20,13 @@
       "url": "https://raw.githubusercontent.com/Natheo123/MoneysHouse/main/public/proofs/mcmoney/552e7d42-736d-4f28-811d-fdab60b97145.jpg",
       "createdAt": "2026-05-31T16:02:36.592Z"
     }
+  ],
+  "money-sms": [
+    {
+      "id": "e6679155-a1f0-412d-bfa3-095dc2dae780",
+      "path": "public/proofs/money-sms/e6679155-a1f0-412d-bfa3-095dc2dae780.jpg",
+      "url": "https://raw.githubusercontent.com/Natheo123/MoneysHouse/main/public/proofs/money-sms/e6679155-a1f0-412d-bfa3-095dc2dae780.jpg",
+      "createdAt": "2026-05-31T16:03:01.579Z"
+    }
   ]
 }
