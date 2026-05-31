@@ -1,6 +1,12 @@
 {
   "admins": [
-    { "email": "shosanun@gmail.com", "role": "member" },
-    { "email": "baboudj17@gmail.com", "role": "member" }
+    {
+      "email": "shosanun@gmail.com",
+      "role": "manager"
+    },
+    {
+      "email": "baboudj17@gmail.com",
+      "role": "member"
+    }
   ]
 }
