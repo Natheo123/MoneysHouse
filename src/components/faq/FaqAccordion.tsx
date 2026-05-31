@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Copy, Check, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import {
@@ -11,8 +11,8 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { apps } from "@/lib/data/apps";
-import { siteConfig } from "@/lib/config";
 import { useReferrals, hasReferralProgram } from "@/context/ReferralContext";
+import { useLanguage, useTranslation } from "@/context/LanguageContext";
 import type { FAQItem } from "@/types";
 
 interface FaqAccordionProps {
@@ -20,6 +20,8 @@ interface FaqAccordionProps {
 }
 
 function ReferralFaqAnswer() {
+  const { t } = useTranslation();
+  const { localizedApps } = useLanguage();
   const { ready, referrals, getReferralData, getReferralBonus } = useReferrals();
   const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
@@ -30,41 +32,52 @@ function ReferralFaqAnswer() {
   };
 
   if (!ready) {
-    return <p className="text-sm text-phantom-gray">Chargement des codes parrain…</p>;
+    return <p className="text-sm text-phantom-gray">{t("faqAccordion.loadingCodes")}</p>;
   }
 
   return (
     <div className="space-y-4">
       <p className="text-phantom-gray leading-relaxed">
-        Cliquez sur un lien d&apos;installation pour voir le bonus exact et récupérer le code ou le
-        lien parrain avant de vous inscrire.
+        {t("faqAccordion.faqIntro")}
       </p>
 
-      {apps.map((app) => {
-        const data = referrals[app.id] ?? getReferralData(app.id);
-        const bonus = getReferralBonus(app.id);
-        const withReferral = hasReferralProgram(app.id);
+      {localizedApps.map((localizedApp) => {
+        const baseApp = apps.find((a) => a.id === localizedApp.id) ?? localizedApp;
+        const data = referrals[localizedApp.id] ?? getReferralData(localizedApp.id);
+        const bonus = getReferralBonus(localizedApp.id);
+        const withReferral = hasReferralProgram(localizedApp.id);
         const hasContent = data.codes.length > 0 || data.links.length > 0;
+
+        const bonusTitle =
+          bonus && bonus.title === baseApp.referralBonusTitle
+            ? (localizedApp.referralBonusTitle ?? bonus.title)
+            : bonus?.title;
+        const bonusDescription =
+          bonus && bonus.description === baseApp.referralBonusDescription
+            ? (localizedApp.referralBonusDescription ?? bonus.description)
+            : bonus?.description;
 
         return (
           <div
-            key={app.id}
+            key={localizedApp.id}
             className="rounded-[20px] bg-phantom-bg border border-phantom-dark/5 p-4"
           >
             <Link
-              href={`/apps/${app.slug}`}
+              href={`/apps/${localizedApp.slug}`}
               className="font-medium text-phantom-dark hover:text-phantom-purple transition-colors"
             >
-              {app.name}
+              {localizedApp.name}
             </Link>
 
-            {withReferral && bonus && (
+            {withReferral && bonus && bonusTitle && (
               <div
                 className="mt-3 p-3 rounded-[16px] border border-phantom-purple/20"
-                style={{ background: `${app.color}22` }}
+                style={{ background: `${localizedApp.color}22` }}
               >
-                <p className="text-lg font-bold text-phantom-dark">{bonus.title}</p>
-                <p className="text-sm text-phantom-gray mt-1">{bonus.description}</p>
+                <p className="text-lg font-bold text-phantom-dark">{bonusTitle}</p>
+                {bonusDescription && (
+                  <p className="text-sm text-phantom-gray mt-1">{bonusDescription}</p>
+                )}
               </div>
             )}
 
@@ -87,7 +100,7 @@ function ReferralFaqAnswer() {
                             ) : (
                               <Copy className="h-3.5 w-3.5" />
                             )}
-                            {copiedValue === code ? "Copié" : "Copier"}
+                            {copiedValue === code ? t("faqAccordion.copied") : t("faqAccordion.copy")}
                           </Button>
                         </li>
                       ))}
@@ -131,37 +144,22 @@ function ReferralFaqAnswer() {
                   )}
                 </div>
               ) : (
-                <p className="mt-2 text-sm text-phantom-gray">
-                  Aucun code ou lien disponible pour le moment. Rejoignez notre{" "}
-                  <a
-                    href={siteConfig.links.discord}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-phantom-purple hover:underline"
-                  >
-                    Discord
-                  </a>{" "}
-                  pour en obtenir un.
-                </p>
+                <p className="mt-2 text-sm text-phantom-gray">{t("faqAccordion.noCodes")}</p>
               )
             ) : (
-              <p className="mt-2 text-sm text-phantom-gray">Pas de programme de parrainage.</p>
+              <p className="mt-2 text-sm text-phantom-gray">{t("faqAccordion.noProgram")}</p>
             )}
 
-            {app.referralFaqHint && withReferral && (
-              <p className="mt-3 text-sm text-phantom-gray leading-relaxed">{app.referralFaqHint}</p>
+            {localizedApp.referralFaqHint && withReferral && (
+              <p className="mt-3 text-sm text-phantom-gray leading-relaxed">
+                {localizedApp.referralFaqHint}
+              </p>
             )}
           </div>
         );
       })}
 
-      <p className="text-sm text-phantom-gray">
-        Consultez la{" "}
-        <Link href="/apps" className="text-phantom-purple hover:underline">
-          fiche de chaque application
-        </Link>{" "}
-        pour le guide détaillé.
-      </p>
+      <p className="text-sm text-phantom-gray">{t("faqAccordion.seeAppPage")}</p>
     </div>
   );
 }

@@ -5,15 +5,17 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Shield, Crown, Users } from "lucide-react";
 import { useUser } from "@/context/UserContext";
-import { useAdmin, ADMIN_ROLE_LABELS } from "@/context/AdminContext";
+import { useAdmin } from "@/context/AdminContext";
 import { GsapScrollReveal } from "@/components/shared/GsapScrollReveal";
 import { Badge } from "@/components/ui/badge";
 import { PageShell } from "@/components/layout/PageShell";
 import { AdminProofsSection } from "@/components/admin/AdminProofsSection";
 import { AdminReferralsSection } from "@/components/admin/AdminReferralsSection";
 import { AdminManageSection } from "@/components/admin/AdminManageSection";
+import { useTranslation } from "@/context/LanguageContext";
 
 export default function AdminPage() {
+  const { t } = useTranslation();
   const { user } = useUser();
   const { ready: adminReady, isAdmin, getRole, canManageAdmins } = useAdmin();
   const router = useRouter();
@@ -39,32 +41,30 @@ export default function AdminPage() {
           <div className="flex items-center gap-3 mb-2">
             <Shield className="h-8 w-8 text-phantom-purple" />
             <h1 className="text-3xl md:text-4xl font-normal text-phantom-dark tracking-tight">
-              Administration
+              {t("admin.title")}
             </h1>
           </div>
           <p className="text-phantom-gray mb-4">
-            Connecté en tant que <strong>{user.email}</strong>
+            {t("admin.connectedAs")} <strong>{user.email}</strong>
             {role === "owner" && (
               <Badge className="ml-2 gap-1">
-                <Crown className="h-3 w-3" /> Propriétaire
+                <Crown className="h-3 w-3" /> {t("admin.owner")}
               </Badge>
             )}
             {role === "manager" && (
               <Badge className="ml-2 gap-1">
-                <Users className="h-3 w-3" /> {ADMIN_ROLE_LABELS.manager}
+                <Users className="h-3 w-3" /> {t("admin.manager")}
               </Badge>
             )}
             {role === "member" && (
               <Badge variant="outline" className="ml-2">
-                {ADMIN_ROLE_LABELS.member}
+                {t("admin.editor")}
               </Badge>
             )}
           </p>
           {role === "member" && (
             <p className="text-sm text-phantom-gray mb-10 rounded-[16px] bg-phantom-bg border border-phantom-dark/5 px-4 py-3">
-              En tant qu&apos;éditeur, vous pouvez gérer les <strong>parrainages</strong> et les{" "}
-              <strong>preuves de paiement</strong>. L&apos;ajout d&apos;autres administrateurs est
-              réservé au propriétaire et aux gestionnaires.
+              {t("admin.editorHint")}
             </p>
           )}
           {role !== "member" && <div className="mb-10" />}
@@ -90,7 +90,7 @@ export default function AdminPage() {
 
         <div className="mt-8 text-center">
           <Link href="/dashboard" className="text-phantom-purple hover:underline text-sm">
-            ← Retour au dashboard
+            ← {t("admin.backDashboard")}
           </Link>
         </div>
     </PageShell>

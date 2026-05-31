@@ -8,7 +8,6 @@ import type { App } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatEarnings } from "@/lib/utils";
 import { useUser } from "@/context/UserContext";
 import { AppLogo } from "@/components/icons/AppLogo";
 import { ReferralBonusBadge } from "@/components/apps/ReferralBonusBadge";
@@ -31,7 +30,7 @@ interface AppCardProps {
 
 export function AppCard({ app, showFavorite = true }: AppCardProps) {
   const { t } = useTranslation();
-  const { getLocalizedApp } = useLanguage();
+  const { getLocalizedApp, formatEarnings } = useLanguage();
   const localizedApp = getLocalizedApp(app);
   const cardRef = useRef<HTMLDivElement>(null);
   const { isFavorite, toggleFavorite } = useUser();
@@ -89,7 +88,9 @@ export function AppCard({ app, showFavorite = true }: AppCardProps) {
           <p className="text-phantom-gray text-sm mb-4 flex-1">{localizedApp.shortDescription}</p>
           <div className="flex flex-wrap gap-2 mb-4">
             <Badge variant="secondary">
-              {localizedApp.earningsLabel || formatEarnings(localizedApp.earningsMin, localizedApp.earningsMax)}
+              {localizedApp.earningsMin != null || localizedApp.earningsMax != null
+                ? formatEarnings(localizedApp.earningsMin, localizedApp.earningsMax)
+                : localizedApp.earningsLabel || formatEarnings(localizedApp.earningsMin, localizedApp.earningsMax)}
             </Badge>
             <Badge variant="outline">{localizedApp.difficultyLabel}</Badge>
             {proofCount > 0 && (

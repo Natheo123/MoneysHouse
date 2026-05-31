@@ -7,8 +7,10 @@ import { useUser } from "@/context/UserContext";
 import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "@/context/LanguageContext";
 
 export default function ConnexionPage() {
+  const { t } = useTranslation();
   const { login, user } = useUser();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -30,10 +32,10 @@ export default function ConnexionPage() {
       <div className="w-full">
         <div className="text-center mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-normal text-phantom-dark tracking-tight mb-2">
-            Connexion
+            {t("auth.loginTitle")}
           </h1>
           <p className="text-phantom-gray text-sm sm:text-base">
-            Accédez à votre dashboard Money&apos;s House
+            {t("auth.loginSubtitle")}
           </p>
         </div>
         <form
@@ -41,17 +43,17 @@ export default function ConnexionPage() {
           className="p-5 sm:p-8 rounded-[24px] sm:rounded-[32px] bg-phantom-surface border border-phantom-dark/5 space-y-4"
         >
           <div>
-            <label className="text-sm font-medium text-phantom-dark mb-2 block">Email</label>
+            <label className="text-sm font-medium text-phantom-dark mb-2 block">{t("auth.email")}</label>
             <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="vous@email.com"
+              placeholder={t("common.emailPlaceholder")}
               required
             />
           </div>
           <div>
-            <label className="text-sm font-medium text-phantom-dark mb-2 block">Mot de passe</label>
+            <label className="text-sm font-medium text-phantom-dark mb-2 block">{t("auth.password")}</label>
             <Input
               type="password"
               value={password}
@@ -61,12 +63,12 @@ export default function ConnexionPage() {
             />
           </div>
           <Button type="submit" className="w-full">
-            Se connecter
+            {t("auth.submitLogin")}
           </Button>
           <p className="text-center text-sm text-phantom-gray">
-            Pas encore de compte ?{" "}
+            {t("auth.noAccount")}{" "}
             <Link href="/inscription" className="text-phantom-purple hover:underline">
-              S&apos;inscrire
+              {t("auth.signupLink")}
             </Link>
           </p>
         </form>

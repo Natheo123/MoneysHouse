@@ -1,17 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { apps } from "@/lib/data/apps";
 import { getAppRatingStats } from "@/lib/reviews";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GsapScrollReveal } from "@/components/shared/GsapScrollReveal";
 import { PageShell } from "@/components/layout/PageShell";
-import { formatEarnings } from "@/lib/utils";
 import { AppLogo } from "@/components/icons/AppLogo";
 import { ReferralDownloadButton } from "@/components/apps/ReferralDownloadButton";
 import { X } from "lucide-react";
 import Link from "next/link";
+import { useLanguage, useTranslation } from "@/context/LanguageContext";
 import type { App } from "@/types";
 
 const platformLabels: Record<string, string> = {
@@ -22,45 +22,62 @@ const platformLabels: Record<string, string> = {
   web: "Web",
 };
 
-function getComparisonRows(selectedApps: App[]) {
-  return [
-    {
-      label: "Revenus",
-      values: selectedApps.map(
-        (a) => a.earningsLabel || formatEarnings(a.earningsMin, a.earningsMax)
-      ),
-    },
-    {
-      label: "Difficulté",
-      values: selectedApps.map((a) => a.difficultyLabel),
-    },
-    {
-      label: "Note communauté",
-      values: selectedApps.map((a) => {
-        const s = getAppRatingStats(a.id);
-        return s.count > 0 ? `${s.average}/5 (${s.count} avis)` : "Aucun avis";
-      }),
-    },
-    {
-      label: "Plateformes",
-      values: selectedApps.map((a) =>
-        a.platforms.map((p) => platformLabels[p]).join(", ")
-      ),
-    },
-    {
-      label: "Fonctionnement",
-      values: selectedApps.map((a) => a.shortDescription),
-    },
-    {
-      label: "Liens",
-      values: selectedApps.map((a) => a.downloadLinks.map((l) => l.label).join(", ")),
-    },
-  ];
+function useComparisonRows(
+  selectedApps: App[],
+  t: (key: string, params?: Record<string, string | number>) => string,
+  formatEarnings: (min?: number, max?: number) => string
+) {
+  return useMemo(
+    () => [
+      {
+        label: t("compare.rowEarnings"),
+        values: selectedApps.map(
+          (a) => a.earningsLabel || formatEarnings(a.earningsMin, a.earningsMax)
+        ),
+      },
+      {
+        label: t("compare.rowDifficulty"),
+        values: selectedApps.map((a) => a.difficultyLabel),
+      },
+      {
+        label: t("compare.rowRating"),
+        values: selectedApps.map((a) => {
+          const s = getAppRatingStats(a.id);
+          return s.count > 0
+            ? `${s.average}/5 (${s.count} ${t("apps.reviews")})`
+            : t("compare.noReviews");
+        }),
+      },
+      {
+        label: t("compare.rowPlatforms"),
+        values: selectedApps.map((a) =>
+          a.platforms.map((p) => platformLabels[p]).join(", ")
+        ),
+      },
+      {
+        label: t("compare.rowHow"),
+        values: selectedApps.map((a) => a.shortDescription),
+      },
+      {
+        label: t("compare.rowLinks"),
+        values: selectedApps.map((a) => a.downloadLinks.map((l) => l.label).join(", ")),
+      },
+    ],
+    [selectedApps, t, formatEarnings]
+  );
 }
 
-function MobileCompareCards({ selectedApps }: { selectedApps: App[] }) {
-  const rows = getComparisonRows(selectedApps);
+type ComparisonRow = { label: string; values: string[] };
 
+function MobileCompareCards({
+  selectedApps,
+  rows,
+  t,
+}: {
+  selectedApps: App[];
+  rows: ComparisonRow[];
+  t: (key: string, params?: Record<string, string | number>) => string;
+}) {
   return (
     <div className="md:hidden space-y-6">
       {selectedApps.map((app, appIndex) => (
@@ -86,13 +103,13 @@ function MobileCompareCards({ selectedApps }: { selectedApps: App[] }) {
 
           <div className="mt-6 pt-4 border-t border-phantom-dark/5 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-phantom-gray">
-              Télécharger
+              {t("compare.download")}
             </p>
             <div className="flex flex-col gap-2">
               {app.downloadLinks.slice(0, 2).map((link) => (
                 <ReferralDownloadButton
                   key={link.url}
-                  app={app}
+                  app={apps.find((a) => a.id === app.id) ?? app}
                   link={link}
                   size="sm"
                   variant="outline"
@@ -104,7 +121,7 @@ function MobileCompareCards({ selectedApps }: { selectedApps: App[] }) {
             </div>
             <Link href={`/apps/${app.slug}`} className="block">
               <Button size="sm" className="w-full">
-                Voir la fiche
+                {t("common.seeAppDetails")}
               </Button>
             </Link>
           </div>
@@ -115,6 +132,8 @@ function MobileCompareCards({ selectedApps }: { selectedApps: App[] }) {
 }
 
 export default function ComparateurPage() {
+  const { t } = useTranslation();
+  const { getLocalizedApp, formatEarnings } = useLanguage();
   const [selected, setSelected] = useState<string[]>([]);
 
   const toggleApp = (id: string) => {
@@ -125,47 +144,53 @@ export default function ComparateurPage() {
     });
   };
 
-  const selectedApps = apps.filter((a) => selected.includes(a.id));
-  const rows = getComparisonRows(selectedApps);
+  const selectedApps = selected
+    .map((id) => apps.find((a) => a.id === id))
+    .filter(Boolean)
+    .map((app) => getLocalizedApp(app!));
+
+  const rows = useComparisonRows(selectedApps, t, formatEarnings);
 
   return (
     <PageShell>
       <GsapScrollReveal>
         <div className="text-center mb-8 sm:mb-12">
           <h1 className="text-3xl sm:text-4xl md:text-6xl font-normal text-phantom-dark tracking-tight mb-4">
-            Comparateur
+            {t("compare.title")}
           </h1>
           <p className="text-phantom-gray text-base sm:text-lg">
-            Comparez jusqu&apos;à 3 applications côte à côte
+            {t("compare.subtitle")}
           </p>
         </div>
       </GsapScrollReveal>
 
       <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-12">
-        {apps.map((app) => (
-          <button key={app.id} onClick={() => toggleApp(app.id)} type="button">
-            <Badge
-              variant={selected.includes(app.id) ? "default" : "outline"}
-              className="cursor-pointer px-3 sm:px-4 py-2 text-xs sm:text-sm flex items-center gap-2 max-w-full"
-            >
-              <AppLogo appId={app.id} size={20} />
-              <span className="truncate max-w-[120px] sm:max-w-none">{app.name}</span>
-              {selected.includes(app.id) && <X className="h-3 w-3 shrink-0" />}
-            </Badge>
-          </button>
-        ))}
+        {apps.map((app) => {
+          const displayApp = getLocalizedApp(app);
+          return (
+            <button key={app.id} onClick={() => toggleApp(app.id)} type="button">
+              <Badge
+                variant={selected.includes(app.id) ? "default" : "outline"}
+                className="cursor-pointer px-3 sm:px-4 py-2 text-xs sm:text-sm flex items-center gap-2 max-w-full"
+              >
+                <AppLogo appId={app.id} size={20} />
+                <span className="truncate max-w-[120px] sm:max-w-none">{displayApp.name}</span>
+                {selected.includes(app.id) && <X className="h-3 w-3 shrink-0" />}
+              </Badge>
+            </button>
+          );
+        })}
       </div>
 
       {selectedApps.length > 0 ? (
         <>
-          <MobileCompareCards selectedApps={selectedApps} />
+          <MobileCompareCards selectedApps={selectedApps} rows={rows} t={t} />
 
           <div className="hidden md:block overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
-            <p className="text-xs text-phantom-gray mb-3 lg:hidden">Glissez horizontalement pour voir tout le tableau →</p>
             <table className="w-full min-w-[640px]">
               <thead>
                 <tr>
-                  <th className="text-left p-3 sm:p-4 text-phantom-gray font-medium">Critère</th>
+                  <th className="text-left p-3 sm:p-4 text-phantom-gray font-medium" />
                   {selectedApps.map((app) => (
                     <th key={app.id} className="p-3 sm:p-4 text-center">
                       <div className="flex flex-col items-center gap-2">
@@ -188,14 +213,14 @@ export default function ComparateurPage() {
                   </tr>
                 ))}
                 <tr className="border-t border-phantom-dark/5">
-                  <td className="p-3 sm:p-4 font-medium text-phantom-dark align-top">Télécharger</td>
+                  <td className="p-3 sm:p-4 font-medium text-phantom-dark align-top">{t("compare.download")}</td>
                   {selectedApps.map((app) => (
                     <td key={app.id} className="p-3 sm:p-4 text-center align-top">
                       <div className="flex flex-col gap-2 items-center">
                         {app.downloadLinks.slice(0, 2).map((link) => (
                           <ReferralDownloadButton
                             key={link.url}
-                            app={app}
+                            app={apps.find((a) => a.id === app.id) ?? app}
                             link={link}
                             size="sm"
                             variant="outline"
@@ -212,7 +237,7 @@ export default function ComparateurPage() {
                   {selectedApps.map((app) => (
                     <td key={app.id} className="p-3 sm:p-4 text-center">
                       <Link href={`/apps/${app.slug}`}>
-                        <Button size="sm">Voir la fiche</Button>
+                        <Button size="sm">{t("common.seeAppDetails")}</Button>
                       </Link>
                     </td>
                   ))}
@@ -224,7 +249,7 @@ export default function ComparateurPage() {
       ) : (
         <div className="text-center py-16 sm:py-20 rounded-[28px] sm:rounded-[32px] bg-phantom-surface border border-phantom-dark/5 px-4">
           <p className="text-phantom-gray text-base sm:text-lg">
-            Sélectionnez des applications ci-dessus pour les comparer
+            {t("compare.selectApps")}
           </p>
         </div>
       )}

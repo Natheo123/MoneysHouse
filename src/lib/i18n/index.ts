@@ -17,3 +17,6 @@ export function getFaqItems(locale: Locale): FAQItem[] {
 export * from "./types";
 export * from "./get";
 export * from "./localize-app";
+export * from "./legal-pages";
+export * from "./blog-i18n";
+export * from "./format-earnings";

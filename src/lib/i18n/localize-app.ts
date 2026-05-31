@@ -6,16 +6,34 @@ export function localizeApp(app: App, locale: Locale): App {
   if (locale === "fr") return app;
 
   const en = appsEn[app.id];
-  if (!en) return app;
+  if (!en) {
+    return {
+      ...app,
+      earningsLabel: app.earningsLabel
+        ? ({ Variables: "Varies", "Récompenses Google Play": "Google Play rewards" }[app.earningsLabel] ??
+          app.earningsLabel)
+        : app.earningsLabel,
+    };
+  }
 
   return {
     ...app,
     ...en,
+    referralBonusTitle: en.referralBonusTitle ?? app.referralBonusTitle,
+    referralBonusDescription: en.referralBonusDescription ?? app.referralBonusDescription,
+    referralInstructions: en.referralInstructions ?? app.referralInstructions,
+    referralFaqHint: en.referralFaqHint ?? app.referralFaqHint,
     downloadLinks: en.downloadLinks ?? app.downloadLinks,
     tutorial: en.tutorial ?? app.tutorial,
     faq: en.faq ?? app.faq,
     advantages: en.advantages ?? app.advantages,
     disadvantages: en.disadvantages ?? app.disadvantages,
+    earningsLabel:
+      en.earningsLabel ??
+      (app.earningsLabel
+        ? ({ Variables: "Varies", "Récompenses Google Play": "Google Play rewards" }[app.earningsLabel] ??
+          app.earningsLabel)
+        : undefined),
   };
 }
 

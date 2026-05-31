@@ -10,8 +10,12 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useLanguage, useTranslation } from "@/context/LanguageContext";
 
 export function AppProofsGallery({ app }: { app: App }) {
+  const { t } = useTranslation();
+  const { getLocalizedApp } = useLanguage();
+  const localizedApp = getLocalizedApp(app);
   const { ready, getProofsForApp } = useProofs();
   const proofs = getProofsForApp(app.id);
   const [selectedUrl, setSelectedUrl] = useState<string | null>(null);
@@ -29,11 +33,10 @@ export function AppProofsGallery({ app }: { app: App }) {
       <section>
         <div className="flex items-center gap-2 mb-2">
           <ImageIcon className="h-5 w-5 text-phantom-purple" />
-          <h2 className="text-2xl font-semibold text-phantom-dark">Preuves de paiement</h2>
+          <h2 className="text-2xl font-semibold text-phantom-dark">{t("proofs.title")}</h2>
         </div>
         <p className="text-phantom-gray text-sm mb-6">
-          Captures réelles partagées par l&apos;équipe Money&apos;s House pour prouver que{" "}
-          {app.name} paie bien.
+          {t("proofs.subtitle", { app: localizedApp.name })}
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
           {proofs.map((proof) => (
@@ -46,7 +49,7 @@ export function AppProofsGallery({ app }: { app: App }) {
               <div className="relative flex items-center justify-center p-2 min-h-[140px]">
                 <Image
                   src={proof.url}
-                  alt={proof.caption ?? `Preuve ${app.name}`}
+                  alt={proof.caption ?? t("proofs.dialogTitle", { app: localizedApp.name })}
                   width={600}
                   height={600}
                   className="w-full h-auto max-h-56 object-contain transition-transform duration-300 group-hover:scale-[1.02]"
@@ -68,13 +71,15 @@ export function AppProofsGallery({ app }: { app: App }) {
 
       <Dialog open={Boolean(selectedUrl)} onOpenChange={(open) => !open && setSelectedUrl(null)}>
         <DialogContent className="max-w-3xl p-3 sm:p-4">
-          <DialogTitle className="sr-only">Preuve {app.name}</DialogTitle>
+          <DialogTitle className="sr-only">
+            {t("proofs.dialogTitle", { app: localizedApp.name })}
+          </DialogTitle>
           {selectedUrl && (
             <div className="space-y-3">
               <div className="relative w-full min-h-[200px] max-h-[75dvh] rounded-[16px] overflow-hidden bg-phantom-bg">
                 <Image
                   src={selectedUrl}
-                  alt={selectedCaption ?? `Preuve ${app.name}`}
+                  alt={selectedCaption ?? t("proofs.dialogTitle", { app: localizedApp.name })}
                   width={1200}
                   height={1600}
                   className="w-full h-auto max-h-[75dvh] object-contain mx-auto"

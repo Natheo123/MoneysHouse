@@ -15,6 +15,7 @@ import {
   localizeApp,
   localizeApps,
   translate,
+  formatEarningsLocalized,
   LOCALE_STORAGE_KEY,
   type Locale,
 } from "@/lib/i18n";
@@ -30,6 +31,7 @@ interface LanguageContextValue {
   getLocalizedApp: (app: App) => App;
   faqItems: FAQItem[];
   ready: boolean;
+  formatEarnings: (min?: number, max?: number) => string;
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
@@ -69,10 +71,14 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const localizedApps = useMemo(() => localizeApps(apps, locale), [locale]);
   const getLocalizedApp = useCallback((app: App) => localizeApp(app, locale), [locale]);
   const faqItems = useMemo(() => getFaqItems(locale), [locale]);
+  const formatEarnings = useCallback(
+    (min?: number, max?: number) => formatEarningsLocalized(locale, min, max),
+    [locale]
+  );
 
   const value = useMemo(
-    () => ({ locale, setLocale, t, localizedApps, getLocalizedApp, faqItems, ready }),
-    [locale, setLocale, t, localizedApps, getLocalizedApp, faqItems, ready]
+    () => ({ locale, setLocale, t, localizedApps, getLocalizedApp, faqItems, ready, formatEarnings }),
+    [locale, setLocale, t, localizedApps, getLocalizedApp, faqItems, ready, formatEarnings]
   );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;

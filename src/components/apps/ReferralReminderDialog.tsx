@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { siteConfig } from "@/lib/config";
 import { openDownloadUrl } from "@/lib/download-links";
 import { useReferrals, hasReferralProgram } from "@/context/ReferralContext";
+import { useLanguage, useTranslation } from "@/context/LanguageContext";
 import type { App } from "@/types";
 
 interface ReferralReminderDialogProps {
@@ -30,6 +31,9 @@ export function ReferralReminderDialog({
   open,
   onOpenChange,
 }: ReferralReminderDialogProps) {
+  const { t } = useTranslation();
+  const { getLocalizedApp, locale } = useLanguage();
+  const localizedApp = getLocalizedApp(app);
   const { ready, getReferralData, getReferralBonus, refreshReferrals } = useReferrals();
   const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
@@ -41,6 +45,15 @@ export function ReferralReminderDialog({
   const bonus = getReferralBonus(app.id);
   const hasContent = referrals.codes.length > 0 || referrals.links.length > 0;
   const showReferral = hasReferralProgram(app.id) && (hasContent || bonus);
+
+  const bonusTitle =
+    locale === "en" && localizedApp.referralBonusTitle
+      ? localizedApp.referralBonusTitle
+      : bonus?.title ?? localizedApp.referralBonusTitle ?? "";
+  const bonusDescription =
+    locale === "en" && localizedApp.referralBonusDescription
+      ? localizedApp.referralBonusDescription
+      : bonus?.description ?? localizedApp.referralBonusDescription ?? "";
 
   const copyValue = async (value: string) => {
     await navigator.clipboard.writeText(value);
@@ -65,7 +78,7 @@ export function ReferralReminderDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         {!ready ? (
-          <p className="text-sm text-phantom-gray py-4">Chargement du parrainage…</p>
+          <p className="text-sm text-phantom-gray py-4">{t("referralDialog.loading")}</p>
         ) : showReferral && bonus ? (
           <>
             <div
@@ -76,31 +89,34 @@ export function ReferralReminderDialog({
             >
               <Badge className="mb-3 bg-phantom-dark text-phantom-cream border-0 gap-1">
                 <Sparkles className="h-3 w-3" />
-                Bonus exclusif Money&apos;s House
+                {t("referralDialog.exclusiveBadge")}
               </Badge>
               <DialogHeader className="text-left space-y-2 p-0">
                 <DialogTitle className="text-2xl md:text-3xl font-bold text-phantom-dark leading-tight">
-                  {bonus.title}
+                  {bonusTitle}
                 </DialogTitle>
               </DialogHeader>
-              <p className="text-sm text-phantom-dark/80 mt-2 leading-relaxed">{bonus.description}</p>
+              <p className="text-sm text-phantom-dark/80 mt-2 leading-relaxed">{bonusDescription}</p>
             </div>
 
-            <p className="text-sm text-phantom-gray">
-              Installez <strong className="text-phantom-dark">{app.name}</strong> via{" "}
-              <strong className="text-phantom-dark">{linkLabel}</strong> et récupérez votre bonus
-              en utilisant notre parrainage ci-dessous.
-            </p>
+            <p
+              className="text-sm text-phantom-gray"
+              dangerouslySetInnerHTML={{
+                __html: t("referralDialog.installVia", { app: app.name, link: linkLabel })
+                  .replace(app.name, `<strong class="text-phantom-dark">${app.name}</strong>`)
+                  .replace(linkLabel, `<strong class="text-phantom-dark">${linkLabel}</strong>`),
+              }}
+            />
 
             {(primaryCode || primaryLink) && (
               <div className="rounded-[20px] bg-phantom-bg border-2 border-phantom-purple/40 p-4 space-y-4">
                 <p className="text-xs font-semibold text-phantom-purple uppercase tracking-wide">
-                  Votre accès au bonus
+                  {t("referralDialog.bonusAccess")}
                 </p>
 
                 {primaryCode && (
                   <div>
-                    <p className="text-xs text-phantom-gray mb-1">Code parrain</p>
+                    <p className="text-xs text-phantom-gray mb-1">{t("referralDialog.referralCode")}</p>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                       <code className="text-lg sm:text-2xl font-black text-phantom-dark tracking-wider break-all">
                         {primaryCode}
@@ -115,7 +131,7 @@ export function ReferralReminderDialog({
                         ) : (
                           <Copy className="h-4 w-4" />
                         )}
-                        {copiedValue === primaryCode ? "Copié !" : "Copier"}
+                        {copiedValue === primaryCode ? t("referral.copied") : t("referral.copy")}
                       </Button>
                     </div>
                   </div>
@@ -123,7 +139,7 @@ export function ReferralReminderDialog({
 
                 {referrals.codes.length > 1 && (
                   <div className="space-y-2 pt-1 border-t border-phantom-dark/5">
-                    <p className="text-xs text-phantom-gray">Autres codes</p>
+                    <p className="text-xs text-phantom-gray">{t("referralDialog.otherCodes")}</p>
                     {referrals.codes.slice(1).map((code) => (
                       <div key={code} className="flex items-center justify-between gap-2">
                         <code className="text-sm font-bold text-phantom-dark">{code}</code>
@@ -137,7 +153,7 @@ export function ReferralReminderDialog({
 
                 {referrals.links.map((link) => (
                   <div key={link} className="pt-1 border-t border-phantom-dark/5">
-                    <p className="text-xs text-phantom-gray mb-1">Lien parrain direct</p>
+                    <p className="text-xs text-phantom-gray mb-1">{t("referralDialog.directLink")}</p>
                     <div className="flex items-center gap-2">
                       <a
                         href={link}
@@ -159,56 +175,58 @@ export function ReferralReminderDialog({
             )}
 
             <ol className="text-sm text-phantom-gray space-y-1.5 list-decimal list-inside">
-              <li>Copiez le code ou ouvrez le lien parrain</li>
-              <li>Inscrivez-vous sur {app.name}</li>
-              <li>Recevez <strong className="text-phantom-dark">{bonus.title.toLowerCase()}</strong></li>
+              <li>{t("referralDialog.step1")}</li>
+              <li>{t("referralDialog.step2", { app: app.name })}</li>
+              <li>{t("referralDialog.step3", { bonus: bonusTitle.toLowerCase() })}</li>
             </ol>
           </>
         ) : showReferral && hasContent ? (
           <>
             <DialogHeader>
-              <DialogTitle>Profitez du parrainage Money&apos;s House</DialogTitle>
+              <DialogTitle>{t("referralDialog.titleDefault")}</DialogTitle>
             </DialogHeader>
             <p className="text-sm text-phantom-gray mb-4">
-              Utilisez notre parrainage avant de continuer vers {linkLabel}.
+              {t("referralDialog.useBefore", { link: linkLabel })}
             </p>
             {referrals.codes.map((code) => (
               <div key={code} className="flex justify-between items-center p-3 rounded-[16px] bg-phantom-bg">
                 <code className="font-bold">{code}</code>
-                <Button size="sm" variant="outline" onClick={() => copyValue(code)}>Copier</Button>
+                <Button size="sm" variant="outline" onClick={() => copyValue(code)}>
+                  {t("referral.copy")}
+                </Button>
               </div>
             ))}
           </>
         ) : hasReferralProgram(app.id) ? (
           <>
             <DialogHeader>
-              <DialogTitle>Bonus bientôt disponible</DialogTitle>
+              <DialogTitle>{t("referralDialog.soonTitle")}</DialogTitle>
             </DialogHeader>
             <p className="text-sm text-phantom-gray">
-              Rejoignez notre{" "}
+              {t("referralDialog.soonTextBefore")}
               <a href={siteConfig.links.discord} target="_blank" rel="noopener noreferrer" className="text-phantom-purple hover:underline">
                 Discord
-              </a>{" "}
-              pour obtenir le code parrain et le bonus associé.
+              </a>
+              {t("referralDialog.soonTextAfter")}
             </p>
           </>
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle>Continuer vers {linkLabel}</DialogTitle>
+              <DialogTitle>{t("referralDialog.continueTitle", { link: linkLabel })}</DialogTitle>
             </DialogHeader>
             <p className="text-sm text-phantom-gray">
-              {app.name} ne propose pas de programme de parrainage.
+              {t("referralDialog.noProgram", { app: app.name })}
             </p>
           </>
         )}
 
         <details className="text-sm">
           <summary className="cursor-pointer text-phantom-purple font-medium hover:underline">
-            Comment activer le bonus sur {app.name} ?
+            {t("referralDialog.howTo", { app: app.name })}
           </summary>
           <p className="mt-3 text-phantom-gray leading-relaxed whitespace-pre-line">
-            {app.referralInstructions}
+            {localizedApp.referralInstructions}
           </p>
         </details>
 
@@ -216,14 +234,14 @@ export function ReferralReminderDialog({
           {ready && showReferral && primaryCode && (
             <Button onClick={copyAndContinue} className="w-full gap-2">
               <Copy className="h-4 w-4" />
-              Copier le code &amp; continuer
+              {t("referralDialog.copyAndContinue")}
               <ArrowRight className="h-4 w-4" />
             </Button>
           )}
           {ready && showReferral && !primaryCode && primaryLink && (
             <Button asChild className="w-full gap-2">
               <a href={primaryLink} target="_blank" rel="noopener noreferrer" onClick={() => onOpenChange(false)}>
-                Utiliser le lien parrain
+                {t("referralDialog.useReferralLink")}
                 <ArrowRight className="h-4 w-4" />
               </a>
             </Button>
@@ -233,7 +251,9 @@ export function ReferralReminderDialog({
             variant={ready && showReferral && (primaryCode || primaryLink) ? "outline" : "default"}
             className="w-full"
           >
-            {showReferral ? `Continuer vers ${linkLabel}` : `Ouvrir ${linkLabel}`}
+            {showReferral
+              ? t("referralDialog.continueTo", { link: linkLabel })
+              : t("referralDialog.openLink", { link: linkLabel })}
           </Button>
         </div>
       </DialogContent>

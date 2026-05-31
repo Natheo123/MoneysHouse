@@ -2,15 +2,30 @@
 
 import { Sparkles } from "lucide-react";
 import { useReferrals, hasReferralProgram } from "@/context/ReferralContext";
+import { apps } from "@/lib/data/apps";
+import { useLanguage, useTranslation } from "@/context/LanguageContext";
 import type { App } from "@/types";
 
 export function ReferralBonusBanner({ app }: { app: App }) {
+  const { t } = useTranslation();
+  const { getLocalizedApp, locale } = useLanguage();
   const { ready, getReferralBonus } = useReferrals();
 
   if (!ready || !hasReferralProgram(app.id)) return null;
 
   const bonus = getReferralBonus(app.id);
   if (!bonus) return null;
+
+  const baseApp = apps.find((a) => a.id === app.id) ?? app;
+  const localizedApp = getLocalizedApp(baseApp);
+  const title =
+    locale === "en" && localizedApp.referralBonusTitle
+      ? localizedApp.referralBonusTitle
+      : bonus.title;
+  const description =
+    locale === "en" && localizedApp.referralBonusDescription
+      ? localizedApp.referralBonusDescription
+      : bonus.description;
 
   return (
     <div
@@ -25,10 +40,10 @@ export function ReferralBonusBanner({ app }: { app: App }) {
         </div>
         <div>
           <p className="text-xs font-semibold text-phantom-dark/70 uppercase tracking-wide mb-1">
-            Offre parrainage Money&apos;s House
+            {t("referral.offerLabel")}
           </p>
-          <p className="text-xl font-bold text-phantom-dark mb-1">{bonus.title}</p>
-          <p className="text-sm text-phantom-dark/75">{bonus.description}</p>
+          <p className="text-xl font-bold text-phantom-dark mb-1">{title}</p>
+          <p className="text-sm text-phantom-dark/75">{description}</p>
         </div>
       </div>
     </div>

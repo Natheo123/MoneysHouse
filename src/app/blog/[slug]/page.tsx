@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { blogPosts, getBlogPost } from "@/lib/data/blog";
-import { BlogIcon } from "@/components/icons/UiIcons";
+import { BlogPostClient } from "@/components/blog/BlogPostClient";
 import { PageShell } from "@/components/layout/PageShell";
 
 interface Props {
@@ -31,28 +30,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <PageShell maxWidth="3xl">
-      <article className="w-full">
-        <div className="mb-6 sm:mb-8">
-          <Link href="/blog" className="text-phantom-purple hover:underline text-sm">
-            ← Retour au blog
-          </Link>
-        </div>
-        <BlogIcon id={post.iconId} size={48} className="mb-6" />
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
-          <span className="text-xs font-medium text-phantom-purple bg-phantom-purple/20 px-3 py-1 rounded-full">
-            {post.category}
-          </span>
-          <span className="text-sm text-phantom-gray">
-            {post.date} · {post.readTime}
-          </span>
-        </div>
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-normal text-phantom-dark tracking-tight mb-6 sm:mb-8">
-          {post.title}
-        </h1>
-        <div className="text-phantom-gray text-base sm:text-lg leading-relaxed whitespace-pre-line">
-          {post.content.trim()}
-        </div>
-      </article>
+      <BlogPostClient post={post} />
     </PageShell>
   );
 }

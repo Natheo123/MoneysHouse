@@ -1,8 +1,9 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { FlagIcon } from "@/components/icons/FlagIcon";
 import { useLanguage } from "@/context/LanguageContext";
-import { LOCALE_FLAGS, LOCALE_LABELS, type Locale } from "@/lib/i18n";
+import { LOCALE_LABELS, type Locale } from "@/lib/i18n";
 
 const options: Locale[] = ["fr", "en"];
 
@@ -34,9 +35,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
             aria-pressed={active}
             aria-label={option === "fr" ? t("language.french") : t("language.english")}
           >
-            <span aria-hidden className="text-sm leading-none">
-              {LOCALE_FLAGS[option]}
-            </span>
+            <FlagIcon locale={option} />
             <span>{LOCALE_LABELS[option]}</span>
           </button>
         );

@@ -5,6 +5,7 @@ import type { App } from "@/types";
 import { ExternalLink, Smartphone, Monitor, Globe, UserPlus } from "lucide-react";
 import { ReferralDownloadButton } from "@/components/apps/ReferralDownloadButton";
 import { ReferralBonusBanner } from "@/components/apps/ReferralBonusBanner";
+import { useTranslation } from "@/context/LanguageContext";
 
 const iconByPlatform: Record<string, ReactNode> = {
   signup: <UserPlus className="h-4 w-4" />,
@@ -16,14 +17,15 @@ const iconByPlatform: Record<string, ReactNode> = {
 };
 
 export function AppDownloadLinks({ app }: { app: App }) {
+  const { t } = useTranslation();
+
   return (
     <section>
       <h2 className="text-2xl font-semibold text-phantom-dark mb-4">
-        Télécharger & utiliser
+        {t("download.title")}
       </h2>
       <p className="text-phantom-gray mb-6 text-sm">
-        Liens officiels vérifiés (stores, sites et APK). Chaque bouton affiche le bonus parrainage
-        Money&apos;s House avant l&apos;installation.
+        {t("download.subtitle")}
       </p>
       <ReferralBonusBanner app={app} />
       <div className="flex flex-wrap gap-3">

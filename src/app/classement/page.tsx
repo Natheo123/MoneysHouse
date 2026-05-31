@@ -7,14 +7,25 @@ import { AppCard } from "@/components/apps/AppCard";
 import { GsapScrollReveal } from "@/components/shared/GsapScrollReveal";
 import { PageShell } from "@/components/layout/PageShell";
 import { Badge } from "@/components/ui/badge";
-import type { App, Category, Platform } from "@/types";
+import { useLanguage, useTranslation } from "@/context/LanguageContext";
+import type { Category, Platform } from "@/types";
 
 type Tab = "earnings" | "easy" | "rating";
 
 const platformFilters: Platform[] = ["android", "ios", "windows", "linux"];
 const categoryFilters: Category[] = ["passive", "surveys", "games", "sms"];
 
+const categoryLabelKeys: Partial<Record<Category, string>> = {
+  passive: "apps.filterPassive",
+  surveys: "apps.filterSurveys",
+  games: "apps.filterGames",
+  sms: "apps.filterSms",
+  bandwidth: "apps.filterPassive",
+};
+
 export default function ClassementPage() {
+  const { t } = useTranslation();
+  const { localizedApps } = useLanguage();
   const [tab, setTab] = useState<Tab>("earnings");
   const [platformFilter, setPlatformFilter] = useState<Platform | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<Category | null>(null);
@@ -41,10 +52,10 @@ export default function ClassementPage() {
     return true;
   });
 
-  const tabs: { key: Tab; label: string }[] = [
-    { key: "earnings", label: "Revenus les plus élevés" },
-    { key: "easy", label: "Plus faciles" },
-    { key: "rating", label: "Meilleures notes communauté" },
+  const tabs: { key: Tab; labelKey: string }[] = [
+    { key: "earnings", labelKey: "ranking.tabEarnings" },
+    { key: "easy", labelKey: "ranking.tabEasy" },
+    { key: "rating", labelKey: "ranking.tabRating" },
   ];
 
   return (
@@ -52,22 +63,22 @@ export default function ClassementPage() {
         <GsapScrollReveal>
           <div className="text-center mb-8 sm:mb-12">
             <h1 className="text-3xl sm:text-4xl md:text-6xl font-normal text-phantom-dark tracking-tight mb-4">
-              Classement
+              {t("ranking.title")}
             </h1>
             <p className="text-phantom-gray text-base sm:text-lg">
-              Les meilleures applications classées par critères
+              {t("ranking.subtitle")}
             </p>
           </div>
         </GsapScrollReveal>
 
         <div className="flex flex-wrap justify-center gap-2 mb-6">
-          {tabs.map((t) => (
-            <button key={t.key} onClick={() => setTab(t.key)}>
+          {tabs.map((tabItem) => (
+            <button key={tabItem.key} onClick={() => setTab(tabItem.key)}>
               <Badge
-                variant={tab === t.key ? "default" : "outline"}
+                variant={tab === tabItem.key ? "default" : "outline"}
                 className="cursor-pointer px-4 py-2 text-sm"
               >
-                {t.label}
+                {t(tabItem.labelKey)}
               </Badge>
             </button>
           ))}
@@ -75,12 +86,12 @@ export default function ClassementPage() {
 
         {tab === "rating" && Object.keys(ratingStats).length === 0 && (
           <p className="text-center text-phantom-gray text-sm mb-6">
-            Aucun avis communauté pour l&apos;instant. Les notes apparaîtront dès que des utilisateurs laisseront leurs avis.
+            {t("ranking.noRatingsYet")}
           </p>
         )}
 
         <div className="flex flex-wrap justify-center gap-2 mb-4">
-          <span className="text-sm text-phantom-gray self-center mr-2">Plateforme :</span>
+          <span className="text-sm text-phantom-gray self-center mr-2">{t("ranking.platform")} :</span>
           {platformFilters.map((p) => (
             <button
               key={p}
@@ -97,7 +108,7 @@ export default function ClassementPage() {
         </div>
 
         <div className="flex flex-wrap justify-center gap-2 mb-12">
-          <span className="text-sm text-phantom-gray self-center mr-2">Catégorie :</span>
+          <span className="text-sm text-phantom-gray self-center mr-2">{t("ranking.category")} :</span>
           {categoryFilters.map((c) => (
             <button
               key={c}
@@ -107,13 +118,7 @@ export default function ClassementPage() {
                 variant={categoryFilter === c ? "default" : "outline"}
                 className="cursor-pointer"
               >
-                {c === "passive"
-                  ? "Revenus passifs"
-                  : c === "surveys"
-                    ? "Sondages"
-                    : c === "games"
-                      ? "Jeux"
-                      : "SMS"}
+                {t(categoryLabelKeys[c] ?? "apps.filterAll")}
               </Badge>
             </button>
           ))}
@@ -126,7 +131,7 @@ export default function ClassementPage() {
                 <div className="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-phantom-purple flex items-center justify-center text-phantom-dark font-bold z-10">
                   #{i + 1}
                 </div>
-                <AppCard app={app} />
+                <AppCard app={localizedApps.find((a) => a.id === app.id) ?? app} />
               </div>
             </GsapScrollReveal>
           ))}

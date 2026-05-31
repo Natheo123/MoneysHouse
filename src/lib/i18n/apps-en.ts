@@ -43,6 +43,8 @@ export const appsEn: Record<string, Partial<App>> = {
       "Sign up with our referral code and unlock an extra bonus on your EarnApp account.",
     referralInstructions:
       "EarnApp — during registration:\n\n1. Go to earnapp.com and create an account.\n2. If a \"Referral code\" field appears, paste the Money's House code.\n3. You can also use a referral link: https://earnapp.com/i/YOUR_CODE\n4. Install the app and sign in with the same account.\n\nThe code must be entered before or during account creation.",
+    referralFaqHint:
+      "Enter the code when signing up on earnapp.com, or use the link earnapp.com/i/YOUR_CODE.",
     downloadLinks: [
       { platform: "signup", label: "Create an account", url: "" },
       { platform: "android", label: "Download Android", url: "" },
@@ -86,6 +88,8 @@ export const appsEn: Record<string, Partial<App>> = {
       "Create your Honeygain account with our referral code and receive 500 MB of bonus bandwidth.",
     referralInstructions:
       "Honeygain — during registration:\n\n1. Go to dashboard.honeygain.com/sign-up.\n2. Fill in your email and password.\n3. Enter the Money's House code in the \"Referral code\" field.\n4. Alternative: referral link https://r.honeygain.com/YOURCODE\n5. Download the app and sign in.\n\nThe code must be entered at registration.",
+    referralFaqHint:
+      "Enter the code in the \"Referral code\" field on dashboard.honeygain.com/sign-up, or via r.honeygain.com/YOURCODE.",
     downloadLinks: [
       { platform: "signup", label: "Create an account", url: "" },
       { platform: "web", label: "Dashboard", url: "" },
@@ -118,6 +122,7 @@ export const appsEn: Record<string, Partial<App>> = {
       "Enter our referral code at registration and receive a bonus on your first McMoney earnings.",
     referralInstructions:
       "McMoney — during registration:\n\n1. Download the APK from cm.com/mcmoney and install the app.\n2. Create an account in the app.\n3. Look for \"Referral code\" or \"Invitation code\" in settings or during sign-up.\n4. Enter the Money's House code before confirming.\n\nThe code must be entered during initial account setup.",
+    referralFaqHint: "Enter the code when registering in the Android app.",
     downloadLinks: [
       { platform: "signup", label: "Official site", url: "" },
       { platform: "web", label: "CM.com McMoney", url: "" },
@@ -141,6 +146,7 @@ export const appsEn: Record<string, Partial<App>> = {
       "Use our referral code on moneysmsapp.com and receive a bonus on your Money SMS account.",
     referralInstructions:
       "Money SMS — during registration:\n\n1. Sign up on moneysmsapp.com/fr.\n2. During account creation, a \"Referral code\" field is available.\n3. Enter the Money's House code before confirming.\n4. Download the Android app and sign in with the same account.\n\nThe code must be entered on the website before installing the app.",
+    referralFaqHint: "Enter the code on moneysmsapp.com when creating your account.",
     downloadLinks: [
       { platform: "signup", label: "Create an account", url: "" },
       { platform: "web", label: "Official site", url: "" },
@@ -189,6 +195,8 @@ export const appsEn: Record<string, Partial<App>> = {
       "Sign up with our referral code and receive 50 Gambz instantly on Gamby.",
     referralInstructions:
       "Gamby — during registration:\n\n1. Download Gamby from the Play Store or App Store.\n2. Create your account with your email.\n3. Look for \"Referral code\" in settings or during sign-up.\n4. Enter the Money's House code before confirming.\n5. Invite friends to earn bonus Gambz.\n\nThe referral code can be entered at registration or from your profile.",
+    referralFaqHint:
+      "Enter the referral code when signing up or in the Gamby referral section of the app.",
     downloadLinks: [
       { platform: "signup", label: "Official site", url: "" },
       { platform: "android", label: "Google Play", url: "" },
@@ -237,6 +245,8 @@ export const appsEn: Record<string, Partial<App>> = {
       "Sign up with our AttaPoll referral code and receive a bonus on your first activity in the app.",
     referralInstructions:
       "AttaPoll — during registration:\n\n1. Download AttaPoll from the Play Store, App Store, or attapoll.com/fr-be/.\n2. Create your account with your email.\n3. Open Profile or Settings, then \"Referrals\" / \"Refer a friend\".\n4. Enter the Money's House code before confirming.\n5. Complete surveys to accumulate earnings.\n\nThe referral code can be entered at registration or from your profile.",
+    referralFaqHint:
+      "Enter the referral code in the AttaPoll app under \"Referrals\" or \"Refer a friend\", or at registration if the field is offered.",
     downloadLinks: [
       { platform: "signup", label: "Official site", url: "" },
       { platform: "web", label: "AttaPoll Belgium", url: "" },
@@ -286,6 +296,8 @@ export const appsEn: Record<string, Partial<App>> = {
       "Sign up with our Eureka referral code and receive a bonus on your account upon registration.",
     referralInstructions:
       "Eureka Surveys — during registration:\n\n1. Download Eureka from the Play Store, App Store, or go to eurekasurveys.com.\n2. Create your account with your email.\n3. Look for \"Referral code\" during sign-up or in settings.\n4. Enter the Money's House code before confirming.\n5. Complete surveys and the daily poll to accumulate earnings.\n\nThe referral code can be entered at registration or from your profile.",
+    referralFaqHint:
+      "Enter the referral code when signing up in the app or on eurekasurveys.com, in the referral section.",
     downloadLinks: [
       { platform: "signup", label: "Official site", url: "" },
       { platform: "web", label: "Eureka Surveys", url: "" },

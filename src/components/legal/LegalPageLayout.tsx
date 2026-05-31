@@ -10,6 +10,7 @@ interface LegalPageLayoutProps {
   title: string;
   description: string;
   updatedAt: string;
+  updatedAtLabel: string;
   sections: LegalSection[];
   children?: ReactNode;
 }
@@ -18,6 +19,7 @@ export function LegalPageLayout({
   title,
   description,
   updatedAt,
+  updatedAtLabel,
   sections,
   children,
 }: LegalPageLayoutProps) {
@@ -28,7 +30,9 @@ export function LegalPageLayout({
           {title}
         </h1>
         <p className="text-phantom-gray text-base sm:text-lg max-w-2xl mx-auto">{description}</p>
-        <p className="text-sm text-phantom-gray/70 mt-3">Dernière mise à jour : {updatedAt}</p>
+        <p className="text-sm text-phantom-gray/70 mt-3">
+          {updatedAtLabel} {updatedAt}
+        </p>
       </div>
 
       <div className="rounded-[24px] sm:rounded-[32px] bg-phantom-surface border border-phantom-dark/5 p-6 sm:p-10 space-y-8 sm:space-y-10">

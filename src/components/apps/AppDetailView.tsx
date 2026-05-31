@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/accordion";
 import { GsapScrollReveal } from "@/components/shared/GsapScrollReveal";
 import { PageShell } from "@/components/layout/PageShell";
-import { formatEarnings } from "@/lib/utils";
 import { useUser } from "@/context/UserContext";
 import { AppLogo } from "@/components/icons/AppLogo";
 import { AppDownloadLinks } from "@/components/apps/AppDownloadLinks";
@@ -40,7 +39,7 @@ const platformLabels: Record<string, string> = {
 
 export function AppDetailView({ app }: { app: App }) {
   const { t } = useTranslation();
-  const { getLocalizedApp } = useLanguage();
+  const { getLocalizedApp, formatEarnings } = useLanguage();
   const localizedApp = getLocalizedApp(app);
   const { isFavorite, toggleFavorite, addToHistory, user } = useUser();
   const { reviews, stats, alreadyReviewed, submitReview } = useAppReviews(
