@@ -2,7 +2,7 @@
 
 import { useRef, useLayoutEffect, useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, X, Bell, User, Shield, LogIn } from "lucide-react";
+import { Menu, X, Bell, User, Shield, LogIn, MessageCircle } from "lucide-react";
 import { gsap, registerGsapPlugins } from "@/lib/gsap";
 import { siteConfig } from "@/lib/config";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,6 @@ const navLinkKeys = [
   { href: "/blog", labelKey: "nav.blog" },
   { href: "/faq", labelKey: "nav.faq" },
   { href: "/equipe", labelKey: "nav.team" },
-  { href: siteConfig.links.discord, labelKey: "nav.contact", external: true },
 ] as const;
 
 function NavLink({
@@ -75,57 +74,73 @@ export function Header() {
   }, []);
 
   useEffect(() => {
-    const updateFromScroll = (scrollY: number, direction: number) => {
+    const handleScroll = (scrollY: number, direction: number) => {
       setScrolled(scrollY > 40);
 
-      const delta = scrollY - lastScrollY.current;
-
-      if (scrollY <= 8) {
+      if (scrollY <= 12) {
         setVisible(true);
-      } else if (direction > 0 && scrollY > 24) {
+        return;
+      }
+
+      if (direction > 0 && scrollY > 48) {
         setVisible(false);
         setMobileOpen(false);
       } else if (direction < 0) {
         setVisible(true);
-      } else if (Math.abs(delta) >= 6) {
-        if (delta > 0 && scrollY > 24) {
-          setVisible(false);
-          setMobileOpen(false);
-        } else if (delta < 0) {
-          setVisible(true);
-        }
       }
-
-      lastScrollY.current = scrollY;
     };
 
-    if (lenis) {
-      const onLenisScroll = (instance: typeof lenis) => {
-        const scrollY = instance.scroll;
+    const onLenisScroll = (payload: unknown) => {
+      if (typeof payload === "object" && payload !== null && "scroll" in payload) {
+        const e = payload as { scroll: number; direction?: number };
         const direction =
-          instance.direction !== 0
-            ? instance.direction
+          e.direction !== undefined && e.direction !== 0
+            ? e.direction
+            : e.scroll > lastScrollY.current
+              ? 1
+              : e.scroll < lastScrollY.current
+                ? -1
+                : 0;
+        handleScroll(e.scroll, direction);
+        lastScrollY.current = e.scroll;
+        return;
+      }
+
+      if (lenis) {
+        const scrollY = lenis.scroll;
+        const direction =
+          lenis.direction !== 0
+            ? lenis.direction
             : scrollY > lastScrollY.current
               ? 1
               : scrollY < lastScrollY.current
                 ? -1
                 : 0;
-        updateFromScroll(scrollY, direction);
-      };
+        handleScroll(scrollY, direction);
+        lastScrollY.current = scrollY;
+      }
+    };
 
+    if (lenis) {
       lenis.on("scroll", onLenisScroll);
-      updateFromScroll(lenis.scroll, 0);
-
+      handleScroll(lenis.scroll, 0);
       return () => {
         lenis.off("scroll", onLenisScroll);
       };
     }
 
+    let ticking = false;
     const onWindowScroll = () => {
-      const scrollY = window.scrollY;
-      const direction =
-        scrollY > lastScrollY.current ? 1 : scrollY < lastScrollY.current ? -1 : 0;
-      updateFromScroll(scrollY, direction);
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        const direction =
+          scrollY > lastScrollY.current ? 1 : scrollY < lastScrollY.current ? -1 : 0;
+        handleScroll(scrollY, direction);
+        lastScrollY.current = scrollY;
+        ticking = false;
+      });
     };
 
     window.addEventListener("scroll", onWindowScroll, { passive: true });
@@ -143,7 +158,7 @@ export function Header() {
   }, [mobileOpen]);
 
   const linkClass =
-    "px-4 py-2 rounded-full text-phantom-dark hover:bg-phantom-lavender/50 transition-colors text-sm font-medium";
+    "px-2.5 xl:px-3 py-2 rounded-full text-phantom-dark hover:bg-phantom-lavender/50 transition-colors text-sm font-medium whitespace-nowrap shrink-0";
 
   const closeMobile = () => setMobileOpen(false);
 
@@ -175,16 +190,25 @@ export function Header() {
             </span>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center">
+          <nav className="hidden xl:flex items-center gap-0.5 flex-1 justify-center min-w-0">
             {navLinkKeys.map((link) => (
               <NavLink
                 key={link.href}
                 href={link.href}
                 label={t(link.labelKey)}
-                external={"external" in link ? link.external : undefined}
                 className={linkClass}
               />
             ))}
+            <a
+              href={siteConfig.links.discord}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${linkClass} inline-flex items-center gap-1.5 text-[#5865F2] hover:bg-[#5865F2]/10`}
+              aria-label={t("nav.contact")}
+            >
+              <MessageCircle className="h-4 w-4 shrink-0" />
+              <span className="hidden 2xl:inline">{t("nav.contact")}</span>
+            </a>
           </nav>
 
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
@@ -238,7 +262,7 @@ export function Header() {
             )}
             <button
               type="button"
-              className="lg:hidden p-2 rounded-full hover:bg-phantom-lavender/50 shrink-0"
+              className="xl:hidden p-2 rounded-full hover:bg-phantom-lavender/50 shrink-0"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-expanded={mobileOpen}
               aria-label={mobileOpen ? t("nav.closeMenu") : t("nav.menu")}
@@ -253,12 +277,12 @@ export function Header() {
         <>
           <button
             type="button"
-            className="fixed inset-0 z-40 bg-phantom-dark/40 backdrop-blur-sm lg:hidden"
+            className="fixed inset-0 z-40 bg-phantom-dark/40 backdrop-blur-sm xl:hidden"
             aria-label={t("nav.closeMenu")}
             onClick={closeMobile}
           />
           <div
-            className="fixed left-0 right-0 z-40 lg:hidden border-t border-phantom-dark/5 bg-phantom-surface shadow-lg overflow-y-auto max-h-[calc(100dvh-4rem-env(safe-area-inset-top))]"
+            className="fixed left-0 right-0 z-40 xl:hidden border-t border-phantom-dark/5 bg-phantom-surface shadow-lg overflow-y-auto max-h-[calc(100dvh-4rem-env(safe-area-inset-top))]"
             style={{ top: "calc(4rem + env(safe-area-inset-top, 0px))" }}
           >
             <div className="section-x py-4 space-y-1">
@@ -286,11 +310,20 @@ export function Header() {
                   key={link.href}
                   href={link.href}
                   label={t(link.labelKey)}
-                  external={"external" in link ? link.external : undefined}
                   onClick={closeMobile}
                   className="block px-4 py-3 rounded-[24px] text-phantom-dark hover:bg-phantom-lavender/50 font-medium"
                 />
               ))}
+              <a
+                href={siteConfig.links.discord}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={closeMobile}
+                className="flex items-center gap-2 px-4 py-3 rounded-[24px] text-[#5865F2] hover:bg-[#5865F2]/10 font-medium"
+              >
+                <MessageCircle className="h-5 w-5" />
+                {t("nav.contact")}
+              </a>
               {!user && (
                 <div className="pt-4 flex flex-col gap-2 sm:hidden">
                   <Link href="/connexion" onClick={closeMobile}>

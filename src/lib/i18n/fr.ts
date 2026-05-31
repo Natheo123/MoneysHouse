@@ -5,8 +5,8 @@ export const fr = {
     compare: "Comparateur",
     blog: "Blog",
     faq: "FAQ",
-    team: "Notre équipe",
-    contact: "Nous contacter",
+    team: "Équipe",
+    contact: "Discord",
     admin: "Admin",
     adminPanel: "Administration",
     login: "Connexion",
@@ -231,6 +231,7 @@ export const fr = {
     staff: "Équipe",
     empty: "L'équipe sera bientôt présentée ici.",
     viewDiscord: "Voir le profil Discord",
+    roleSection: "Rôle sur Money's House",
     roles: {
       founder: "Fondateur",
       admin: "Admin",

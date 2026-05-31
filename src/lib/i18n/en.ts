@@ -7,8 +7,8 @@ export const en: Dictionary = {
     compare: "Compare",
     blog: "Blog",
     faq: "FAQ",
-    team: "Our team",
-    contact: "Contact us",
+    team: "Team",
+    contact: "Discord",
     admin: "Admin",
     adminPanel: "Administration",
     login: "Log in",
@@ -229,6 +229,7 @@ export const en: Dictionary = {
     staff: "Team",
     empty: "The team will be presented here soon.",
     viewDiscord: "View Discord profile",
+    roleSection: "Role on Money's House",
     roles: {
       founder: "Founder",
       admin: "Admin",

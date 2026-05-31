@@ -61,8 +61,8 @@ export default function TeamPage() {
           {founders.length > 0 && (
             <ScrollReveal>
               <section>
-                <h2 className="text-xl font-semibold text-phantom-dark mb-6">{t("team.founders")}</h2>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <h2 className="text-xl font-semibold text-phantom-dark mb-8 text-center">{t("team.founders")}</h2>
+                <div className="flex flex-wrap justify-center gap-8">
                   {founders.map((member) => (
                     <TeamMemberCard key={member.discordId} member={member} />
                   ))}
@@ -74,8 +74,8 @@ export default function TeamPage() {
           {staff.length > 0 && (
             <ScrollReveal>
               <section>
-                <h2 className="text-xl font-semibold text-phantom-dark mb-6">{t("team.staff")}</h2>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <h2 className="text-xl font-semibold text-phantom-dark mb-8 text-center">{t("team.staff")}</h2>
+                <div className="flex flex-wrap justify-center gap-8">
                   {staff.map((member) => (
                     <TeamMemberCard key={member.discordId} member={member} />
                   ))}
