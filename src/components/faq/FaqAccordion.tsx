@@ -14,6 +14,7 @@ import { apps } from "@/lib/data/apps";
 import { siteConfig } from "@/lib/config";
 import {
   getAllReferralData,
+  getReferralBonus,
   hasReferralProgram,
   REFERRAL_CODES_UPDATED_EVENT,
   type AppReferrals,
@@ -51,13 +52,13 @@ function ReferralFaqAnswer() {
   return (
     <div className="space-y-4">
       <p className="text-phantom-gray leading-relaxed">
-        Avant chaque téléchargement, une fenêtre vous rappelle d&apos;utiliser nos codes et liens de
-        parrainage. Copiez un code ou ouvrez un lien ci-dessous, puis suivez les instructions pour
-        chaque application.
+        Cliquez sur un lien d&apos;installation pour voir le bonus exact et récupérer le code ou le
+        lien parrain avant de vous inscrire.
       </p>
 
       {apps.map((app) => {
         const data = dataByApp[app.id] ?? { codes: [], links: [] };
+        const bonus = getReferralBonus(app.id);
         const withReferral = hasReferralProgram(app.id);
         const hasContent = data.codes.length > 0 || data.links.length > 0;
 
@@ -72,6 +73,16 @@ function ReferralFaqAnswer() {
             >
               {app.name}
             </Link>
+
+            {withReferral && bonus && (
+              <div
+                className="mt-3 p-3 rounded-[16px] border border-phantom-purple/20"
+                style={{ background: `${app.color}22` }}
+              >
+                <p className="text-lg font-bold text-phantom-dark">{bonus.title}</p>
+                <p className="text-sm text-phantom-gray mt-1">{bonus.description}</p>
+              </div>
+            )}
 
             {withReferral ? (
               hasContent ? (

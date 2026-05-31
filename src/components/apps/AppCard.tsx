@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { formatEarnings } from "@/lib/utils";
 import { useUser } from "@/context/UserContext";
 import { AppLogo } from "@/components/icons/AppLogo";
+import { ReferralBonusBadge } from "@/components/apps/ReferralBonusBadge";
 import { useAppReviews } from "@/hooks/useAppReviews";
 
 const platformLabels: Record<string, string> = {
@@ -75,6 +76,9 @@ export function AppCard({ app, showFavorite = true }: AppCardProps) {
             )}
           </div>
           <h3 className="text-xl font-semibold text-phantom-dark mb-2">{app.name}</h3>
+          <div className="mb-2">
+            <ReferralBonusBadge appId={app.id} />
+          </div>
           <p className="text-phantom-gray text-sm mb-4 flex-1">{app.shortDescription}</p>
           <div className="flex flex-wrap gap-2 mb-4">
             <Badge variant="secondary">

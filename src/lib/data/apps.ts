@@ -23,6 +23,9 @@ export const apps: App[] = [
       { platform: "linux", label: "Linux / macOS", url: "https://earnapp.com/download/" },
     ],
     referralCodes: [],
+    referralBonusTitle: "Bonus de bienvenue EarnApp",
+    referralBonusDescription:
+      "Inscrivez-vous avec notre code parrain et débloquez un bonus supplémentaire sur votre compte EarnApp.",
     referralFaqHint:
       "Entrez le code lors de l'inscription sur earnapp.com, ou utilisez le lien earnapp.com/i/VOTRE_CODE.",
     referralInstructions:
@@ -76,6 +79,9 @@ export const apps: App[] = [
       { platform: "linux", label: "Linux / macOS", url: "https://www.honeygain.com/download" },
     ],
     referralCodes: [],
+    referralBonusTitle: "500 Mo offerts",
+    referralBonusDescription:
+      "Créez votre compte Honeygain avec notre code parrain et recevez 500 Mo de bande passante bonus.",
     referralFaqHint:
       "Saisissez le code dans le champ « Referral code » sur dashboard.honeygain.com/sign-up, ou via r.honeygain.com/VOTRECODE.",
     referralInstructions:
@@ -122,6 +128,9 @@ export const apps: App[] = [
       { platform: "android", label: "Google Play", url: "https://play.google.com/store/apps/details?id=com.textcash.ap" },
     ],
     referralCodes: [],
+    referralBonusTitle: "Bonus d'inscription McMoney",
+    referralBonusDescription:
+      "Entrez notre code parrain à l'inscription et recevez un bonus sur votre premier gain McMoney.",
     referralFaqHint: "Entrez le code à l'inscription dans l'application Android.",
     referralInstructions:
       "McMoney — lors de l'inscription :\n\n1. Téléchargez l'app depuis le Play Store ou mcmoney.app.\n2. Créez un compte dans l'application.\n3. Cherchez « Referral code » ou « Code d'invitation » dans les paramètres ou à l'inscription.\n4. Entrez le code Money's House avant de valider.\n\nLe code doit être entré lors de la première configuration du compte.",
@@ -157,6 +166,9 @@ export const apps: App[] = [
       { platform: "android", label: "Google Play", url: "https://play.google.com/store/apps/details?id=com.mooncy.sms" },
     ],
     referralCodes: [],
+    referralBonusTitle: "Bonus d'inscription Money SMS",
+    referralBonusDescription:
+      "Utilisez notre code parrain sur moneysms.net et recevez un bonus sur votre compte Money SMS.",
     referralFaqHint: "Saisissez le code sur moneysms.net lors de la création du compte.",
     referralInstructions:
       "Money SMS — lors de l'inscription :\n\n1. Inscrivez-vous sur moneysms.net.\n2. Lors de la création du compte, un champ « Referral code » est disponible.\n3. Entrez le code Money's House avant de valider.\n4. Téléchargez l'app Android et connectez-vous avec le même compte.\n\nLe code doit être saisi sur le site web avant d'installer l'app.",
@@ -190,6 +202,9 @@ export const apps: App[] = [
       { platform: "ios", label: "App Store", url: "https://apps.apple.com/app/gamby-sports-prediction-game/id6477860898" },
     ],
     referralCodes: [],
+    referralBonusTitle: "50 Gambz offerts",
+    referralBonusDescription:
+      "Inscrivez-vous avec notre code parrain et recevez 50 Gambz immédiatement sur Gamby.",
     referralFaqHint:
       "Entrez le code parrain lors de l'inscription ou dans la section parrainage de l'application Gamby.",
     referralInstructions:

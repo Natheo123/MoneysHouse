@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import type { App } from "@/types";
 import { ExternalLink, Smartphone, Monitor, Globe, UserPlus } from "lucide-react";
 import { ReferralDownloadButton } from "@/components/apps/ReferralDownloadButton";
+import { ReferralBonusBanner } from "@/components/apps/ReferralBonusBanner";
 
 const iconByPlatform: Record<string, ReactNode> = {
   signup: <UserPlus className="h-4 w-4" />,
@@ -21,9 +22,10 @@ export function AppDownloadLinks({ app }: { app: App }) {
         Télécharger & utiliser
       </h2>
       <p className="text-phantom-gray mb-6 text-sm">
-        Liens officiels vers les stores et le site de {app.name}. Une fenêtre vous rappellera
-        d&apos;utiliser le code ou le lien de parrainage avant chaque téléchargement.
+        Liens officiels vers les stores et le site de {app.name}. Chaque bouton affiche le bonus
+        parrainage Money&apos;s House avant l&apos;installation.
       </p>
+      <ReferralBonusBanner app={app} />
       <div className="flex flex-wrap gap-3">
         {app.downloadLinks.map((link) => (
           <ReferralDownloadButton

@@ -3,9 +3,16 @@ import { apps } from "@/lib/data/apps";
 const REFERRAL_STORAGE_KEY = "moneys-house-referrals";
 const LEGACY_REFERRAL_CODES_KEY = "moneys-house-referral-codes";
 
+export interface ReferralBonus {
+  title: string;
+  description: string;
+}
+
 export interface AppReferrals {
   codes: string[];
   links: string[];
+  bonusTitle?: string;
+  bonusDescription?: string;
 }
 
 export const REFERRAL_CODES_UPDATED_EVENT = "referral-codes-updated";
@@ -50,10 +57,21 @@ function parseStoredEntry(raw: unknown): AppReferrals {
     return { codes: normalizeCodes(raw), links: [] };
   }
   if (raw && typeof raw === "object") {
-    const entry = raw as { codes?: unknown; links?: unknown };
+    const entry = raw as {
+      codes?: unknown;
+      links?: unknown;
+      bonusTitle?: unknown;
+      bonusDescription?: unknown;
+    };
     return {
       codes: normalizeCodes(entry.codes),
       links: normalizeLinks(entry.links),
+      bonusTitle:
+        typeof entry.bonusTitle === "string" ? entry.bonusTitle.trim() : undefined,
+      bonusDescription:
+        typeof entry.bonusDescription === "string"
+          ? entry.bonusDescription.trim()
+          : undefined,
     };
   }
   return { codes: [], links: [] };
@@ -105,6 +123,8 @@ function getDefaultReferrals(appId: string): AppReferrals {
   return {
     codes: app?.referralCodes?.filter(Boolean) ?? [],
     links: app?.referralLinks?.filter(Boolean) ?? [],
+    bonusTitle: app?.referralBonusTitle,
+    bonusDescription: app?.referralBonusDescription,
   };
 }
 
@@ -118,6 +138,33 @@ function updateStoredReferrals(appId: string, referrals: AppReferrals): void {
   const stored = loadAllStored();
   stored[appId] = referrals;
   saveAllStored(stored);
+}
+
+export function getReferralBonus(appId: string): ReferralBonus | null {
+  if (!hasReferralProgram(appId)) return null;
+  const stored = getStoredReferrals(appId);
+  const app = apps.find((a) => a.id === appId);
+  const title = stored.bonusTitle || app?.referralBonusTitle;
+  if (!title) return null;
+  return {
+    title,
+    description:
+      stored.bonusDescription ||
+      app?.referralBonusDescription ||
+      "Utilisez notre code ou lien parrain pour débloquer ce bonus à l'inscription.",
+  };
+}
+
+export function setReferralBonus(
+  appId: string,
+  bonus: { title: string; description: string }
+): void {
+  const current = getStoredReferrals(appId);
+  setReferralData(appId, {
+    ...current,
+    bonusTitle: bonus.title.trim(),
+    bonusDescription: bonus.description.trim(),
+  });
 }
 
 export function getReferralData(appId: string): AppReferrals {
@@ -164,6 +211,8 @@ export function setReferralData(appId: string, data: AppReferrals): void {
   updateStoredReferrals(appId, {
     codes: normalizeCodes(data.codes),
     links: normalizeLinks(data.links),
+    bonusTitle: data.bonusTitle?.trim() || undefined,
+    bonusDescription: data.bonusDescription?.trim() || undefined,
   });
 }
 

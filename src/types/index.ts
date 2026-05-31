@@ -25,6 +25,8 @@ export interface App {
   downloadLinks: AppLink[];
   referralCodes?: string[];
   referralLinks?: string[];
+  referralBonusTitle?: string;
+  referralBonusDescription?: string;
   referralFaqHint?: string;
   referralInstructions: string;
   hasReferral?: boolean;

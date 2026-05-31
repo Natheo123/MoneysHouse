@@ -9,10 +9,12 @@ import { useAdmin, OWNER_EMAIL } from "@/context/AdminContext";
 import { apps } from "@/lib/data/apps";
 import {
   getAllReferralData,
+  getReferralBonus,
   addReferralCode,
   removeReferralCode,
   addReferralLink,
   removeReferralLink,
+  setReferralBonus,
   type AppReferrals,
 } from "@/lib/referrals";
 import { GsapScrollReveal } from "@/components/shared/GsapScrollReveal";
@@ -34,6 +36,7 @@ export default function AdminPage() {
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [adminError, setAdminError] = useState("");
   const [referralData, setReferralData] = useState<Record<string, AppReferrals>>({});
+  const [bonusFields, setBonusFields] = useState<Record<string, { title: string; description: string }>>({});
   const [newCodes, setNewCodes] = useState<Record<string, string>>({});
   const [newLinks, setNewLinks] = useState<Record<string, string>>({});
   const [referralError, setReferralError] = useState<Record<string, string>>({});
@@ -53,6 +56,11 @@ export default function AdminPage() {
   useEffect(() => {
     if (user && isAdmin(user.email)) {
       setReferralData(getAllReferralData());
+      const bonuses: Record<string, { title: string; description: string }> = {};
+      for (const app of apps.filter((a) => a.hasReferral !== false)) {
+        bonuses[app.id] = getReferralBonus(app.id) ?? { title: "", description: "" };
+      }
+      setBonusFields(bonuses);
     }
   }, [user, isAdmin]);
 
@@ -130,6 +138,20 @@ export default function AdminPage() {
   const handleRemoveReferralLink = (appId: string, link: string) => {
     removeReferralLink(appId, link);
     setReferralData(getAllReferralData());
+    flashSaved();
+  };
+
+  const handleSaveBonus = (appId: string) => {
+    const fields = bonusFields[appId];
+    if (!fields?.title.trim()) {
+      setReferralError((prev) => ({
+        ...prev,
+        [`${appId}-bonus`]: "Le titre du bonus est requis (ex. : 50 Gambz offerts).",
+      }));
+      return;
+    }
+    setReferralBonus(appId, fields);
+    setReferralError((prev) => ({ ...prev, [`${appId}-bonus`]: "" }));
     flashSaved();
   };
 
@@ -224,8 +246,8 @@ export default function AdminPage() {
               Parrainage
             </h2>
             <p className="text-sm text-phantom-gray mb-6">
-              Ajoutez plusieurs codes et liens par application. Ils s&apos;affichent dans la popup
-              avant chaque téléchargement et dans la FAQ.
+              Définissez le bonus marketing affiché (ex. « 50 Gambz offerts »), puis ajoutez codes et
+              liens par application. Visible dans la popup, les listes et la FAQ.
             </p>
 
             {saved && (
@@ -240,6 +262,44 @@ export default function AdminPage() {
                   return (
                     <div key={app.id} className="rounded-[20px] bg-phantom-bg p-5">
                       <p className="text-phantom-dark font-medium mb-4">{app.name}</p>
+
+                      <p className="text-xs text-phantom-gray uppercase tracking-wide mb-2">
+                        Message marketing (gain exact)
+                      </p>
+                      <div className="space-y-3 mb-6 p-4 rounded-[16px] bg-phantom-surface border border-phantom-purple/20">
+                        <Input
+                          value={bonusFields[app.id]?.title ?? ""}
+                          onChange={(e) =>
+                            setBonusFields((prev) => ({
+                              ...prev,
+                              [app.id]: {
+                                title: e.target.value,
+                                description: prev[app.id]?.description ?? "",
+                              },
+                            }))
+                          }
+                          placeholder="Ex. : 50 Gambz offerts"
+                        />
+                        <Input
+                          value={bonusFields[app.id]?.description ?? ""}
+                          onChange={(e) =>
+                            setBonusFields((prev) => ({
+                              ...prev,
+                              [app.id]: {
+                                title: prev[app.id]?.title ?? "",
+                                description: e.target.value,
+                              },
+                            }))
+                          }
+                          placeholder="Ex. : Inscrivez-vous avec notre code et recevez 50 Gambz sur Gamby."
+                        />
+                        <Button size="sm" variant="outline" onClick={() => handleSaveBonus(app.id)}>
+                          Enregistrer le bonus
+                        </Button>
+                        {referralError[`${app.id}-bonus`] && (
+                          <p className="text-red-500 text-sm">{referralError[`${app.id}-bonus`]}</p>
+                        )}
+                      </div>
 
                       <p className="text-xs text-phantom-gray uppercase tracking-wide mb-2">Codes</p>
                       {data.codes.length > 0 ? (
