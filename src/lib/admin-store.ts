@@ -1,6 +1,13 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { isOwnerEmail, normalizeEmail, OWNER_EMAIL } from "@/lib/admin-utils";
+import {
+  hasGitHubPersistence,
+  persistenceSetupHint,
+  readStoredAdminsFromGitHub,
+  writeStoredAdminsToGitHub,
+  type StoredAdmins,
+} from "@/lib/admin-github";
 
 const ADMINS_PATH = path.join(process.cwd(), "data", "admins.json");
 
@@ -31,9 +38,33 @@ async function writeFileAdmins(emails: string[]): Promise<void> {
   await fs.writeFile(ADMINS_PATH, `${JSON.stringify({ emails: unique }, null, 2)}\n`, "utf-8");
 }
 
+async function readStoredAdmins(): Promise<StoredAdmins> {
+  if (hasGitHubPersistence()) {
+    try {
+      const github = await readStoredAdminsFromGitHub();
+      if (github) return github;
+    } catch {
+      // fallback fichier embarqué si GitHub indisponible
+    }
+  }
+
+  return {
+    emails: await readFileAdmins(),
+    source: "file",
+  };
+}
+
+async function writeStoredAdmins(stored: StoredAdmins, emails: string[]): Promise<void> {
+  if (hasGitHubPersistence()) {
+    await writeStoredAdminsToGitHub(emails, stored.sha);
+    return;
+  }
+  await writeFileAdmins(emails);
+}
+
 export async function getExtraAdmins(): Promise<string[]> {
-  const fileAdmins = await readFileAdmins();
-  return [...new Set([...fileAdmins, ...envAdmins()])].filter(
+  const stored = await readStoredAdmins();
+  return [...new Set([...stored.emails, ...envAdmins()])].filter(
     (e) => e !== normalizeEmail(OWNER_EMAIL)
   );
 }
@@ -53,20 +84,21 @@ export async function addExtraAdmin(email: string): Promise<{ ok: boolean; error
     return { ok: false, error: "Le propriétaire est déjà administrateur." };
   }
 
-  const fileAdmins = await readFileAdmins();
+  const stored = await readStoredAdmins();
   const all = await getAllAdminEmails();
   if (all.includes(newEmail)) {
     return { ok: false, error: "Cet email est déjà administrateur." };
   }
 
   try {
-    await writeFileAdmins([...fileAdmins, newEmail]);
+    await writeStoredAdmins(stored, [...stored.emails, newEmail]);
     return { ok: true };
-  } catch {
+  } catch (error) {
+    const hint = persistenceSetupHint();
+    const detail = error instanceof Error ? error.message : "Erreur inconnue.";
     return {
       ok: false,
-      error:
-        "Impossible d'enregistrer sur le serveur. Ajoutez EXTRA_ADMIN_EMAILS dans les variables d'environnement ou déployez sur un hébergement avec stockage fichier.",
+      error: hint ? `${detail} ${hint}` : detail,
     };
   }
 }
@@ -77,11 +109,11 @@ export async function removeExtraAdmin(email: string): Promise<{ ok: boolean; er
     return { ok: false, error: "Le propriétaire ne peut pas être retiré." };
   }
 
-  const fileAdmins = await readFileAdmins();
-  if (!fileAdmins.includes(target) && !envAdmins().includes(target)) {
+  const stored = await readStoredAdmins();
+  if (!stored.emails.includes(target) && !envAdmins().includes(target)) {
     return { ok: false, error: "Cet administrateur n'est pas dans la liste." };
   }
-  if (!fileAdmins.includes(target) && envAdmins().includes(target)) {
+  if (!stored.emails.includes(target) && envAdmins().includes(target)) {
     return {
       ok: false,
       error: "Cet admin est défini via EXTRA_ADMIN_EMAILS et ne peut pas être retiré depuis l'interface.",
@@ -89,9 +121,17 @@ export async function removeExtraAdmin(email: string): Promise<{ ok: boolean; er
   }
 
   try {
-    await writeFileAdmins(fileAdmins.filter((e) => e !== target));
+    await writeStoredAdmins(
+      stored,
+      stored.emails.filter((e) => e !== target)
+    );
     return { ok: true };
-  } catch {
-    return { ok: false, error: "Impossible de modifier la liste sur le serveur." };
+  } catch (error) {
+    const hint = persistenceSetupHint();
+    const detail = error instanceof Error ? error.message : "Erreur inconnue.";
+    return {
+      ok: false,
+      error: hint ? `${detail} ${hint}` : detail,
+    };
   }
 }

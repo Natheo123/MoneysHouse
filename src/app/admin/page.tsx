@@ -133,7 +133,9 @@ export default function AdminPage() {
               </h2>
               <p className="text-sm text-phantom-gray mb-6">
                 Propriétaire : {OWNER_EMAIL}. Les admins ajoutés ici ont accès sur tous les
-                appareils une fois connectés avec le même email.
+                appareils une fois connectés avec le même email. En production, configurez{" "}
+                <code className="text-xs bg-phantom-bg px-1.5 py-0.5 rounded">GITHUB_TOKEN</code>{" "}
+                sur Vercel pour enregistrer les changements.
               </p>
 
               <div className="flex gap-2 mb-6">
