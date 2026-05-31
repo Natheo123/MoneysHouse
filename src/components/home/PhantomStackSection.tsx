@@ -1,0 +1,174 @@
+"use client";
+
+import Link from "next/link";
+import { useRef, useLayoutEffect } from "react";
+import { ArrowRight } from "lucide-react";
+import { gsap, registerGsapPlugins } from "@/lib/gsap";
+import { getFeaturedApps } from "@/lib/data/apps";
+import { SectionIcon, type SectionIconId } from "@/components/icons/UiIcons";
+
+const stacks: {
+  id: SectionIconId;
+  title: string;
+  subtitle: string;
+  href: string;
+  cards: { color: string; text: string; href: string; label: string }[];
+}[] = [
+  {
+    id: "passive",
+    title: "Revenus passifs",
+    subtitle: "pour",
+    href: "/apps",
+    cards: getFeaturedApps()
+      .slice(0, 3)
+      .map((app, i) => ({
+        color: ["#AB9FF2", "#4878D8", "#E2DFFE"][i],
+        text: app.shortDescription,
+        href: `/apps/${app.slug}`,
+        label: app.name,
+      })),
+  },
+  {
+    id: "easy",
+    title: "Facile à démarrer",
+    subtitle: "en",
+    href: "/faq",
+    cards: [
+      { color: "#AB9FF2", text: "Installation en 2 minutes chrono.", href: "/apps/earnapp", label: "EarnApp" },
+      { color: "#4878D8", text: "Aucune compétence technique requise.", href: "/faq", label: "FAQ" },
+      { color: "#FFF3C4", text: "Tutoriels pas à pas pour chaque app.", href: "/apps", label: "Apps" },
+    ],
+  },
+  {
+    id: "trusted",
+    title: "Testé et approuvé",
+    subtitle: "par",
+    href: "/classement",
+    cards: [
+      { color: "#E2DFFE", text: "Chaque app est vérifiée par notre équipe.", href: "/classement", label: "Classement" },
+      { color: "#AB9FF2", text: "Avis authentiques de la communauté.", href: "/apps", label: "Avis" },
+      { color: "#4878D8", text: "Comparateur pour choisir la meilleure.", href: "/comparateur", label: "Comparer" },
+    ],
+  },
+];
+
+function StackGroup({
+  stack,
+}: {
+  stack: (typeof stacks)[0];
+}) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const cardsRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    registerGsapPlugins();
+    const section = sectionRef.current;
+    const wrapper = cardsRef.current;
+    if (!section || !wrapper) return;
+
+    const cards = gsap.utils.toArray<HTMLElement>(
+      wrapper.querySelectorAll("[data-stack-card]")
+    );
+
+    const ctx = gsap.context(() => {
+      gsap.from(section.querySelector("[data-stack-title]"), {
+        opacity: 0,
+        y: 60,
+        duration: 1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: section,
+          start: "top 85%",
+        },
+      });
+
+      cards.forEach((card, index) => {
+        if (index < cards.length - 1) {
+          gsap.to(card, {
+            scale: 0.88,
+            opacity: 0.55,
+            filter: "blur(2px)",
+            scrollTrigger: {
+              trigger: cards[index + 1],
+              start: "top 75%",
+              end: "top 28%",
+              scrub: 0.8,
+            },
+          });
+        }
+
+        gsap.from(card, {
+          y: 80,
+          opacity: 0,
+          duration: 0.9,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: card,
+            start: "top 92%",
+            toggleActions: "play none none reverse",
+          },
+        });
+      });
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section ref={sectionRef} className="py-16 md:py-24">
+      <div data-stack-title className="text-center mb-16 px-6">
+        <h2 className="text-4xl md:text-6xl font-normal text-phantom-dark tracking-tight leading-tight flex items-center justify-center gap-3 flex-wrap">
+          {stack.title}{" "}
+          <SectionIcon id={stack.id} size={36} className="align-middle" />{" "}
+          {stack.subtitle} tous
+        </h2>
+        <Link
+          href={stack.href}
+          className="inline-flex items-center gap-2 mt-6 text-phantom-purple hover:underline font-medium text-lg"
+        >
+          Voir plus <ArrowRight className="h-5 w-5" />
+        </Link>
+      </div>
+
+      <div ref={cardsRef} className="relative px-6 max-w-4xl mx-auto">
+        {stack.cards.map((card, i) => (
+          <div
+            key={card.text}
+            data-stack-card
+            className="sticky top-28 md:top-32 mb-6 last:mb-0"
+            style={{ zIndex: i + 1 }}
+          >
+            <Link href={card.href} className="block group">
+              <div
+                className="rounded-[40px] p-10 md:p-14 min-h-[280px] md:min-h-[320px] flex flex-col justify-end shadow-xl transition-shadow duration-500 group-hover:shadow-2xl origin-top"
+                style={{ backgroundColor: card.color }}
+              >
+                <span className="text-sm font-semibold text-phantom-dark/60 uppercase tracking-wider mb-3">
+                  {card.label}
+                </span>
+                <p className="text-2xl md:text-3xl font-medium text-phantom-dark leading-snug max-w-xl">
+                  {card.text}
+                </p>
+                <span className="inline-flex items-center gap-2 mt-6 text-phantom-dark/70 font-medium group-hover:gap-3 transition-all">
+                  Découvrir <ArrowRight className="h-5 w-5" />
+                </span>
+              </div>
+            </Link>
+          </div>
+        ))}
+        {/* Spacer for scroll room after last card */}
+        <div className="h-[30vh]" aria-hidden />
+      </div>
+    </section>
+  );
+}
+
+export function PhantomStackSection() {
+  return (
+    <div className="relative">
+      {stacks.map((stack) => (
+        <StackGroup key={stack.id} stack={stack} />
+      ))}
+    </div>
+  );
+}

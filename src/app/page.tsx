@@ -1,12 +1,13 @@
 import { HeroSection } from "@/components/home/HeroSection";
-import { FeatureCards, FeaturedApps } from "@/components/home/FeatureCards";
+import { PhantomStackSection } from "@/components/home/PhantomStackSection";
+import { FeaturedApps } from "@/components/home/FeatureCards";
 import { CtaSection } from "@/components/home/CtaSection";
 
 export default function HomePage() {
   return (
     <>
       <HeroSection />
-      <FeatureCards />
+      <PhantomStackSection />
       <FeaturedApps />
       <CtaSection />
     </>

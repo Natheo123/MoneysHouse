@@ -1,8 +1,9 @@
 "use client";
 
+import { useRef, useLayoutEffect, useEffect, useState } from "react";
 import Link from "next/link";
-import { useState } from "react";
 import { Menu, X, Bell, User, Shield } from "lucide-react";
+import { gsap, registerGsapPlugins } from "@/lib/gsap";
 import { siteConfig } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
@@ -34,13 +35,7 @@ function NavLink({
 }) {
   if (external) {
     return (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={onClick}
-        className={className}
-      >
+      <a href={href} target="_blank" rel="noopener noreferrer" onClick={onClick} className={className}>
         {label}
       </a>
     );
@@ -53,33 +48,53 @@ function NavLink({
 }
 
 export function Header() {
+  const headerRef = useRef<HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { user, notifications } = useUser();
   const unread = notifications.filter((n) => !n.read).length;
   const adminAccess = user ? isAdmin(user.email) : false;
+
+  useLayoutEffect(() => {
+    registerGsapPlugins();
+    gsap.from(headerRef.current, {
+      y: -20,
+      opacity: 0,
+      duration: 0.8,
+      delay: 0.2,
+      ease: "power3.out",
+    });
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const linkClass =
     "px-4 py-2 rounded-full text-phantom-dark hover:bg-phantom-lavender/50 transition-colors text-sm font-medium";
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-phantom-surface/80 backdrop-blur-xl border-b border-phantom-dark/5">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+    <header
+      ref={headerRef}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled
+          ? "bg-phantom-surface/90 backdrop-blur-xl border-b border-phantom-dark/8 shadow-sm py-3"
+          : "bg-transparent py-4"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <MoneyHouseLogo size={40} />
-          <span className="text-xl font-semibold text-phantom-dark hidden sm:block">
+          <MoneyHouseLogo size={scrolled ? 36 : 40} className="transition-all duration-300" />
+          <span className={`font-semibold text-phantom-dark hidden sm:block transition-all duration-300 ${scrolled ? "text-lg" : "text-xl"}`}>
             {siteConfig.name}
           </span>
         </Link>
 
         <nav className="hidden lg:flex items-center gap-1">
           {navLinks.map((link) => (
-            <NavLink
-              key={link.href}
-              href={link.href}
-              label={link.label}
-              external={link.external}
-              className={linkClass}
-            />
+            <NavLink key={link.href} href={link.href} label={link.label} external={link.external} className={linkClass} />
           ))}
         </nav>
 

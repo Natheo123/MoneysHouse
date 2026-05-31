@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/lib/config";
-import { getReferralCode, hasReferralProgram } from "@/lib/referrals";
+import { getReferralCodes, hasReferralProgram } from "@/lib/referrals";
 import type { App } from "@/types";
 
 interface ReferralReminderDialogProps {
@@ -28,20 +28,19 @@ export function ReferralReminderDialog({
   open,
   onOpenChange,
 }: ReferralReminderDialogProps) {
-  const [copied, setCopied] = useState(false);
-  const [code, setCode] = useState("");
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [codes, setCodes] = useState<string[]>([]);
 
   useEffect(() => {
-    if (open) setCode(getReferralCode(app.id));
+    if (open) setCodes(getReferralCodes(app.id));
   }, [open, app.id]);
 
-  const showCode = hasReferralProgram(app.id) && code.length > 0;
+  const showCodes = hasReferralProgram(app.id) && codes.length > 0;
 
-  const copyCode = async () => {
-    if (!code) return;
+  const copyCode = async (code: string) => {
     await navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setCopiedCode(code);
+    setTimeout(() => setCopiedCode(null), 2000);
   };
 
   const continueDownload = () => {
@@ -61,20 +60,29 @@ export function ReferralReminderDialog({
 
         <p className="text-phantom-gray text-sm mb-4">
           Avant de continuer vers <strong className="text-phantom-dark">{linkLabel}</strong> pour{" "}
-          <strong className="text-phantom-dark">{app.name}</strong>, pensez à utiliser le code
+          <strong className="text-phantom-dark">{app.name}</strong>, pensez à utiliser un code
           parrainage Money&apos;s House pour profiter des bonus.
         </p>
 
-        {showCode ? (
-          <div className="rounded-[20px] bg-phantom-bg border border-phantom-purple/30 p-4 mb-4">
-            <p className="text-xs text-phantom-gray mb-2 uppercase tracking-wide">Code parrainage</p>
-            <div className="flex items-center justify-between gap-3">
-              <code className="text-2xl font-bold text-phantom-dark tracking-wider">{code}</code>
-              <Button size="sm" variant="outline" onClick={copyCode} className="gap-2 shrink-0">
-                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                {copied ? "Copié" : "Copier"}
-              </Button>
-            </div>
+        {showCodes ? (
+          <div className="rounded-[20px] bg-phantom-bg border border-phantom-purple/30 p-4 mb-4 space-y-3">
+            <p className="text-xs text-phantom-gray uppercase tracking-wide">
+              {codes.length > 1 ? "Codes de parrainage" : "Code parrainage"}
+            </p>
+            {codes.map((code) => (
+              <div key={code} className="flex items-center justify-between gap-3">
+                <code className="text-xl font-bold text-phantom-dark tracking-wider">{code}</code>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => copyCode(code)}
+                  className="gap-2 shrink-0"
+                >
+                  {copiedCode === code ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  {copiedCode === code ? "Copié" : "Copier"}
+                </Button>
+              </div>
+            ))}
           </div>
         ) : hasReferralProgram(app.id) ? (
           <div className="rounded-[20px] bg-phantom-bg border border-phantom-dark/10 p-4 mb-4">
@@ -107,8 +115,8 @@ export function ReferralReminderDialog({
         </details>
 
         <div className="flex flex-col sm:flex-row gap-3">
-          {showCode && (
-            <Button variant="outline" onClick={copyCode} className="flex-1 gap-2">
+          {showCodes && codes.length === 1 && (
+            <Button variant="outline" onClick={() => copyCode(codes[0])} className="flex-1 gap-2">
               <Copy className="h-4 w-4" />
               Copier le code
             </Button>

@@ -23,7 +23,7 @@ export interface App {
   platforms: Platform[];
   categories: Category[];
   downloadLinks: AppLink[];
-  referralCode?: string;
+  referralCodes?: string[];
   referralInstructions: string;
   hasReferral?: boolean;
   howItWorks: string;
@@ -42,7 +42,7 @@ export interface BlogPost {
   date: string;
   readTime: string;
   category: string;
-  image: string;
+  iconId: BlogIconId;
 }
 
 export interface Review {
@@ -64,3 +64,5 @@ export interface AppRatingStats {
   average: number;
   count: number;
 }
+
+export type BlogIconId = "chart" | "trophy" | "compare";

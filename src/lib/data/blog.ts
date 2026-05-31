@@ -30,7 +30,7 @@ Avec cette combinaison, 50€/mois est atteignable en moins d'un mois de configu
     date: "2026-05-15",
     readTime: "5 min",
     category: "Guide",
-    image: "📈",
+    iconId: "chart",
   },
   {
     slug: "meilleures-applications-revenus-passifs-2026",
@@ -53,7 +53,7 @@ Nous évaluons chaque app sur : fiabilité des paiements, facilité d'utilisatio
     date: "2026-05-01",
     readTime: "8 min",
     category: "Comparatif",
-    image: "🏆",
+    iconId: "trophy",
   },
   {
     slug: "earnapp-vs-honeygain",
@@ -77,7 +77,7 @@ Pour débuter : **EarnApp** (retrait plus bas). Pour maximiser : utilisez **les 
     date: "2026-04-20",
     readTime: "6 min",
     category: "Comparatif",
-    image: "⚔️",
+    iconId: "compare",
   },
 ];
 

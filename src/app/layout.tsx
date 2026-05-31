@@ -5,6 +5,7 @@ import { siteConfig } from "@/lib/config";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { UserProvider } from "@/context/UserContext";
+import { SmoothScrollProvider } from "@/components/animations/SmoothScrollProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -74,9 +75,11 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <UserProvider>
-          <Header />
-          <main className="min-h-screen">{children}</main>
-          <Footer />
+          <SmoothScrollProvider>
+            <Header />
+            <main className="min-h-screen">{children}</main>
+            <Footer />
+          </SmoothScrollProvider>
         </UserProvider>
       </body>
     </html>

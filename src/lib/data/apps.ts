@@ -22,7 +22,7 @@ export const apps: App[] = [
       { platform: "windows", label: "Windows", url: "https://earnapp.com/download/" },
       { platform: "linux", label: "Linux / macOS", url: "https://earnapp.com/download/" },
     ],
-    referralCode: "",
+    referralCodes: [],
     referralInstructions:
       "EarnApp — lors de l'inscription :\n\n1. Rendez-vous sur earnapp.com et créez un compte.\n2. Si un champ « Referral code » apparaît, collez le code Money's House.\n3. Vous pouvez aussi utiliser un lien parrain : https://earnapp.com/i/VOTRE_CODE\n4. Installez l'application et connectez-vous avec le même compte.\n\nLe code doit être entré avant ou pendant la création du compte.",
     howItWorks:
@@ -73,7 +73,7 @@ export const apps: App[] = [
       { platform: "windows", label: "Windows", url: "https://www.honeygain.com/download" },
       { platform: "linux", label: "Linux / macOS", url: "https://www.honeygain.com/download" },
     ],
-    referralCode: "",
+    referralCodes: [],
     referralInstructions:
       "Honeygain — lors de l'inscription :\n\n1. Allez sur dashboard.honeygain.com/sign-up.\n2. Remplissez email et mot de passe.\n3. Entrez le code Money's House dans le champ « Referral code ».\n4. Alternative : lien parrain https://r.honeygain.com/VOTRECODE\n5. Téléchargez l'app et connectez-vous.\n\nLe code doit être saisi au moment de l'inscription.",
     howItWorks:
@@ -117,7 +117,7 @@ export const apps: App[] = [
       { platform: "signup", label: "Site officiel", url: "https://mcmoney.app/" },
       { platform: "android", label: "Google Play", url: "https://play.google.com/store/apps/details?id=com.textcash.ap" },
     ],
-    referralCode: "",
+    referralCodes: [],
     referralInstructions:
       "McMoney — lors de l'inscription :\n\n1. Téléchargez l'app depuis le Play Store ou mcmoney.app.\n2. Créez un compte dans l'application.\n3. Cherchez « Referral code » ou « Code d'invitation » dans les paramètres ou à l'inscription.\n4. Entrez le code Money's House avant de valider.\n\nLe code doit être entré lors de la première configuration du compte.",
     howItWorks:
@@ -151,7 +151,7 @@ export const apps: App[] = [
       { platform: "signup", label: "Créer un compte", url: "https://moneysms.net/" },
       { platform: "android", label: "Google Play", url: "https://play.google.com/store/apps/details?id=com.mooncy.sms" },
     ],
-    referralCode: "",
+    referralCodes: [],
     referralInstructions:
       "Money SMS — lors de l'inscription :\n\n1. Inscrivez-vous sur moneysms.net.\n2. Lors de la création du compte, un champ « Referral code » est disponible.\n3. Entrez le code Money's House avant de valider.\n4. Téléchargez l'app Android et connectez-vous avec le même compte.\n\nLe code doit être saisi sur le site web avant d'installer l'app.",
     howItWorks:
@@ -182,7 +182,7 @@ export const apps: App[] = [
       { platform: "android", label: "Google Play", url: "https://play.google.com/store/apps/details?id=com.google.opinionrewards" },
       { platform: "ios", label: "App Store", url: "https://apps.apple.com/app/google-opinion-rewards/id1220212672" },
     ],
-    referralCode: "",
+    referralCodes: [],
     hasReferral: false,
     referralInstructions:
       "Google Opinion Rewards ne propose pas de programme de parrainage. Vous pouvez télécharger l'application directement depuis le Play Store ou l'App Store sans code.",

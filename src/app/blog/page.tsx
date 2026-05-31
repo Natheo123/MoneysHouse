@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { blogPosts } from "@/lib/data/blog";
+import { BlogIcon } from "@/components/icons/UiIcons";
 
 export const metadata: Metadata = {
   title: "Blog — Guides et comparatifs revenus passifs",
@@ -26,7 +27,7 @@ export default function BlogPage() {
             <Link key={post.slug} href={`/blog/${post.slug}`}>
               <article className="group p-8 rounded-[32px] bg-phantom-surface border border-phantom-dark/5 hover:shadow-lg hover:shadow-phantom-purple/10 hover:-translate-y-1 transition-all duration-300">
                 <div className="flex items-start gap-6">
-                  <div className="text-5xl shrink-0">{post.image}</div>
+                  <BlogIcon id={post.iconId} size={36} />
                   <div>
                     <div className="flex items-center gap-3 mb-2">
                       <span className="text-xs font-medium text-phantom-purple bg-phantom-purple/20 px-3 py-1 rounded-full">

@@ -8,13 +8,15 @@ interface GsapScrollRevealProps {
   className?: string;
   delay?: number;
   y?: number;
+  scale?: number;
 }
 
 export function GsapScrollReveal({
   children,
   className,
   delay = 0,
-  y = 50,
+  y = 60,
+  scale = 0.96,
 }: GsapScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -23,12 +25,13 @@ export function GsapScrollReveal({
     const el = ref.current;
     if (!el) return;
 
-    gsap.set(el, { opacity: 0, y });
+    gsap.set(el, { opacity: 0, y, scale });
 
     const tween = gsap.to(el, {
       opacity: 1,
       y: 0,
-      duration: 0.8,
+      scale: 1,
+      duration: 1,
       delay,
       ease: "power3.out",
       scrollTrigger: {
@@ -42,7 +45,7 @@ export function GsapScrollReveal({
       tween.scrollTrigger?.kill();
       tween.kill();
     };
-  }, [delay, y]);
+  }, [delay, y, scale]);
 
   return (
     <div ref={ref} className={className}>
@@ -51,5 +54,4 @@ export function GsapScrollReveal({
   );
 }
 
-/** @deprecated Use GsapScrollReveal */
 export const ScrollReveal = GsapScrollReveal;

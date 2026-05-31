@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { blogPosts, getBlogPost } from "@/lib/data/blog";
+import { BlogIcon } from "@/components/icons/UiIcons";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -35,7 +36,7 @@ export default async function BlogPostPage({ params }: Props) {
             ← Retour au blog
           </Link>
         </div>
-        <div className="text-6xl mb-6">{post.image}</div>
+        <BlogIcon id={post.iconId} size={48} className="mb-6" />
         <div className="flex items-center gap-3 mb-4">
           <span className="text-xs font-medium text-phantom-purple bg-phantom-purple/20 px-3 py-1 rounded-full">
             {post.category}

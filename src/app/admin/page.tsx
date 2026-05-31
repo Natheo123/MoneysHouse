@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Shield, UserPlus, Trash2, Gift, Crown } from "lucide-react";
+import { Shield, UserPlus, Trash2, Gift, Crown, Plus } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { apps } from "@/lib/data/apps";
 import {
@@ -14,12 +14,15 @@ import {
   isOwner,
   OWNER_EMAIL,
 } from "@/lib/admin";
-import { getAllReferralCodes, setReferralCode } from "@/lib/referrals";
+import {
+  getAllReferralCodes,
+  addReferralCode,
+  removeReferralCode,
+} from "@/lib/referrals";
 import { GsapScrollReveal } from "@/components/shared/GsapScrollReveal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { siteConfig } from "@/lib/config";
 
 export default function AdminPage() {
   const { user } = useUser();
@@ -27,7 +30,9 @@ export default function AdminPage() {
   const [admins, setAdmins] = useState<string[]>([]);
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [adminError, setAdminError] = useState("");
-  const [referralCodes, setReferralCodes] = useState<Record<string, string>>({});
+  const [referralCodes, setReferralCodes] = useState<Record<string, string[]>>({});
+  const [newCodes, setNewCodes] = useState<Record<string, string>>({});
+  const [referralError, setReferralError] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
@@ -64,11 +69,34 @@ export default function AdminPage() {
     else setAdminError(result.error ?? "Erreur");
   };
 
-  const handleSaveReferral = (appId: string, code: string) => {
-    setReferralCode(appId, code);
-    setReferralCodes(getAllReferralCodes());
+  const flashSaved = () => {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleAddReferral = (appId: string) => {
+    const code = newCodes[appId]?.trim() ?? "";
+    if (!code) return;
+
+    const added = addReferralCode(appId, code);
+    if (!added) {
+      setReferralError((prev) => ({
+        ...prev,
+        [appId]: "Code vide ou déjà enregistré.",
+      }));
+      return;
+    }
+
+    setReferralCodes(getAllReferralCodes());
+    setNewCodes((prev) => ({ ...prev, [appId]: "" }));
+    setReferralError((prev) => ({ ...prev, [appId]: "" }));
+    flashSaved();
+  };
+
+  const handleRemoveReferral = (appId: string, code: string) => {
+    removeReferralCode(appId, code);
+    setReferralCodes(getAllReferralCodes());
+    flashSaved();
   };
 
   return (
@@ -154,41 +182,78 @@ export default function AdminPage() {
               Codes de parrainage
             </h2>
             <p className="text-sm text-phantom-gray mb-6">
-              Ces codes s&apos;affichent dans la popup avant chaque téléchargement.
+              Ajoutez plusieurs codes par application. Ils s&apos;affichent tous dans la popup avant
+              chaque téléchargement.
             </p>
 
             {saved && (
               <p className="text-green-600 text-sm mb-4">Codes enregistrés avec succès.</p>
             )}
 
-            <div className="space-y-6">
+            <div className="space-y-8">
               {apps
                 .filter((a) => a.hasReferral !== false)
-                .map((app) => (
-                  <div key={app.id} className="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <span className="text-phantom-dark font-medium w-40 shrink-0">
-                      {app.name}
-                    </span>
-                    <Input
-                      value={referralCodes[app.id] ?? ""}
-                      onChange={(e) =>
-                        setReferralCodes((prev) => ({
-                          ...prev,
-                          [app.id]: e.target.value,
-                        }))
-                      }
-                      placeholder="Code parrainage"
-                      className="flex-1"
-                    />
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleSaveReferral(app.id, referralCodes[app.id] ?? "")}
-                    >
-                      Enregistrer
-                    </Button>
-                  </div>
-                ))}
+                .map((app) => {
+                  const codes = referralCodes[app.id] ?? [];
+                  return (
+                    <div key={app.id} className="rounded-[20px] bg-phantom-bg p-5">
+                      <p className="text-phantom-dark font-medium mb-4">{app.name}</p>
+
+                      {codes.length > 0 ? (
+                        <ul className="space-y-2 mb-4">
+                          {codes.map((code) => (
+                            <li
+                              key={code}
+                              className="flex items-center justify-between gap-3 p-3 rounded-[16px] bg-phantom-surface border border-phantom-dark/5"
+                            >
+                              <code className="text-sm font-semibold text-phantom-dark tracking-wide">
+                                {code}
+                              </code>
+                              <button
+                                onClick={() => handleRemoveReferral(app.id, code)}
+                                className="p-2 rounded-full hover:bg-red-100 text-phantom-gray hover:text-red-500 transition-colors shrink-0"
+                                title="Supprimer"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-sm text-phantom-gray mb-4">Aucun code enregistré.</p>
+                      )}
+
+                      <div className="flex gap-2">
+                        <Input
+                          value={newCodes[app.id] ?? ""}
+                          onChange={(e) =>
+                            setNewCodes((prev) => ({
+                              ...prev,
+                              [app.id]: e.target.value,
+                            }))
+                          }
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleAddReferral(app.id);
+                          }}
+                          placeholder="Nouveau code parrainage"
+                          className="flex-1"
+                        />
+                        <Button
+                          size="sm"
+                          onClick={() => handleAddReferral(app.id)}
+                          disabled={!(newCodes[app.id]?.trim())}
+                          className="gap-1 shrink-0"
+                        >
+                          <Plus className="h-4 w-4" />
+                          Ajouter
+                        </Button>
+                      </div>
+                      {referralError[app.id] && (
+                        <p className="text-red-500 text-sm mt-2">{referralError[app.id]}</p>
+                      )}
+                    </div>
+                  );
+                })}
             </div>
           </section>
         </GsapScrollReveal>
