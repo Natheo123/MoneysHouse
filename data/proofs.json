@@ -12,5 +12,13 @@
       "url": "https://raw.githubusercontent.com/Natheo123/MoneysHouse/main/public/proofs/earnapp/d40c9fd1-612b-4040-b5ca-f829303054b1.png",
       "createdAt": "2026-05-31T15:58:58.735Z"
     }
+  ],
+  "mcmoney": [
+    {
+      "id": "552e7d42-736d-4f28-811d-fdab60b97145",
+      "path": "public/proofs/mcmoney/552e7d42-736d-4f28-811d-fdab60b97145.jpg",
+      "url": "https://raw.githubusercontent.com/Natheo123/MoneysHouse/main/public/proofs/mcmoney/552e7d42-736d-4f28-811d-fdab60b97145.jpg",
+      "createdAt": "2026-05-31T16:02:36.592Z"
+    }
   ]
 }
