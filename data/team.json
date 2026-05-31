@@ -13,5 +13,10 @@
     "discordId": "1401999412019859509",
     "role": "founder",
     "order": 2
+  },
+  {
+    "discordId": "1402137352121487420",
+    "role": "member",
+    "order": 3
   }
 ]
