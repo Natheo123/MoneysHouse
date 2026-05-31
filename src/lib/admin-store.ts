@@ -97,13 +97,14 @@ export async function getAllAdminEmails(): Promise<string[]> {
   return [owner, ...members.map((m) => m.email)];
 }
 
-export async function getAdminRole(
-  email: string
-): Promise<AdminRole | "owner" | null> {
+async function getAdminRole(email: string): Promise<AdminRole | "owner" | null> {
   const normalized = normalizeEmail(email);
   if (isOwnerEmail(normalized)) return "owner";
   const member = (await getAdminMembers()).find((m) => m.email === normalized);
-  return member?.role ?? null;
+  if (member) return member.role;
+  const all = await getAllAdminEmails();
+  if (all.includes(normalized)) return "member";
+  return null;
 }
 
 export async function canManageAdminsByEmail(email: string): Promise<boolean> {

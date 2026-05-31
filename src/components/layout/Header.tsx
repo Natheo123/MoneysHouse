@@ -183,10 +183,10 @@ export function Header() {
             {user ? (
               <>
                 {adminAccess && (
-                  <Link href="/admin" className="hidden md:inline-flex">
+                  <Link href="/admin" className="inline-flex">
                     <Button variant="ghost" size="sm" className="gap-1">
                       <Shield className="h-4 w-4" />
-                      <span className="hidden lg:inline">Admin</span>
+                      <span className="hidden sm:inline">Admin</span>
                     </Button>
                   </Link>
                 )}

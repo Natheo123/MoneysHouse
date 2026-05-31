@@ -53,7 +53,13 @@ export async function POST(request: NextRequest) {
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());
-  const result = await addProofServer(appId, buffer, file.type || "image/jpeg", caption);
+  const result = await addProofServer(
+    appId,
+    buffer,
+    file.name,
+    file.type,
+    caption
+  );
 
   if (!result.ok) {
     return NextResponse.json(result, { status: 400 });

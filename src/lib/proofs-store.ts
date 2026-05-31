@@ -3,10 +3,11 @@ import { promises as fs } from "fs";
 import path from "path";
 import { apps } from "@/lib/data/apps";
 import {
-  extensionForMime,
+  detectProofImageType,
   getProofPublicUrl,
-  isAllowedProofMime,
+  isHeicLike,
   MAX_PROOF_BYTES,
+  MIN_PROOF_BYTES,
   parseProofsData,
   type ProofEntry,
   type ProofsData,
@@ -23,7 +24,6 @@ import {
 } from "@/lib/proofs-github";
 
 const PROOFS_PATH = path.join(process.cwd(), "data", "proofs.json");
-const PUBLIC_PROOFS_DIR = path.join(process.cwd(), "public", "proofs");
 
 async function readFileProofs(): Promise<ProofsData> {
   try {
@@ -61,6 +61,24 @@ async function writeStoredProofs(stored: StoredProofs, data: ProofsData): Promis
     return;
   }
   await writeFileProofs(data);
+}
+
+async function writeStoredProofsWithRetry(stored: StoredProofs, data: ProofsData): Promise<void> {
+  let current = stored;
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      await writeStoredProofs(current, data);
+      return;
+    } catch (error) {
+      lastError = error;
+      if (!hasGitHubPersistence() || attempt === 2) break;
+      current = await readStoredProofs();
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error("Erreur lors de l'enregistrement.");
 }
 
 function isValidAppId(appId: string): boolean {
@@ -117,26 +135,49 @@ async function deleteProofImage(repoPath: string): Promise<void> {
 export async function addProofServer(
   appId: string,
   file: Buffer,
-  mime: string,
+  fileName = "",
+  declaredMime = "",
   caption?: string
 ): Promise<{ ok: boolean; error?: string; proofs?: ProofEntry[] }> {
   if (!isValidAppId(appId)) {
     return { ok: false, error: "Application inconnue." };
   }
-  if (!isAllowedProofMime(mime)) {
-    return { ok: false, error: "Format non supporté (JPG, PNG, WebP, GIF)." };
+
+  if (file.byteLength < MIN_PROOF_BYTES) {
+    return { ok: false, error: "Fichier vide ou illisible." };
   }
   if (file.byteLength > MAX_PROOF_BYTES) {
-    return { ok: false, error: "Image trop volumineuse (max 4 Mo)." };
+    return {
+      ok: false,
+      error: `Image trop volumineuse (max ${Math.round(MAX_PROOF_BYTES / (1024 * 1024))} Mo).`,
+    };
   }
 
-  const ext = extensionForMime(mime);
-  if (!ext) return { ok: false, error: "Format non supporté." };
+  if (isHeicLike(declaredMime, fileName)) {
+    return {
+      ok: false,
+      error:
+        "Format HEIC/HEIF non supporté. Enregistrez la capture en JPG ou PNG depuis votre téléphone.",
+    };
+  }
+
+  const detected = detectProofImageType(file, fileName, declaredMime);
+  if (!detected) {
+    return {
+      ok: false,
+      error: "Format non reconnu. Utilisez JPG, PNG, WebP, GIF, BMP ou AVIF.",
+    };
+  }
 
   try {
     const stored = await readStoredProofs();
     const id = randomUUID();
-    const { path: repoPath, url } = await writeProofImage(appId, id, ext, file);
+    const { path: repoPath, url } = await writeProofImage(
+      appId,
+      id,
+      detected.ext,
+      file
+    );
 
     const entry: ProofEntry = {
       id,
@@ -151,7 +192,7 @@ export async function addProofServer(
       [appId]: [...(stored.data[appId] ?? []), entry],
     };
 
-    await writeStoredProofs(stored, next);
+    await writeStoredProofsWithRetry(stored, next);
     return { ok: true, proofs: next[appId] };
   } catch (error) {
     const hint = persistenceSetupHint();
@@ -184,7 +225,7 @@ export async function removeProofServer(
       delete next[appId];
     }
 
-    await writeStoredProofs(stored, next);
+    await writeStoredProofsWithRetry(stored, next);
     return { ok: true, proofs: remaining };
   } catch (error) {
     const hint = persistenceSetupHint();

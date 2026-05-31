@@ -8,6 +8,7 @@ import { useProofs } from "@/context/ProofContext";
 import { AdminAppSearchSelect } from "@/components/admin/AdminAppSearchSelect";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PROOF_ACCEPTED_FORMATS_LABEL } from "@/lib/proofs-shared";
 
 interface AdminProofsSectionProps {
   userEmail: string;
@@ -44,15 +45,36 @@ export function AdminProofsSection({ userEmail }: AdminProofsSectionProps) {
     setTimeout(() => setSaved(false), 2000);
   };
 
-  const handleUpload = async (file: File) => {
+  const handleUpload = async (files: FileList | File[]) => {
     setError("");
     setUploading(true);
-    const result = await addProof(selectedAppId, file, caption, userEmail);
+
+    const list = Array.from(files);
+    let successCount = 0;
+    let lastError = "";
+
+    for (const file of list) {
+      const result = await addProof(selectedAppId, file, caption, userEmail);
+      if (result.ok) {
+        successCount += 1;
+      } else {
+        lastError = result.error ?? "Erreur lors de l'envoi.";
+      }
+    }
+
     setUploading(false);
 
-    if (!result.ok) {
-      setError(result.error ?? "Erreur lors de l'envoi.");
+    if (successCount === 0) {
+      setError(lastError || "Aucune image n'a pu être envoyée.");
       return;
+    }
+
+    if (lastError) {
+      setError(
+        `${successCount} image${successCount > 1 ? "s" : ""} ajoutée${successCount > 1 ? "s" : ""}, mais certaines ont échoué : ${lastError}`
+      );
+    } else {
+      setError("");
     }
 
     setCaption("");
@@ -111,11 +133,12 @@ export function AdminProofsSection({ userEmail }: AdminProofsSectionProps) {
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif"
+          accept="image/*,.jpg,.jpeg,.png,.webp,.gif,.bmp,.avif"
+          multiple
           className="hidden"
           onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) void handleUpload(file);
+            const files = e.target.files;
+            if (files && files.length > 0) void handleUpload(files);
           }}
         />
         <Button
@@ -125,9 +148,9 @@ export function AdminProofsSection({ userEmail }: AdminProofsSectionProps) {
           onClick={() => fileInputRef.current?.click()}
         >
           <Upload className="h-4 w-4" />
-          {uploading ? "Envoi en cours…" : "Choisir une photo"}
+          {uploading ? "Envoi en cours…" : "Choisir une ou plusieurs photos"}
         </Button>
-        <p className="text-xs text-phantom-gray">JPG, PNG, WebP ou GIF — max 4 Mo.</p>
+        <p className="text-xs text-phantom-gray">{PROOF_ACCEPTED_FORMATS_LABEL}</p>
       </div>
 
       {appProofs.length > 0 ? (
@@ -135,15 +158,15 @@ export function AdminProofsSection({ userEmail }: AdminProofsSectionProps) {
           {appProofs.map((proof) => (
             <div
               key={proof.id}
-              className="relative rounded-[16px] overflow-hidden border border-phantom-dark/10 bg-phantom-bg aspect-[3/4]"
+              className="relative rounded-[16px] overflow-hidden border border-phantom-dark/10 bg-phantom-bg min-h-[120px] flex items-center justify-center"
             >
               <Image
                 src={proof.url}
                 alt={proof.caption ?? "Preuve"}
-                fill
-                className="object-cover"
+                width={400}
+                height={400}
+                className="w-full h-auto max-h-48 object-contain"
                 unoptimized
-                sizes="150px"
               />
               <button
                 type="button"

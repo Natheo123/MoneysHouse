@@ -41,18 +41,20 @@ export function AppProofsGallery({ app }: { app: App }) {
               key={proof.id}
               type="button"
               onClick={() => openProof(proof.url, proof.caption)}
-              className="group relative aspect-[3/4] rounded-[20px] overflow-hidden border border-phantom-dark/10 bg-phantom-bg focus:outline-none focus:ring-2 focus:ring-phantom-purple"
+              className="group relative rounded-[20px] overflow-hidden border border-phantom-dark/10 bg-phantom-bg min-h-[140px] focus:outline-none focus:ring-2 focus:ring-phantom-purple"
             >
-              <Image
-                src={proof.url}
-                alt={proof.caption ?? `Preuve ${app.name}`}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
-                unoptimized
-                sizes="(max-width: 640px) 50vw, 33vw"
-              />
-              <div className="absolute inset-0 bg-phantom-dark/0 group-hover:bg-phantom-dark/20 transition-colors flex items-center justify-center">
-                <ZoomIn className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow" />
+              <div className="relative flex items-center justify-center p-2 min-h-[140px]">
+                <Image
+                  src={proof.url}
+                  alt={proof.caption ?? `Preuve ${app.name}`}
+                  width={600}
+                  height={600}
+                  className="w-full h-auto max-h-56 object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+                  unoptimized
+                />
+                <div className="absolute inset-0 bg-phantom-dark/0 group-hover:bg-phantom-dark/20 transition-colors flex items-center justify-center pointer-events-none">
+                  <ZoomIn className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow" />
+                </div>
               </div>
               {proof.caption && (
                 <div className="absolute bottom-0 inset-x-0 p-2 bg-gradient-to-t from-phantom-dark/70 to-transparent">

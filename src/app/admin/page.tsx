@@ -15,7 +15,7 @@ import { AdminManageSection } from "@/components/admin/AdminManageSection";
 
 export default function AdminPage() {
   const { user } = useUser();
-  const { ready: adminReady, isAdmin, getRole } = useAdmin();
+  const { ready: adminReady, isAdmin, getRole, canManageAdmins } = useAdmin();
   const router = useRouter();
 
   useEffect(() => {
@@ -31,6 +31,7 @@ export default function AdminPage() {
   if (!user || !adminReady || !isAdmin(user.email)) return null;
 
   const role = getRole(user.email);
+  const showTeamManagement = canManageAdmins(user.email);
 
   return (
     <PageShell maxWidth="3xl">
@@ -41,7 +42,7 @@ export default function AdminPage() {
               Administration
             </h1>
           </div>
-          <p className="text-phantom-gray mb-10">
+          <p className="text-phantom-gray mb-4">
             Connecté en tant que <strong>{user.email}</strong>
             {role === "owner" && (
               <Badge className="ml-2 gap-1">
@@ -59,11 +60,21 @@ export default function AdminPage() {
               </Badge>
             )}
           </p>
+          {role === "member" && (
+            <p className="text-sm text-phantom-gray mb-10 rounded-[16px] bg-phantom-bg border border-phantom-dark/5 px-4 py-3">
+              En tant qu&apos;éditeur, vous pouvez gérer les <strong>parrainages</strong> et les{" "}
+              <strong>preuves de paiement</strong>. L&apos;ajout d&apos;autres administrateurs est
+              réservé au propriétaire et aux gestionnaires.
+            </p>
+          )}
+          {role !== "member" && <div className="mb-10" />}
         </GsapScrollReveal>
 
-        <GsapScrollReveal>
-          <AdminManageSection userEmail={user.email} />
-        </GsapScrollReveal>
+        {showTeamManagement && (
+          <GsapScrollReveal>
+            <AdminManageSection userEmail={user.email} />
+          </GsapScrollReveal>
+        )}
 
         <GsapScrollReveal>
           <div className="mb-12">

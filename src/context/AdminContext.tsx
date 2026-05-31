@@ -126,9 +126,12 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     (email: string): AdminRole | "owner" | null => {
       const normalized = normalizeEmail(email);
       if (isOwnerEmail(normalized)) return "owner";
-      return adminMembers.find((m) => m.email === normalized)?.role ?? null;
+      const member = adminMembers.find((m) => m.email === normalized);
+      if (member) return member.role;
+      if (adminEmails.includes(normalized)) return "member";
+      return null;
     },
-    [adminMembers]
+    [adminMembers, adminEmails]
   );
 
   const canManageAdminsFor = useCallback(
