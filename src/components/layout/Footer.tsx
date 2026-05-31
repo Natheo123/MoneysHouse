@@ -21,10 +21,10 @@ const footerLinks = {
     { href: "/apps/eureka", label: "Eureka Surveys" },
   ],
   Entreprise: [
-    { href: "/faq", label: "À propos" },
+    { href: "/a-propos", label: "À propos" },
     { href: siteConfig.links.discord, label: "Nous contacter", external: true },
-    { href: "/faq", label: "Confidentialité" },
-    { href: "/faq", label: "Conditions" },
+    { href: "/confidentialite", label: "Confidentialité" },
+    { href: "/conditions", label: "Conditions" },
   ],
 };
 
@@ -82,10 +82,10 @@ export function Footer() {
             © 2026 {siteConfig.name}. Tous droits réservés.
           </p>
           <div className="flex flex-wrap justify-center md:justify-end gap-4 sm:gap-6 text-sm text-phantom-gray">
-            <Link href="/faq" className="hover:text-phantom-purple transition-colors">
+            <Link href="/conditions" className="hover:text-phantom-purple transition-colors">
               Conditions
             </Link>
-            <Link href="/faq" className="hover:text-phantom-purple transition-colors">
+            <Link href="/confidentialite" className="hover:text-phantom-purple transition-colors">
               Confidentialité
             </Link>
             <a
