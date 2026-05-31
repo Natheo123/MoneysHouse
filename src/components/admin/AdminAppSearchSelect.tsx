@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type WheelEvent } from "react";
 import { ChevronDown, Search, X } from "lucide-react";
 import { AppLogo } from "@/components/icons/AppLogo";
 import { Input } from "@/components/ui/input";
+import { useLenis } from "@/context/LenisContext";
 import { cn } from "@/lib/utils";
 
 export interface AdminAppOption {
@@ -30,6 +31,8 @@ export function AdminAppSearchSelect({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const lenis = useLenis();
 
   const selected = apps.find((app) => app.id === value);
 
@@ -53,6 +56,38 @@ export function AdminAppSearchSelect({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    lenis?.stop();
+    return () => {
+      lenis?.start();
+    };
+  }, [open, lenis]);
+
+  const handleDropdownWheel = (event: WheelEvent<HTMLElement>) => {
+    event.stopPropagation();
+
+    const list = listRef.current;
+    if (!list) {
+      event.preventDefault();
+      return;
+    }
+
+    if (list.scrollHeight <= list.clientHeight) {
+      event.preventDefault();
+      return;
+    }
+
+    const goingUp = event.deltaY < 0;
+    const goingDown = event.deltaY > 0;
+    const atTop = list.scrollTop <= 0;
+    const atBottom = list.scrollTop + list.clientHeight >= list.scrollHeight - 1;
+
+    if ((atTop && goingUp) || (atBottom && goingDown)) {
+      event.preventDefault();
+    }
+  };
 
   const handleSelect = (appId: string) => {
     onChange(appId);
@@ -95,7 +130,10 @@ export function AdminAppSearchSelect({
       </button>
 
       {open && (
-        <div className="absolute z-50 top-full left-0 right-0 mt-2 rounded-[20px] border border-phantom-dark/10 bg-phantom-surface shadow-xl overflow-hidden">
+        <div
+          className="absolute z-50 top-full left-0 right-0 mt-2 rounded-[20px] border border-phantom-dark/10 bg-phantom-surface shadow-xl overflow-hidden"
+          onWheel={handleDropdownWheel}
+        >
           <div className="p-3 border-b border-phantom-dark/5">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-phantom-gray" />
@@ -119,7 +157,12 @@ export function AdminAppSearchSelect({
             </div>
           </div>
 
-          <ul className="max-h-64 overflow-y-auto py-1" role="listbox">
+          <ul
+            ref={listRef}
+            className="max-h-64 overflow-y-auto overscroll-contain py-1"
+            role="listbox"
+            onWheel={handleDropdownWheel}
+          >
             {filtered.length === 0 ? (
               <li className="px-4 py-6 text-sm text-phantom-gray text-center">
                 Aucune application trouvée.

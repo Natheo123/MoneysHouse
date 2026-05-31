@@ -1,15 +1,18 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState, type WheelEvent } from "react";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { apps } from "@/lib/data/apps";
 import { AppLogo } from "@/components/icons/AppLogo";
+import { useLenis } from "@/context/LenisContext";
 
 export function SearchBar({ className }: { className?: string }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const listRef = useRef<HTMLDivElement>(null);
+  const lenis = useLenis();
 
   const results = useMemo(() => {
     if (!query.trim()) return [];
@@ -21,6 +24,38 @@ export function SearchBar({ className }: { className?: string }) {
         app.shortDescription.toLowerCase().includes(q)
     );
   }, [query]);
+
+  useEffect(() => {
+    if (!open || results.length === 0) return;
+    lenis?.stop();
+    return () => {
+      lenis?.start();
+    };
+  }, [open, results.length, lenis]);
+
+  const handleDropdownWheel = (event: WheelEvent<HTMLElement>) => {
+    event.stopPropagation();
+
+    const list = listRef.current;
+    if (!list) {
+      event.preventDefault();
+      return;
+    }
+
+    if (list.scrollHeight <= list.clientHeight) {
+      event.preventDefault();
+      return;
+    }
+
+    const goingUp = event.deltaY < 0;
+    const goingDown = event.deltaY > 0;
+    const atTop = list.scrollTop <= 0;
+    const atBottom = list.scrollTop + list.clientHeight >= list.scrollHeight - 1;
+
+    if ((atTop && goingUp) || (atBottom && goingDown)) {
+      event.preventDefault();
+    }
+  };
 
   return (
     <div className={`relative ${className ?? ""}`}>
@@ -49,7 +84,11 @@ export function SearchBar({ className }: { className?: string }) {
         )}
       </div>
       {open && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-phantom-surface rounded-[24px] border border-phantom-dark/10 shadow-xl z-50 overflow-hidden">
+        <div
+          ref={listRef}
+          className="absolute top-full left-0 right-0 mt-2 max-h-80 overflow-y-auto overscroll-contain bg-phantom-surface rounded-[24px] border border-phantom-dark/10 shadow-xl z-50"
+          onWheel={handleDropdownWheel}
+        >
           {results.map((app) => (
             <Link
               key={app.id}
