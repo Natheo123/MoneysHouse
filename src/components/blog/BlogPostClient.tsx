@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { BlogIcon } from "@/components/icons/UiIcons";
 import { useLanguage, useTranslation } from "@/context/LanguageContext";
-import { getLocalizedBlogPost } from "@/lib/i18n";
+import { getLocalizedBlogPost, convertCurrencyInText } from "@/lib/i18n";
 import type { BlogPost } from "@/types";
 
 export function BlogPostClient({ post }: { post: BlogPost }) {
@@ -40,7 +40,9 @@ export function BlogPostClient({ post }: { post: BlogPost }) {
         </p>
       )}
       <div className="text-phantom-gray text-base sm:text-lg leading-relaxed whitespace-pre-line">
-        {post.content.trim()}
+        {locale === "en"
+          ? convertCurrencyInText(post.content.trim(), "en")
+          : post.content.trim()}
       </div>
     </article>
   );

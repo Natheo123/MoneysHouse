@@ -7,10 +7,12 @@ import { gsap, registerGsapPlugins } from "@/lib/gsap";
 import { Button } from "@/components/ui/button";
 import { GsapAnimatedCounter } from "@/components/shared/GsapAnimatedCounter";
 import { apps } from "@/lib/data/apps";
-import { useTranslation } from "@/context/LanguageContext";
+import { useLanguage, useTranslation } from "@/context/LanguageContext";
+import { eurToUsd } from "@/lib/i18n";
 
 export function HeroSection() {
   const { t } = useTranslation();
+  const { locale } = useLanguage();
   const sectionRef = useRef<HTMLElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -23,10 +25,14 @@ export function HeroSection() {
   const heroStats = useMemo(
     () => [
       { value: apps.length, suffix: "+", label: t("hero.statApps") },
-      { value: 10, suffix: "€", label: t("hero.statMinIncome") },
+      {
+        value: locale === "en" ? eurToUsd(10) : 10,
+        suffix: locale === "en" ? "$" : "€",
+        label: t("hero.statMinIncome"),
+      },
       { value: apps.length, suffix: "", label: t("hero.statAvailable") },
     ],
-    [t]
+    [t, locale]
   );
 
   useLayoutEffect(() => {

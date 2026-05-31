@@ -1,5 +1,6 @@
 import type { Locale } from "./types";
 import { getBlogPost } from "@/lib/data/blog";
+import { convertCurrencyInText } from "./currency";
 
 export interface LocalizedBlogPostMeta {
   title: string;
@@ -54,7 +55,16 @@ export function getLocalizedBlogPost(slug: string, locale: Locale): LocalizedBlo
   if (!post) return undefined;
 
   const meta = locale === "en" ? blogMetaEn[slug] : blogMetaFr[slug];
-  if (meta) return meta;
+  if (meta) {
+    if (locale === "en") {
+      return {
+        ...meta,
+        title: convertCurrencyInText(meta.title, "en"),
+        excerpt: convertCurrencyInText(meta.excerpt, "en"),
+      };
+    }
+    return meta;
+  }
 
   return {
     title: post.title,
