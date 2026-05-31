@@ -159,7 +159,7 @@ export async function removeExtraAdmin(email: string): Promise<{ ok: boolean; er
   if (!stored.admins.some((m) => m.email === target) && envAdmins().some((m) => m.email === target)) {
     return {
       ok: false,
-      error: "Cet admin est défini via EXTRA_ADMIN_EMAILS et ne peut pas être retiré depuis l'interface.",
+      error: "Cet administrateur est défini par configuration serveur et ne peut pas être retiré depuis l'interface.",
     };
   }
 

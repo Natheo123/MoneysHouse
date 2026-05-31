@@ -44,7 +44,7 @@ export default function AboutPage() {
         {
           title: "Nous contacter",
           paragraphs: [
-            "Une question, une suggestion ou un signalement ? Rejoignez notre communauté Discord ou écrivez-nous à l'adresse indiquée dans notre politique de confidentialité.",
+            "Une question, une suggestion ou un signalement ? Rejoignez notre communauté Discord.",
           ],
         },
       ]}

@@ -32,7 +32,7 @@ const MIME_ALIASES: Record<string, ProofImageExt> = {
   "image/avif": "avif",
 };
 
-/** Vercel — corps de requête limité (~4,5 Mo). */
+/** Limite du corps de requête en production (~4,5 Mo). */
 export const MAX_PROOF_BYTES = 4.5 * 1024 * 1024;
 
 export const MIN_PROOF_BYTES = 1;

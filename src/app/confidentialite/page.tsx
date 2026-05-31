@@ -20,7 +20,7 @@ export default function PrivacyPage() {
         {
           title: "Responsable du traitement",
           paragraphs: [
-            `Le site ${siteConfig.url} est édité par Money's House. Pour toute question relative à vos données, vous pouvez nous contacter à ${siteConfig.ownerEmail}.`,
+            `Le site ${siteConfig.url} est édité par Money's House. Pour toute question relative à vos données, contactez-nous sur notre serveur Discord : ${siteConfig.links.discord}.`,
           ],
         },
         {
@@ -37,7 +37,7 @@ export default function PrivacyPage() {
             "Fournir et améliorer les services du site (compte utilisateur, dashboard, comparateur).",
             "Gérer les liens de parrainage et le contenu éditorial.",
             "Assurer la sécurité du site et prévenir les abus.",
-            "Répondre à vos demandes via Discord ou e-mail.",
+            "Répondre à vos demandes via Discord.",
           ],
         },
         {
@@ -66,7 +66,7 @@ export default function PrivacyPage() {
           title: "Vos droits",
           paragraphs: [
             "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, de suppression et de limitation du traitement de vos données.",
-            `Pour exercer ces droits, contactez-nous à ${siteConfig.ownerEmail}. Vous pouvez également introduire une réclamation auprès de la CNIL.`,
+            `Pour exercer ces droits, contactez-nous sur Discord (${siteConfig.links.discord}). Vous pouvez également introduire une réclamation auprès de la CNIL.`,
           ],
         },
       ]}

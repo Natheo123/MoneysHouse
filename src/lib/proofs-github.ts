@@ -43,7 +43,7 @@ export async function readGitHubTextFile(
   });
 
   if (res.status === 404) return { content: "", sha: undefined };
-  if (!res.ok) throw new Error(`Lecture GitHub impossible (${res.status}).`);
+  if (!res.ok) throw new Error(`Lecture des données impossible (${res.status}).`);
 
   const payload = (await res.json()) as { content?: string; sha?: string };
   if (!payload.content) return { content: "", sha: payload.sha };
@@ -65,7 +65,7 @@ export async function readStoredProofsFromGitHub(): Promise<StoredProofs | null>
 
 export async function writeStoredProofsToGitHub(data: ProofsData, sha?: string): Promise<void> {
   const config = githubConfig();
-  if (!config) throw new Error("GITHUB_TOKEN manquant.");
+  if (!config) throw new Error("Configuration de persistance manquante.");
 
   const payload = `${JSON.stringify(data, null, 2)}\n`;
   await putGitHubBinaryFile(PROOFS_FILE, Buffer.from(payload, "utf-8"), sha, "chore: mise à jour des preuves Money's House");
@@ -82,7 +82,7 @@ export async function getGitHubFileSha(filePath: string): Promise<string | null>
   });
 
   if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`Lecture GitHub impossible (${res.status}).`);
+  if (!res.ok) throw new Error(`Lecture des données impossible (${res.status}).`);
 
   const payload = (await res.json()) as GitHubFileMeta;
   return payload.sha;
@@ -95,7 +95,7 @@ export async function putGitHubBinaryFile(
   message = "chore: ajout preuve Money's House"
 ): Promise<void> {
   const config = githubConfig();
-  if (!config) throw new Error("GITHUB_TOKEN manquant.");
+  if (!config) throw new Error("Configuration de persistance manquante.");
 
   const body: Record<string, string> = {
     message,
@@ -115,7 +115,7 @@ export async function putGitHubBinaryFile(
 
   if (!res.ok) {
     const detail = await res.text();
-    throw new Error(`Écriture GitHub impossible (${res.status}). ${detail.slice(0, 200)}`);
+    throw new Error(`Enregistrement impossible (${res.status}). ${detail.slice(0, 200)}`);
   }
 }
 
@@ -125,7 +125,7 @@ export async function deleteGitHubFile(
   message = "chore: suppression preuve Money's House"
 ): Promise<void> {
   const config = githubConfig();
-  if (!config) throw new Error("GITHUB_TOKEN manquant.");
+  if (!config) throw new Error("Configuration de persistance manquante.");
 
   const res = await fetch(`https://api.github.com/repos/${config.repo}/contents/${filePath}`, {
     method: "DELETE",
@@ -142,7 +142,7 @@ export async function deleteGitHubFile(
 
   if (!res.ok) {
     const detail = await res.text();
-    throw new Error(`Suppression GitHub impossible (${res.status}). ${detail.slice(0, 200)}`);
+    throw new Error(`Suppression impossible (${res.status}). ${detail.slice(0, 200)}`);
   }
 }
 
@@ -152,5 +152,5 @@ export function hasGitHubPersistence(): boolean {
 
 export function persistenceSetupHint(): string {
   if (hasGitHubPersistence()) return "";
-  return "Sur Vercel, ajoutez GITHUB_TOKEN pour persister les preuves.";
+  return "La sauvegarde des preuves n'est pas disponible en production. Contactez le propriétaire du site.";
 }

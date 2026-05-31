@@ -113,9 +113,7 @@ export function AdminManageSection({ userEmail }: AdminManageSectionProps) {
         Propriétaire : {OWNER_EMAIL}. Attribuez le rôle{" "}
         <strong>Gestionnaire</strong> pour permettre à un admin d&apos;inviter d&apos;autres
         personnes par email. Les <strong>Éditeurs</strong> gèrent parrainages et preuves
-        uniquement. En production, configurez{" "}
-        <code className="text-xs bg-phantom-bg px-1.5 py-0.5 rounded">GITHUB_TOKEN</code> sur
-        Vercel.
+        uniquement.
       </p>
 
       <div className="flex flex-col sm:flex-row gap-2 mb-2">

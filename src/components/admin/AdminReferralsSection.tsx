@@ -162,8 +162,7 @@ export function AdminReferralsSection({ userEmail }: AdminReferralsSectionProps)
       </h2>
       <p className="text-sm text-phantom-gray mb-6">
         Choisissez une application, puis définissez le bonus marketing, les codes et les liens.
-        Visible pour tous les visiteurs. Enregistré via{" "}
-        <code className="text-xs bg-phantom-bg px-1.5 py-0.5 rounded">GITHUB_TOKEN</code>.
+        Visible pour tous les visiteurs. Les modifications sont enregistrées automatiquement.
       </p>
 
       {!referralsReady && (

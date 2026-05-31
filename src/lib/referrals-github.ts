@@ -50,7 +50,7 @@ export async function readStoredReferralsFromGitHub(): Promise<StoredReferrals |
   }
 
   if (!res.ok) {
-    throw new Error(`Lecture GitHub impossible (${res.status}).`);
+    throw new Error(`Lecture des données impossible (${res.status}).`);
   }
 
   const payload = (await res.json()) as { content?: string; sha?: string };
@@ -73,7 +73,7 @@ export async function writeStoredReferralsToGitHub(
 ): Promise<void> {
   const config = githubConfig();
   if (!config) {
-    throw new Error("GITHUB_TOKEN manquant.");
+    throw new Error("Configuration de persistance manquante.");
   }
 
   const payload = `${JSON.stringify(data, null, 2)}\n`;
@@ -98,7 +98,7 @@ export async function writeStoredReferralsToGitHub(
 
   if (!res.ok) {
     const detail = await res.text();
-    throw new Error(`Écriture GitHub impossible (${res.status}). ${detail.slice(0, 200)}`);
+    throw new Error(`Enregistrement impossible (${res.status}). ${detail.slice(0, 200)}`);
   }
 }
 
@@ -108,5 +108,5 @@ export function hasGitHubPersistence(): boolean {
 
 export function persistenceSetupHint(): string {
   if (hasGitHubPersistence()) return "";
-  return "Sur Vercel, ajoutez GITHUB_TOKEN dans les variables d'environnement pour persister les parrainages.";
+  return "La sauvegarde des parrainages n'est pas disponible en production. Contactez le propriétaire du site.";
 }

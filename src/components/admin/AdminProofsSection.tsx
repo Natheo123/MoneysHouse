@@ -104,8 +104,7 @@ export function AdminProofsSection({ userEmail }: AdminProofsSectionProps) {
       </h2>
       <p className="text-sm text-phantom-gray mb-6">
         Ajoutez des captures (paiements, retraits, gains) par application. Elles s&apos;affichent
-        sur la fiche de l&apos;app concernée. Enregistrées via{" "}
-        <code className="text-xs bg-phantom-bg px-1.5 py-0.5 rounded">GITHUB_TOKEN</code>.
+        sur la fiche de l&apos;app concernée.
       </p>
 
       {!ready && <p className="text-sm text-phantom-gray mb-4">Chargement des preuves…</p>}

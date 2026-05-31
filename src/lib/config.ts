@@ -3,7 +3,7 @@ export const siteConfig = {
   ownerEmail: "naxnatheo@gmail.com",
   description:
     "Découvre les meilleures applications de revenus passifs testées et approuvées. Gagne de l'argent avec les applications que tu utilises déjà.",
-  url: "https://moneyshouse.app",
+  url: "https://moneys-house.vercel.app",
   ogImage: "/og-image.png",
   links: {
     discord: "https://discord.gg/u7jkunvH8P",

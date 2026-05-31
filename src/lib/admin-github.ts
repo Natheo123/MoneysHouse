@@ -51,7 +51,7 @@ export async function readStoredAdminsFromGitHub(): Promise<StoredAdmins | null>
   }
 
   if (!res.ok) {
-    throw new Error(`Lecture GitHub impossible (${res.status}).`);
+    throw new Error(`Lecture des données impossible (${res.status}).`);
   }
 
   const data = (await res.json()) as { content?: string; sha?: string };
@@ -74,7 +74,7 @@ export async function writeStoredAdminsToGitHub(
 ): Promise<void> {
   const config = githubConfig();
   if (!config) {
-    throw new Error("GITHUB_TOKEN manquant.");
+    throw new Error("Configuration de persistance manquante.");
   }
 
   const payload = `${JSON.stringify(serializeStoredAdmins(withoutOwner(admins)), null, 2)}\n`;
@@ -99,7 +99,7 @@ export async function writeStoredAdminsToGitHub(
 
   if (!res.ok) {
     const detail = await res.text();
-    throw new Error(`Écriture GitHub impossible (${res.status}). ${detail.slice(0, 200)}`);
+    throw new Error(`Enregistrement impossible (${res.status}). ${detail.slice(0, 200)}`);
   }
 }
 
@@ -111,5 +111,5 @@ export function persistenceSetupHint(): string {
   if (hasGitHubPersistence()) {
     return "";
   }
-  return "Sur Vercel, ajoutez GITHUB_TOKEN (accès repo) dans les variables d'environnement, ou définissez EXTRA_ADMIN_EMAILS=email@exemple.com.";
+  return "La persistance des administrateurs n'est pas configurée en production. Contactez le propriétaire du site.";
 }
