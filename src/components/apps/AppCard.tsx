@@ -14,6 +14,7 @@ import { AppLogo } from "@/components/icons/AppLogo";
 import { ReferralBonusBadge } from "@/components/apps/ReferralBonusBadge";
 import { useProofs } from "@/context/ProofContext";
 import { useAppReviews } from "@/hooks/useAppReviews";
+import { useLanguage, useTranslation } from "@/context/LanguageContext";
 
 const platformLabels: Record<string, string> = {
   android: "Android",
@@ -29,6 +30,9 @@ interface AppCardProps {
 }
 
 export function AppCard({ app, showFavorite = true }: AppCardProps) {
+  const { t } = useTranslation();
+  const { getLocalizedApp } = useLanguage();
+  const localizedApp = getLocalizedApp(app);
   const cardRef = useRef<HTMLDivElement>(null);
   const { isFavorite, toggleFavorite } = useUser();
   const { stats } = useAppReviews(app.id);
@@ -78,24 +82,24 @@ export function AppCard({ app, showFavorite = true }: AppCardProps) {
               </button>
             )}
           </div>
-          <h3 className="text-xl font-semibold text-phantom-dark mb-2">{app.name}</h3>
+          <h3 className="text-xl font-semibold text-phantom-dark mb-2">{localizedApp.name}</h3>
           <div className="mb-2 min-w-0">
-            <ReferralBonusBadge appId={app.id} />
+            <ReferralBonusBadge appId={localizedApp.id} />
           </div>
-          <p className="text-phantom-gray text-sm mb-4 flex-1">{app.shortDescription}</p>
+          <p className="text-phantom-gray text-sm mb-4 flex-1">{localizedApp.shortDescription}</p>
           <div className="flex flex-wrap gap-2 mb-4">
             <Badge variant="secondary">
-              {app.earningsLabel || formatEarnings(app.earningsMin, app.earningsMax)}
+              {localizedApp.earningsLabel || formatEarnings(localizedApp.earningsMin, localizedApp.earningsMax)}
             </Badge>
-            <Badge variant="outline">{app.difficultyLabel}</Badge>
+            <Badge variant="outline">{localizedApp.difficultyLabel}</Badge>
             {proofCount > 0 && (
               <Badge variant="outline" className="border-green-500/30 text-green-700">
-                {proofCount} preuve{proofCount > 1 ? "s" : ""}
+                {proofCount} {proofCount > 1 ? t("apps.proofs") : t("apps.proof")}
               </Badge>
             )}
           </div>
           <div className="flex flex-wrap gap-1 mb-4">
-            {app.platforms.map((p) => (
+            {localizedApp.platforms.map((p) => (
               <span key={p} className="text-xs text-phantom-gray bg-phantom-bg px-2 py-1 rounded-full">
                 {platformLabels[p]}
               </span>
@@ -106,14 +110,14 @@ export function AppCard({ app, showFavorite = true }: AppCardProps) {
               <div className="flex items-center gap-1 min-w-0">
                 <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 shrink-0" />
                 <span className="text-sm font-medium text-phantom-dark">{stats.average}</span>
-                <span className="text-xs text-phantom-gray">({stats.count} avis)</span>
+                <span className="text-xs text-phantom-gray">({stats.count} {t("apps.reviews")})</span>
               </div>
             ) : (
-              <span className="text-xs text-phantom-gray">Pas encore d&apos;avis</span>
+              <span className="text-xs text-phantom-gray">{t("apps.noReviews")}</span>
             )}
-            <Link href={`/apps/${app.slug}`} className="w-full sm:w-auto">
+            <Link href={`/apps/${localizedApp.slug}`} className="w-full sm:w-auto">
               <Button size="sm" variant="default" className="w-full sm:w-auto">
-                Découvrir
+                {t("apps.discover")}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>

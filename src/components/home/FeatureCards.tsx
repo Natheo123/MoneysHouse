@@ -6,8 +6,10 @@ import { ArrowRight } from "lucide-react";
 import { gsap, registerGsapPlugins } from "@/lib/gsap";
 import { getFeaturedApps } from "@/lib/data/apps";
 import { AppCard } from "@/components/apps/AppCard";
+import { useTranslation } from "@/context/LanguageContext";
 
 export function FeaturedApps() {
+  const { t } = useTranslation();
   const sectionRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const featured = getFeaturedApps();
@@ -50,10 +52,10 @@ export function FeaturedApps() {
       <div className="max-w-7xl mx-auto">
         <div data-featured-title className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-6xl font-normal text-phantom-dark tracking-tight mb-4">
-            Applications populaires
+            {t("home.featuredTitle")}
           </h2>
           <p className="text-phantom-gray text-lg">
-            Les meilleures apps pour commencer à gagner dès aujourd&apos;hui
+            {t("home.featuredSubtitle")}
           </p>
         </div>
         <div ref={gridRef} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -66,7 +68,7 @@ export function FeaturedApps() {
         <div className="text-center mt-14">
           <Link href="/apps">
             <button className="inline-flex items-center gap-2 px-10 py-5 rounded-[32px] border border-phantom-dark/15 text-phantom-dark hover:bg-phantom-lavender/50 hover:scale-[1.03] transition-all duration-300 font-medium">
-              Voir toutes les applications
+              {t("home.viewAllApps")}
               <ArrowRight className="h-5 w-5" />
             </button>
           </Link>

@@ -1,62 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useLayoutEffect } from "react";
+import { useMemo, useRef, useLayoutEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import { gsap, registerGsapPlugins } from "@/lib/gsap";
 import { getFeaturedApps } from "@/lib/data/apps";
 import { SectionIcon, type SectionIconId } from "@/components/icons/UiIcons";
+import { useLanguage, useTranslation } from "@/context/LanguageContext";
 
-const stacks: {
+type StackConfig = {
   id: SectionIconId;
   title: string;
   subtitle: string;
   href: string;
   cards: { color: string; text: string; href: string; label: string }[];
-}[] = [
-  {
-    id: "passive",
-    title: "Revenus passifs",
-    subtitle: "pour",
-    href: "/apps",
-    cards: getFeaturedApps()
-      .slice(0, 3)
-      .map((app, i) => ({
-        color: ["#AB9FF2", "#4878D8", "#E2DFFE"][i],
-        text: app.shortDescription,
-        href: `/apps/${app.slug}`,
-        label: app.name,
-      })),
-  },
-  {
-    id: "easy",
-    title: "Facile à démarrer",
-    subtitle: "en",
-    href: "/faq",
-    cards: [
-      { color: "#AB9FF2", text: "Installation en 2 minutes chrono.", href: "/apps/earnapp", label: "EarnApp" },
-      { color: "#4878D8", text: "Aucune compétence technique requise.", href: "/faq", label: "FAQ" },
-      { color: "#FFF3C4", text: "Tutoriels pas à pas pour chaque app.", href: "/apps", label: "Apps" },
-    ],
-  },
-  {
-    id: "trusted",
-    title: "Testé et approuvé",
-    subtitle: "par",
-    href: "/classement",
-    cards: [
-      { color: "#E2DFFE", text: "Chaque app est vérifiée par notre équipe.", href: "/classement", label: "Classement" },
-      { color: "#AB9FF2", text: "Avis authentiques de la communauté.", href: "/apps", label: "Avis" },
-      { color: "#4878D8", text: "Comparateur pour choisir la meilleure.", href: "/comparateur", label: "Comparer" },
-    ],
-  },
-];
+};
 
-function StackGroup({
-  stack,
-}: {
-  stack: (typeof stacks)[0];
-}) {
+function StackGroup({ stack }: { stack: StackConfig }) {
+  const { t } = useTranslation();
   const sectionRef = useRef<HTMLElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
 
@@ -120,13 +81,13 @@ function StackGroup({
         <h2 className="text-3xl sm:text-4xl md:text-6xl font-normal text-phantom-dark tracking-tight leading-tight flex items-center justify-center gap-2 sm:gap-3 flex-wrap px-2">
           {stack.title}{" "}
           <SectionIcon id={stack.id} size={36} className="align-middle" />{" "}
-          {stack.subtitle} tous
+          {stack.subtitle} {t("home.stackAll")}
         </h2>
         <Link
           href={stack.href}
           className="inline-flex items-center gap-2 mt-6 text-phantom-purple hover:underline font-medium text-lg"
         >
-          Voir plus <ArrowRight className="h-5 w-5" />
+          {t("home.seeMore")} <ArrowRight className="h-5 w-5" />
         </Link>
       </div>
 
@@ -150,13 +111,12 @@ function StackGroup({
                   {card.text}
                 </p>
                 <span className="inline-flex items-center gap-2 mt-6 text-phantom-dark/70 font-medium group-hover:gap-3 transition-all">
-                  Découvrir <ArrowRight className="h-5 w-5" />
+                  {t("apps.discover")} <ArrowRight className="h-5 w-5" />
                 </span>
               </div>
             </Link>
           </div>
         ))}
-        {/* Spacer for scroll room after last card */}
         <div className="h-[30vh]" aria-hidden />
       </div>
     </section>
@@ -164,6 +124,65 @@ function StackGroup({
 }
 
 export function PhantomStackSection() {
+  const { t } = useTranslation();
+  const { getLocalizedApp } = useLanguage();
+
+  const stacks = useMemo<StackConfig[]>(() => {
+    const featured = getFeaturedApps().slice(0, 3).map(getLocalizedApp);
+
+    return [
+      {
+        id: "passive",
+        title: t("home.stackPassive"),
+        subtitle: t("home.stackFor"),
+        href: "/apps",
+        cards: featured.map((app, i) => ({
+          color: ["#AB9FF2", "#4878D8", "#E2DFFE"][i],
+          text: app.shortDescription,
+          href: `/apps/${app.slug}`,
+          label: app.name,
+        })),
+      },
+      {
+        id: "easy",
+        title: t("home.stackEasy"),
+        subtitle: t("home.stackIn"),
+        href: "/faq",
+        cards: [
+          { color: "#AB9FF2", text: t("home.stackInstall"), href: "/apps/earnapp", label: "EarnApp" },
+          { color: "#4878D8", text: t("home.stackNoSkill"), href: "/faq", label: t("nav.faq") },
+          { color: "#FFF3C4", text: t("home.stackTutorials"), href: "/apps", label: t("nav.apps") },
+        ],
+      },
+      {
+        id: "trusted",
+        title: t("home.stackTrusted"),
+        subtitle: t("home.stackBy"),
+        href: "/classement",
+        cards: [
+          {
+            color: "#E2DFFE",
+            text: t("home.stackVerified"),
+            href: "/classement",
+            label: t("home.stackRanking"),
+          },
+          {
+            color: "#AB9FF2",
+            text: t("home.stackReviews"),
+            href: "/apps",
+            label: t("home.stackReviewsLabel"),
+          },
+          {
+            color: "#4878D8",
+            text: t("home.stackCompare"),
+            href: "/comparateur",
+            label: t("home.stackCompareLabel"),
+          },
+        ],
+      },
+    ];
+  }, [t, getLocalizedApp]);
+
   return (
     <div className="relative">
       {stacks.map((stack) => (

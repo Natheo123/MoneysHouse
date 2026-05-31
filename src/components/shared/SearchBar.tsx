@@ -4,11 +4,13 @@ import { useEffect, useMemo, useRef, useState, type WheelEvent } from "react";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { apps } from "@/lib/data/apps";
 import { AppLogo } from "@/components/icons/AppLogo";
 import { useLenis } from "@/context/LenisContext";
+import { useLanguage, useTranslation } from "@/context/LanguageContext";
 
 export function SearchBar({ className }: { className?: string }) {
+  const { t } = useTranslation();
+  const { localizedApps } = useLanguage();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
@@ -17,13 +19,13 @@ export function SearchBar({ className }: { className?: string }) {
   const results = useMemo(() => {
     if (!query.trim()) return [];
     const q = query.toLowerCase();
-    return apps.filter(
+    return localizedApps.filter(
       (app) =>
         app.name.toLowerCase().includes(q) ||
         app.description.toLowerCase().includes(q) ||
         app.shortDescription.toLowerCase().includes(q)
     );
-  }, [query]);
+  }, [query, localizedApps]);
 
   useEffect(() => {
     if (!open || results.length === 0) return;
@@ -62,7 +64,7 @@ export function SearchBar({ className }: { className?: string }) {
       <div className="relative">
         <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-phantom-gray" />
         <Input
-          placeholder="Rechercher une application..."
+          placeholder={t("apps.searchPlaceholder")}
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);

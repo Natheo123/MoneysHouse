@@ -8,6 +8,7 @@ import { UserProvider } from "@/context/UserContext";
 import { AdminProvider } from "@/context/AdminContext";
 import { ReferralProvider } from "@/context/ReferralContext";
 import { ProofProvider } from "@/context/ProofContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 import { SmoothScrollProvider } from "@/components/animations/SmoothScrollProvider";
 
 const inter = Inter({
@@ -78,19 +79,21 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <UserProvider>
-          <AdminProvider>
-            <ReferralProvider>
-              <ProofProvider>
-                <SmoothScrollProvider>
-                  <Header />
-                  <main className="min-h-screen">{children}</main>
-                  <Footer />
-                </SmoothScrollProvider>
-              </ProofProvider>
-            </ReferralProvider>
-          </AdminProvider>
-        </UserProvider>
+        <LanguageProvider>
+          <UserProvider>
+            <AdminProvider>
+              <ReferralProvider>
+                <ProofProvider>
+                  <SmoothScrollProvider>
+                    <Header />
+                    <main className="min-h-screen">{children}</main>
+                    <Footer />
+                  </SmoothScrollProvider>
+                </ProofProvider>
+              </ReferralProvider>
+            </AdminProvider>
+          </UserProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

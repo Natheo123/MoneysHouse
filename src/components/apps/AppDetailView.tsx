@@ -28,6 +28,7 @@ import { AppDownloadLinks } from "@/components/apps/AppDownloadLinks";
 import { AppProofsGallery } from "@/components/apps/AppProofsGallery";
 import { useProofs } from "@/context/ProofContext";
 import { useAppReviews } from "@/hooks/useAppReviews";
+import { useLanguage, useTranslation } from "@/context/LanguageContext";
 
 const platformLabels: Record<string, string> = {
   android: "Android",
@@ -38,20 +39,23 @@ const platformLabels: Record<string, string> = {
 };
 
 export function AppDetailView({ app }: { app: App }) {
+  const { t } = useTranslation();
+  const { getLocalizedApp } = useLanguage();
+  const localizedApp = getLocalizedApp(app);
   const { isFavorite, toggleFavorite, addToHistory, user } = useUser();
   const { reviews, stats, alreadyReviewed, submitReview } = useAppReviews(
-    app.id,
+    localizedApp.id,
     user?.id
   );
   const [newRating, setNewRating] = useState(5);
   const [newComment, setNewComment] = useState("");
   const [submitError, setSubmitError] = useState("");
   const { ready: proofsReady, getProofCount } = useProofs();
-  const hasProofs = proofsReady && getProofCount(app.id) > 0;
+  const hasProofs = proofsReady && getProofCount(localizedApp.id) > 0;
 
   useEffect(() => {
-    addToHistory(app.id);
-  }, [app.id, addToHistory]);
+    addToHistory(localizedApp.id);
+  }, [localizedApp.id, addToHistory]);
 
   const handleSubmitReview = () => {
     if (!user || !newComment.trim()) return;
@@ -65,7 +69,7 @@ export function AppDetailView({ app }: { app: App }) {
     if (ok) {
       setNewComment("");
     } else {
-      setSubmitError("Vous avez déjà laissé un avis pour cette application.");
+      setSubmitError(t("appDetail.reviewDuplicate"));
     }
   };
 
@@ -83,42 +87,42 @@ export function AppDetailView({ app }: { app: App }) {
               <div className="flex items-start justify-between mb-6">
                 <div
                   className="w-20 h-20 rounded-[24px] flex items-center justify-center"
-                  style={{ backgroundColor: `${app.color}60` }}
-                >
-                  <AppLogo appId={app.id} size={52} />
+                style={{ backgroundColor: `${localizedApp.color}60` }}
+              >
+                  <AppLogo appId={localizedApp.id} size={52} />
                 </div>
                 <button
-                  onClick={() => toggleFavorite(app.id)}
+                  onClick={() => toggleFavorite(localizedApp.id)}
                   className="p-3 rounded-full bg-phantom-cream/10 hover:bg-phantom-cream/20 transition-colors"
                 >
                   <Heart
-                    className={`h-6 w-6 ${isFavorite(app.id) ? "fill-phantom-purple text-phantom-purple" : "text-phantom-cream"}`}
+                    className={`h-6 w-6 ${isFavorite(localizedApp.id) ? "fill-phantom-purple text-phantom-purple" : "text-phantom-cream"}`}
                   />
                 </button>
               </div>
               <h1 className="text-4xl md:text-5xl font-normal text-phantom-cream tracking-tight mb-4">
-                {app.name}
+                {localizedApp.name}
               </h1>
-              <p className="text-phantom-cream/70 text-lg mb-6">{app.description}</p>
+              <p className="text-phantom-cream/70 text-lg mb-6">{localizedApp.description}</p>
               <div className="flex flex-wrap gap-3 mb-6">
                 <Badge className="bg-phantom-purple/30 text-phantom-cream border-0">
-                  {app.earningsLabel || formatEarnings(app.earningsMin, app.earningsMax)}
+                  {localizedApp.earningsLabel || formatEarnings(localizedApp.earningsMin, localizedApp.earningsMax)}
                 </Badge>
                 <Badge className="bg-phantom-cream/10 text-phantom-cream border-0">
-                  {app.difficultyLabel}
+                  {localizedApp.difficultyLabel}
                 </Badge>
                 {stats.count > 0 && (
                   <div className="flex items-center gap-1 text-phantom-cream">
                     <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
                     <span className="font-medium">{stats.average}</span>
                     <span className="text-phantom-cream/50">
-                      ({stats.count} avis communauté)
+                      ({stats.count} {t("appDetail.communityReviews")})
                     </span>
                   </div>
                 )}
               </div>
               <div className="flex flex-wrap gap-2 mb-8">
-                {app.platforms.map((p) => (
+                {localizedApp.platforms.map((p) => (
                   <span
                     key={p}
                     className="text-sm text-phantom-cream/70 bg-phantom-cream/10 px-3 py-1 rounded-full"
@@ -133,23 +137,23 @@ export function AppDetailView({ app }: { app: App }) {
 
         <div className="space-y-12">
           <GsapScrollReveal>
-            <AppDownloadLinks app={app} />
+            <AppDownloadLinks app={localizedApp} />
           </GsapScrollReveal>
 
           {hasProofs && (
             <GsapScrollReveal>
-              <AppProofsGallery app={app} />
+              <AppProofsGallery app={localizedApp} />
             </GsapScrollReveal>
           )}
 
-          {app.hasReferral !== false && (
+          {localizedApp.hasReferral !== false && (
             <GsapScrollReveal>
               <section className="rounded-[24px] bg-phantom-bg border border-phantom-purple/20 p-6">
                 <h2 className="text-lg font-semibold text-phantom-dark mb-3">
-                  Comment entrer le code parrainage sur {app.name}
+                  {t("appDetail.referralHow", { app: localizedApp.name })}
                 </h2>
                 <p className="text-phantom-gray text-sm leading-relaxed whitespace-pre-line">
-                  {app.referralInstructions}
+                  {localizedApp.referralInstructions}
                 </p>
               </section>
             </GsapScrollReveal>
@@ -157,17 +161,17 @@ export function AppDetailView({ app }: { app: App }) {
 
           <GsapScrollReveal>
             <section>
-              <h2 className="text-2xl font-semibold text-phantom-dark mb-4">Comment ça marche</h2>
-              <p className="text-phantom-gray leading-relaxed">{app.howItWorks}</p>
+              <h2 className="text-2xl font-semibold text-phantom-dark mb-4">{t("appDetail.howItWorks")}</h2>
+              <p className="text-phantom-gray leading-relaxed">{localizedApp.howItWorks}</p>
             </section>
           </GsapScrollReveal>
 
           <GsapScrollReveal>
             <div className="grid md:grid-cols-2 gap-8">
               <section>
-                <h2 className="text-2xl font-semibold text-phantom-dark mb-4">Avantages</h2>
+                <h2 className="text-2xl font-semibold text-phantom-dark mb-4">{t("appDetail.advantages")}</h2>
                 <ul className="space-y-3">
-                  {app.advantages.map((a) => (
+                  {localizedApp.advantages.map((a) => (
                     <li key={a} className="flex items-start gap-3 text-phantom-gray">
                       <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
                       {a}
@@ -176,9 +180,9 @@ export function AppDetailView({ app }: { app: App }) {
                 </ul>
               </section>
               <section>
-                <h2 className="text-2xl font-semibold text-phantom-dark mb-4">Inconvénients</h2>
+                <h2 className="text-2xl font-semibold text-phantom-dark mb-4">{t("appDetail.disadvantages")}</h2>
                 <ul className="space-y-3">
-                  {app.disadvantages.map((d) => (
+                  {localizedApp.disadvantages.map((d) => (
                     <li key={d} className="flex items-start gap-3 text-phantom-gray">
                       <X className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
                       {d}
@@ -192,22 +196,22 @@ export function AppDetailView({ app }: { app: App }) {
           <GsapScrollReveal>
             <section>
               <h2 className="text-2xl font-semibold text-phantom-dark mb-6">
-                Tutoriel d&apos;installation
+                {t("appDetail.tutorial")}
               </h2>
               <div className="space-y-4">
-                {app.tutorial.map((step) => (
+                {localizedApp.tutorial.map((step) => (
                   <TutorialStep key={step.step} step={step.step} title={step.title} description={step.description} />
                 ))}
               </div>
             </section>
           </GsapScrollReveal>
 
-          {app.faq.length > 0 && (
+          {localizedApp.faq.length > 0 && (
             <GsapScrollReveal>
               <section>
-                <h2 className="text-2xl font-semibold text-phantom-dark mb-4">FAQ</h2>
+                <h2 className="text-2xl font-semibold text-phantom-dark mb-4">{t("appDetail.faq")}</h2>
                 <Accordion type="single" collapsible className="w-full">
-                  {app.faq.map((item, i) => (
+                  {localizedApp.faq.map((item, i) => (
                     <AccordionItem key={i} value={`faq-${i}`}>
                       <AccordionTrigger>{item.question}</AccordionTrigger>
                       <AccordionContent>{item.answer}</AccordionContent>
@@ -220,18 +224,16 @@ export function AppDetailView({ app }: { app: App }) {
 
           <GsapScrollReveal>
             <section>
-              <h2 className="text-2xl font-semibold text-phantom-dark mb-2">Avis communauté</h2>
-              <p className="text-phantom-gray text-sm mb-6">
-                Seuls les avis laissés par des utilisateurs connectés sont affichés ici.
-              </p>
+              <h2 className="text-2xl font-semibold text-phantom-dark mb-2">{t("appDetail.reviewsTitle")}</h2>
+              <p className="text-phantom-gray text-sm mb-6">{t("appDetail.reviewsHint")}</p>
 
               {!user && (
                 <div className="mb-8 p-6 rounded-[24px] bg-phantom-surface border border-phantom-dark/5 text-center">
                   <p className="text-phantom-gray mb-4">
-                    Connectez-vous pour laisser votre avis sur {app.name}.
+                    {t("appDetail.loginToReview", { app: localizedApp.name })}
                   </p>
                   <Link href="/connexion">
-                    <Button>Se connecter</Button>
+                    <Button>{t("appDetail.loginBtn")}</Button>
                   </Link>
                 </div>
               )}
@@ -250,29 +252,25 @@ export function AppDetailView({ app }: { app: App }) {
                   <textarea
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Partagez votre expérience réelle..."
+                    placeholder={t("appDetail.reviewPlaceholder")}
                     className="w-full p-4 rounded-[16px] border border-phantom-dark/10 bg-phantom-bg text-phantom-dark resize-none h-24 mb-3 focus:outline-none focus:ring-2 focus:ring-phantom-purple"
                   />
                   {submitError && (
                     <p className="text-red-500 text-sm mb-3">{submitError}</p>
                   )}
                   <Button onClick={handleSubmitReview} disabled={!newComment.trim()}>
-                    Publier mon avis
+                    {t("appDetail.publishReview")}
                   </Button>
                 </div>
               )}
 
               {user && alreadyReviewed && (
-                <p className="text-sm text-phantom-gray mb-6">
-                  Vous avez déjà publié un avis pour cette application.
-                </p>
+                <p className="text-sm text-phantom-gray mb-6">{t("appDetail.alreadyReviewed")}</p>
               )}
 
               {reviews.length === 0 ? (
                 <div className="text-center py-12 rounded-[24px] bg-phantom-surface border border-phantom-dark/5">
-                  <p className="text-phantom-gray">
-                    Aucun avis pour le moment. Soyez le premier à partager votre expérience !
-                  </p>
+                  <p className="text-phantom-gray">{t("appDetail.noReviewsYet")}</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -304,7 +302,7 @@ export function AppDetailView({ app }: { app: App }) {
               className="inline-flex items-center gap-2 text-phantom-purple hover:underline font-medium"
             >
               <ChevronRight className="h-4 w-4 rotate-180" />
-              Retour aux applications
+              {t("appDetail.backToApps")}
             </Link>
           </div>
         </div>

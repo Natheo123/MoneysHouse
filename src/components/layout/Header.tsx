@@ -9,16 +9,18 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
 import { useAdmin } from "@/context/AdminContext";
 import { useLenis } from "@/context/LenisContext";
+import { useTranslation } from "@/context/LanguageContext";
 import { MoneyHouseLogo } from "@/components/icons/MoneyHouseLogo";
+import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 
-const navLinks = [
-  { href: "/apps", label: "Applications" },
-  { href: "/classement", label: "Classement" },
-  { href: "/comparateur", label: "Comparateur" },
-  { href: "/blog", label: "Blog" },
-  { href: "/faq", label: "FAQ" },
-  { href: siteConfig.links.discord, label: "Nous contacter", external: true },
-];
+const navLinkKeys = [
+  { href: "/apps", labelKey: "nav.apps" },
+  { href: "/classement", labelKey: "nav.ranking" },
+  { href: "/comparateur", labelKey: "nav.compare" },
+  { href: "/blog", labelKey: "nav.blog" },
+  { href: "/faq", labelKey: "nav.faq" },
+  { href: siteConfig.links.discord, labelKey: "nav.contact", external: true },
+] as const;
 
 function NavLink({
   href,
@@ -48,6 +50,7 @@ function NavLink({
 }
 
 export function Header() {
+  const { t } = useTranslation();
   const headerRef = useRef<HTMLElement>(null);
   const lenis = useLenis();
   const lastScrollY = useRef(0);
@@ -172,39 +175,40 @@ export function Header() {
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center">
-            {navLinks.map((link) => (
+            {navLinkKeys.map((link) => (
               <NavLink
                 key={link.href}
                 href={link.href}
-                label={link.label}
-                external={link.external}
+                label={t(link.labelKey)}
+                external={"external" in link ? link.external : undefined}
                 className={linkClass}
               />
             ))}
           </nav>
 
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            <LanguageSwitcher />
             {user ? (
               <>
                 {adminAccess && (
                   <Link href="/admin" className="inline-flex">
                     <Button variant="ghost" size="sm" className="gap-1">
                       <Shield className="h-4 w-4" />
-                      <span className="hidden sm:inline">Admin</span>
+                      <span className="hidden sm:inline">{t("nav.admin")}</span>
                     </Button>
                   </Link>
                 )}
                 <Link
                   href="/dashboard"
                   className="relative p-2 rounded-full hover:bg-phantom-lavender/50 transition-colors"
-                  aria-label="Notifications"
+                  aria-label={t("nav.notifications")}
                 >
                   <Bell className="h-5 w-5 text-phantom-dark" />
                   {unread > 0 && (
                     <span className="absolute top-1 right-1 w-2 h-2 bg-phantom-purple rounded-full" />
                   )}
                 </Link>
-                <Link href="/dashboard" className="sm:hidden p-2 rounded-full hover:bg-phantom-lavender/50" aria-label="Mon compte">
+                <Link href="/dashboard" className="sm:hidden p-2 rounded-full hover:bg-phantom-lavender/50" aria-label={t("nav.myAccount")}>
                   <User className="h-5 w-5 text-phantom-dark" />
                 </Link>
                 <Link href="/dashboard" className="hidden sm:inline-flex">
@@ -218,15 +222,15 @@ export function Header() {
               <>
                 <Link href="/connexion" className="hidden sm:inline-flex">
                   <Button variant="ghost" size="sm">
-                    Connexion
+                    {t("nav.login")}
                   </Button>
                 </Link>
-                <Link href="/connexion" className="sm:hidden p-2 rounded-full hover:bg-phantom-lavender/50" aria-label="Connexion">
+                <Link href="/connexion" className="sm:hidden p-2 rounded-full hover:bg-phantom-lavender/50" aria-label={t("nav.login")}>
                   <LogIn className="h-5 w-5 text-phantom-dark" />
                 </Link>
                 <Link href="/inscription">
                   <Button size="sm" className="px-3 sm:px-4 text-sm sm:text-base">
-                    Commencer
+                    {t("nav.signup")}
                   </Button>
                 </Link>
               </>
@@ -236,7 +240,7 @@ export function Header() {
               className="lg:hidden p-2 rounded-full hover:bg-phantom-lavender/50 shrink-0"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-expanded={mobileOpen}
-              aria-label="Menu"
+              aria-label={mobileOpen ? t("nav.closeMenu") : t("nav.menu")}
             >
               {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -249,7 +253,7 @@ export function Header() {
           <button
             type="button"
             className="fixed inset-0 z-40 bg-phantom-dark/40 backdrop-blur-sm lg:hidden"
-            aria-label="Fermer le menu"
+            aria-label={t("nav.closeMenu")}
             onClick={closeMobile}
           />
           <div
@@ -257,10 +261,13 @@ export function Header() {
             style={{ top: "calc(4rem + env(safe-area-inset-top, 0px))" }}
           >
             <div className="section-x py-4 space-y-1">
+              <div className="px-4 pb-3 sm:hidden">
+                <LanguageSwitcher className="w-full justify-center" />
+              </div>
               {adminAccess && (
                 <NavLink
                   href="/admin"
-                  label="Administration"
+                  label={t("nav.adminPanel")}
                   onClick={closeMobile}
                   className="flex items-center gap-2 px-4 py-3 rounded-[24px] text-phantom-dark hover:bg-phantom-lavender/50 font-medium"
                 />
@@ -268,17 +275,17 @@ export function Header() {
               {user && (
                 <NavLink
                   href="/dashboard"
-                  label={`Mon compte (${user.name})`}
+                  label={`${t("nav.myAccount")} (${user.name})`}
                   onClick={closeMobile}
                   className="flex items-center gap-2 px-4 py-3 rounded-[24px] text-phantom-dark hover:bg-phantom-lavender/50 font-medium sm:hidden"
                 />
               )}
-              {navLinks.map((link) => (
+              {navLinkKeys.map((link) => (
                 <NavLink
                   key={link.href}
                   href={link.href}
-                  label={link.label}
-                  external={link.external}
+                  label={t(link.labelKey)}
+                  external={"external" in link ? link.external : undefined}
                   onClick={closeMobile}
                   className="block px-4 py-3 rounded-[24px] text-phantom-dark hover:bg-phantom-lavender/50 font-medium"
                 />
@@ -287,11 +294,11 @@ export function Header() {
                 <div className="pt-4 flex flex-col gap-2 sm:hidden">
                   <Link href="/connexion" onClick={closeMobile}>
                     <Button variant="outline" className="w-full">
-                      Connexion
+                      {t("nav.login")}
                     </Button>
                   </Link>
                   <Link href="/inscription" onClick={closeMobile}>
-                    <Button className="w-full">Commencer</Button>
+                    <Button className="w-full">{t("nav.signup")}</Button>
                   </Link>
                 </div>
               )}

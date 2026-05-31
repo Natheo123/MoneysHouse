@@ -1,32 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useLayoutEffect } from "react";
+import { useMemo, useRef, useLayoutEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import { gsap, registerGsapPlugins } from "@/lib/gsap";
 import { Button } from "@/components/ui/button";
 import { GsapAnimatedCounter } from "@/components/shared/GsapAnimatedCounter";
 import { apps } from "@/lib/data/apps";
-
-const heroStats = [
-  { value: apps.length, suffix: "+", label: "Applications testées" },
-  { value: 10, suffix: "€", label: "Revenus minimum par mois" },
-  { value: apps.length, suffix: "", label: "Apps disponibles" },
-] as const;
-
-const heroLines = [
-  "Gagne de l'argent avec",
-  "les applications que tu",
-  "utilises déjà.",
-];
+import { useTranslation } from "@/context/LanguageContext";
 
 export function HeroSection() {
+  const { t } = useTranslation();
   const sectionRef = useRef<HTMLElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const blob1Ref = useRef<HTMLDivElement>(null);
   const blob2Ref = useRef<HTMLDivElement>(null);
   const blob3Ref = useRef<HTMLDivElement>(null);
+
+  const heroLines = [t("hero.line1"), t("hero.line2"), t("hero.line3")];
+
+  const heroStats = useMemo(
+    () => [
+      { value: apps.length, suffix: "+", label: t("hero.statApps") },
+      { value: 10, suffix: "€", label: t("hero.statMinIncome") },
+      { value: apps.length, suffix: "", label: t("hero.statAvailable") },
+    ],
+    [t]
+  );
 
   useLayoutEffect(() => {
     registerGsapPlugins();
@@ -138,16 +139,12 @@ export function HeroSection() {
 
           <div ref={contentRef} className="relative z-10 max-w-4xl">
             <p data-hero-fade className="text-phantom-cream/70 text-lg mb-8">
-              La plateforme de revenus passifs
+              {t("hero.tagline")}
             </p>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] font-normal text-phantom-cream leading-[1.08] tracking-[-0.02em] mb-8 perspective-[1000px]">
               {heroLines.map((line) => (
-                <span
-                  key={line}
-                  data-hero-line
-                  className="block overflow-hidden"
-                >
+                <span key={line} data-hero-line className="block overflow-hidden">
                   {line}
                 </span>
               ))}
@@ -157,13 +154,13 @@ export function HeroSection() {
               data-hero-fade
               className="text-phantom-cream/55 text-lg md:text-xl mb-10 max-w-2xl mx-auto"
             >
-              Découvre les meilleures applications de revenus passifs testées et approuvées.
+              {t("hero.subtitle")}
             </p>
 
             <div data-hero-fade className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/inscription">
                 <Button variant="secondary" size="lg" className="w-full sm:w-auto hover:scale-[1.03] transition-transform">
-                  Commencer
+                  {t("hero.ctaPrimary")}
                 </Button>
               </Link>
               <Link href="/apps">
@@ -172,7 +169,7 @@ export function HeroSection() {
                   size="lg"
                   className="w-full sm:w-auto border-phantom-cream/25 text-phantom-cream hover:bg-phantom-cream/10 hover:scale-[1.03] transition-transform"
                 >
-                  Voir les applications
+                  {t("hero.ctaSecondary")}
                   <ArrowRight className="h-5 w-5" />
                 </Button>
               </Link>
