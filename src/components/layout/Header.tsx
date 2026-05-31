@@ -19,6 +19,7 @@ const navLinkKeys = [
   { href: "/comparateur", labelKey: "nav.compare" },
   { href: "/blog", labelKey: "nav.blog" },
   { href: "/faq", labelKey: "nav.faq" },
+  { href: "/equipe", labelKey: "nav.team" },
   { href: siteConfig.links.discord, labelKey: "nav.contact", external: true },
 ] as const;
 

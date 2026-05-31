@@ -36,6 +36,7 @@ export function Footer() {
       title: t("footer.company"),
       links: [
         { href: "/a-propos", label: t("footer.about") },
+        { href: "/equipe", label: t("footer.team") },
         { href: siteConfig.links.discord, label: t("nav.contact"), external: true },
         { href: "/confidentialite", label: t("footer.privacy") },
         { href: "/conditions", label: t("footer.terms") },
