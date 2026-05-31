@@ -172,6 +172,61 @@ export const apps: App[] = [
     featured: false,
   },
   {
+    id: "gamby",
+    slug: "gamby",
+    name: "Gamby",
+    color: "#22C55E",
+    description:
+      "Gamby est l'application de pronostics sportifs 100 % gratuite qui récompense vos bonnes prédictions. Football, tennis, basket, MMA, eSport… gagnez des Gambz convertibles en argent réel, sans parier ni déposer d'argent.",
+    shortDescription: "Pronostics sportifs gratuits rémunérés",
+    earningsLabel: "Variables",
+    difficulty: "easy",
+    difficultyLabel: "Facile",
+    platforms: ["android", "ios"],
+    categories: ["games", "surveys"],
+    downloadLinks: [
+      { platform: "signup", label: "Site officiel", url: "https://www.gamby.app/" },
+      { platform: "android", label: "Google Play", url: "https://play.google.com/store/apps/details?id=com.gamby.app" },
+      { platform: "ios", label: "App Store", url: "https://apps.apple.com/app/gamby-sports-prediction-game/id6477860898" },
+    ],
+    referralCodes: [],
+    referralFaqHint:
+      "Entrez le code parrain lors de l'inscription ou dans la section parrainage de l'application Gamby.",
+    referralInstructions:
+      "Gamby — lors de l'inscription :\n\n1. Téléchargez Gamby sur le Play Store ou l'App Store.\n2. Créez votre compte avec votre email.\n3. Cherchez « Code parrain » ou « Referral code » dans les paramètres ou à l'inscription.\n4. Entrez le code Money's House avant de valider.\n5. Invitez vos amis pour gagner des Gambz bonus.\n\nLe code parrain peut être saisi à l'inscription ou depuis votre profil.",
+    howItWorks:
+      "Chaque jour, vous recevez des jetons gratuits pour pronostiquer sur des matchs. Les bonnes réponses rapportent des points et des Gambz. Complétez aussi des sondages et mini-jeux pour augmenter vos gains, puis convertissez vos Gambz en argent réel.",
+    advantages: [
+      "100 % gratuit, sans pari ni dépôt",
+      "Pronostics sur de nombreux sports",
+      "Gains convertibles en argent réel",
+      "Programme de parrainage",
+      "Communauté active sur Discord",
+    ],
+    disadvantages: [
+      "Nécessite une activité régulière (jetons quotidiens)",
+      "Revenus variables selon vos pronostics",
+      "Retrait sous quelques jours ouvrés",
+    ],
+    tutorial: [
+      { step: 1, title: "Télécharger Gamby", description: "Installez l'app depuis le Play Store ou l'App Store." },
+      { step: 2, title: "Entrer le code parrain", description: "Saisissez le code Money's House à l'inscription." },
+      { step: 3, title: "Faire vos pronostics", description: "Utilisez vos jetons quotidiens sur les matchs de votre choix." },
+      { step: 4, title: "Convertir vos Gambz", description: "Échangez vos Gambz contre de l'argent réel depuis l'app." },
+    ],
+    faq: [
+      {
+        question: "Gamby est-il un site de paris ?",
+        answer: "Non. Gamby est un jeu de pronostics gratuit. Vous ne pariez jamais votre propre argent.",
+      },
+      {
+        question: "Comment retirer mes gains ?",
+        answer: "Accumulez des Gambz via vos pronostics et défis, puis convertissez-les en argent réel depuis l'application. Les paiements sont généralement traités sous 10 jours.",
+      },
+    ],
+    featured: true,
+  },
+  {
     id: "google-opinion-rewards",
     slug: "google-opinion-rewards",
     name: "Google Opinion Rewards",

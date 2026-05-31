@@ -8,9 +8,12 @@ import { useUser } from "@/context/UserContext";
 import { useAdmin, OWNER_EMAIL } from "@/context/AdminContext";
 import { apps } from "@/lib/data/apps";
 import {
-  getAllReferralCodes,
+  getAllReferralData,
   addReferralCode,
   removeReferralCode,
+  addReferralLink,
+  removeReferralLink,
+  type AppReferrals,
 } from "@/lib/referrals";
 import { GsapScrollReveal } from "@/components/shared/GsapScrollReveal";
 import { Button } from "@/components/ui/button";
@@ -30,8 +33,9 @@ export default function AdminPage() {
   const router = useRouter();
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [adminError, setAdminError] = useState("");
-  const [referralCodes, setReferralCodes] = useState<Record<string, string[]>>({});
+  const [referralData, setReferralData] = useState<Record<string, AppReferrals>>({});
   const [newCodes, setNewCodes] = useState<Record<string, string>>({});
+  const [newLinks, setNewLinks] = useState<Record<string, string>>({});
   const [referralError, setReferralError] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState(false);
   const [addingAdmin, setAddingAdmin] = useState(false);
@@ -48,7 +52,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (user && isAdmin(user.email)) {
-      setReferralCodes(getAllReferralCodes());
+      setReferralData(getAllReferralData());
     }
   }, [user, isAdmin]);
 
@@ -79,7 +83,7 @@ export default function AdminPage() {
     setTimeout(() => setSaved(false), 2000);
   };
 
-  const handleAddReferral = (appId: string) => {
+  const handleAddReferralCode = (appId: string) => {
     const code = newCodes[appId]?.trim() ?? "";
     if (!code) return;
 
@@ -87,20 +91,45 @@ export default function AdminPage() {
     if (!added) {
       setReferralError((prev) => ({
         ...prev,
-        [appId]: "Code vide ou déjà enregistré.",
+        [`${appId}-code`]: "Code vide ou déjà enregistré.",
       }));
       return;
     }
 
-    setReferralCodes(getAllReferralCodes());
+    setReferralData(getAllReferralData());
     setNewCodes((prev) => ({ ...prev, [appId]: "" }));
-    setReferralError((prev) => ({ ...prev, [appId]: "" }));
+    setReferralError((prev) => ({ ...prev, [`${appId}-code`]: "" }));
     flashSaved();
   };
 
-  const handleRemoveReferral = (appId: string, code: string) => {
+  const handleRemoveReferralCode = (appId: string, code: string) => {
     removeReferralCode(appId, code);
-    setReferralCodes(getAllReferralCodes());
+    setReferralData(getAllReferralData());
+    flashSaved();
+  };
+
+  const handleAddReferralLink = (appId: string) => {
+    const link = newLinks[appId]?.trim() ?? "";
+    if (!link) return;
+
+    const added = addReferralLink(appId, link);
+    if (!added) {
+      setReferralError((prev) => ({
+        ...prev,
+        [`${appId}-link`]: "Lien invalide ou déjà enregistré.",
+      }));
+      return;
+    }
+
+    setReferralData(getAllReferralData());
+    setNewLinks((prev) => ({ ...prev, [appId]: "" }));
+    setReferralError((prev) => ({ ...prev, [`${appId}-link`]: "" }));
+    flashSaved();
+  };
+
+  const handleRemoveReferralLink = (appId: string, link: string) => {
+    removeReferralLink(appId, link);
+    setReferralData(getAllReferralData());
     flashSaved();
   };
 
@@ -192,29 +221,30 @@ export default function AdminPage() {
           <section className="p-8 rounded-[32px] bg-phantom-surface border border-phantom-dark/5">
             <h2 className="text-xl font-semibold text-phantom-dark mb-2 flex items-center gap-2">
               <Gift className="h-5 w-5" />
-              Codes de parrainage
+              Parrainage
             </h2>
             <p className="text-sm text-phantom-gray mb-6">
-              Ajoutez plusieurs codes par application. Ils s&apos;affichent tous dans la popup avant
-              chaque téléchargement.
+              Ajoutez plusieurs codes et liens par application. Ils s&apos;affichent dans la popup
+              avant chaque téléchargement et dans la FAQ.
             </p>
 
             {saved && (
-              <p className="text-green-600 text-sm mb-4">Codes enregistrés avec succès.</p>
+              <p className="text-green-600 text-sm mb-4">Parrainage enregistré avec succès.</p>
             )}
 
             <div className="space-y-8">
               {apps
                 .filter((a) => a.hasReferral !== false)
                 .map((app) => {
-                  const codes = referralCodes[app.id] ?? [];
+                  const data = referralData[app.id] ?? { codes: [], links: [] };
                   return (
                     <div key={app.id} className="rounded-[20px] bg-phantom-bg p-5">
                       <p className="text-phantom-dark font-medium mb-4">{app.name}</p>
 
-                      {codes.length > 0 ? (
+                      <p className="text-xs text-phantom-gray uppercase tracking-wide mb-2">Codes</p>
+                      {data.codes.length > 0 ? (
                         <ul className="space-y-2 mb-4">
-                          {codes.map((code) => (
+                          {data.codes.map((code) => (
                             <li
                               key={code}
                               className="flex items-center justify-between gap-3 p-3 rounded-[16px] bg-phantom-surface border border-phantom-dark/5"
@@ -223,7 +253,7 @@ export default function AdminPage() {
                                 {code}
                               </code>
                               <button
-                                onClick={() => handleRemoveReferral(app.id, code)}
+                                onClick={() => handleRemoveReferralCode(app.id, code)}
                                 className="p-2 rounded-full hover:bg-red-100 text-phantom-gray hover:text-red-500 transition-colors shrink-0"
                                 title="Supprimer"
                               >
@@ -236,7 +266,7 @@ export default function AdminPage() {
                         <p className="text-sm text-phantom-gray mb-4">Aucun code enregistré.</p>
                       )}
 
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 mb-6">
                         <Input
                           value={newCodes[app.id] ?? ""}
                           onChange={(e) =>
@@ -246,14 +276,14 @@ export default function AdminPage() {
                             }))
                           }
                           onKeyDown={(e) => {
-                            if (e.key === "Enter") handleAddReferral(app.id);
+                            if (e.key === "Enter") handleAddReferralCode(app.id);
                           }}
                           placeholder="Nouveau code parrainage"
                           className="flex-1"
                         />
                         <Button
                           size="sm"
-                          onClick={() => handleAddReferral(app.id)}
+                          onClick={() => handleAddReferralCode(app.id)}
                           disabled={!(newCodes[app.id]?.trim())}
                           className="gap-1 shrink-0"
                         >
@@ -261,8 +291,67 @@ export default function AdminPage() {
                           Ajouter
                         </Button>
                       </div>
-                      {referralError[app.id] && (
-                        <p className="text-red-500 text-sm mt-2">{referralError[app.id]}</p>
+                      {referralError[`${app.id}-code`] && (
+                        <p className="text-red-500 text-sm mb-4">{referralError[`${app.id}-code`]}</p>
+                      )}
+
+                      <p className="text-xs text-phantom-gray uppercase tracking-wide mb-2">Liens</p>
+                      {data.links.length > 0 ? (
+                        <ul className="space-y-2 mb-4">
+                          {data.links.map((link) => (
+                            <li
+                              key={link}
+                              className="flex items-center justify-between gap-3 p-3 rounded-[16px] bg-phantom-surface border border-phantom-dark/5"
+                            >
+                              <a
+                                href={link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-phantom-purple hover:underline break-all"
+                              >
+                                {link}
+                              </a>
+                              <button
+                                onClick={() => handleRemoveReferralLink(app.id, link)}
+                                className="p-2 rounded-full hover:bg-red-100 text-phantom-gray hover:text-red-500 transition-colors shrink-0"
+                                title="Supprimer"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-sm text-phantom-gray mb-4">Aucun lien enregistré.</p>
+                      )}
+
+                      <div className="flex gap-2">
+                        <Input
+                          value={newLinks[app.id] ?? ""}
+                          onChange={(e) =>
+                            setNewLinks((prev) => ({
+                              ...prev,
+                              [app.id]: e.target.value,
+                            }))
+                          }
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleAddReferralLink(app.id);
+                          }}
+                          placeholder="https://exemple.com/parrainage"
+                          className="flex-1"
+                        />
+                        <Button
+                          size="sm"
+                          onClick={() => handleAddReferralLink(app.id)}
+                          disabled={!(newLinks[app.id]?.trim())}
+                          className="gap-1 shrink-0"
+                        >
+                          <Plus className="h-4 w-4" />
+                          Ajouter
+                        </Button>
+                      </div>
+                      {referralError[`${app.id}-link`] && (
+                        <p className="text-red-500 text-sm mt-2">{referralError[`${app.id}-link`]}</p>
                       )}
                     </div>
                   );

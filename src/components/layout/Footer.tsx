@@ -16,6 +16,7 @@ const footerLinks = {
     { href: "/faq", label: "FAQ" },
     { href: "/apps/earnapp", label: "EarnApp" },
     { href: "/apps/honeygain", label: "Honeygain" },
+    { href: "/apps/gamby", label: "Gamby" },
   ],
   Entreprise: [
     { href: "/faq", label: "À propos" },

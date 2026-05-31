@@ -5,6 +5,7 @@ import { HoneygainIcon } from "./HoneygainIcon";
 import { McMoneyIcon } from "./McMoneyIcon";
 import { MoneySmsIcon } from "./MoneySmsIcon";
 import { GoogleOpinionIcon } from "./GoogleOpinionIcon";
+import { GambyIcon } from "./GambyIcon";
 
 interface AppLogoProps {
   appId: string;
@@ -18,6 +19,7 @@ const iconMap: Record<string, ComponentType<{ size?: number; className?: string 
   mcmoney: McMoneyIcon,
   "money-sms": MoneySmsIcon,
   "google-opinion-rewards": GoogleOpinionIcon,
+  gamby: GambyIcon,
 };
 
 export function AppLogo({ appId, size = 32, className }: AppLogoProps) {

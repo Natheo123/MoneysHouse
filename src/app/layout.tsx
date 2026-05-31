@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     "gagner de l'argent",
     "EarnApp",
     "Honeygain",
+    "Gamby",
     "applications rémunératrices",
     "bande passante",
     "sondages rémunérés",

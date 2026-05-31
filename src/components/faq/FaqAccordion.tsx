@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, ExternalLink } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -13,9 +13,10 @@ import { Button } from "@/components/ui/button";
 import { apps } from "@/lib/data/apps";
 import { siteConfig } from "@/lib/config";
 import {
-  getAllReferralCodes,
+  getAllReferralData,
   hasReferralProgram,
   REFERRAL_CODES_UPDATED_EVENT,
+  type AppReferrals,
 } from "@/lib/referrals";
 import type { FAQItem } from "@/types";
 
@@ -24,11 +25,11 @@ interface FaqAccordionProps {
 }
 
 function ReferralFaqAnswer() {
-  const [codesByApp, setCodesByApp] = useState<Record<string, string[]>>({});
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [dataByApp, setDataByApp] = useState<Record<string, AppReferrals>>({});
+  const [copiedValue, setCopiedValue] = useState<string | null>(null);
 
   const refresh = useCallback(() => {
-    setCodesByApp(getAllReferralCodes());
+    setDataByApp(getAllReferralData());
   }, []);
 
   useEffect(() => {
@@ -41,22 +42,24 @@ function ReferralFaqAnswer() {
     };
   }, [refresh]);
 
-  const copyCode = async (code: string) => {
-    await navigator.clipboard.writeText(code);
-    setCopiedCode(code);
-    setTimeout(() => setCopiedCode(null), 2000);
+  const copyValue = async (value: string) => {
+    await navigator.clipboard.writeText(value);
+    setCopiedValue(value);
+    setTimeout(() => setCopiedValue(null), 2000);
   };
 
   return (
     <div className="space-y-4">
       <p className="text-phantom-gray leading-relaxed">
-        Avant chaque téléchargement, une fenêtre vous rappelle d&apos;utiliser nos codes parrainage.
-        Copiez un code ci-dessous, puis suivez les instructions pour chaque application.
+        Avant chaque téléchargement, une fenêtre vous rappelle d&apos;utiliser nos codes et liens de
+        parrainage. Copiez un code ou ouvrez un lien ci-dessous, puis suivez les instructions pour
+        chaque application.
       </p>
 
       {apps.map((app) => {
-        const codes = codesByApp[app.id] ?? [];
+        const data = dataByApp[app.id] ?? { codes: [], links: [] };
         const withReferral = hasReferralProgram(app.id);
+        const hasContent = data.codes.length > 0 || data.links.length > 0;
 
         return (
           <div
@@ -71,32 +74,72 @@ function ReferralFaqAnswer() {
             </Link>
 
             {withReferral ? (
-              codes.length > 0 ? (
-                <ul className="mt-3 space-y-2">
-                  {codes.map((code) => (
-                    <li key={code} className="flex items-center justify-between gap-3">
-                      <code className="text-base font-bold text-phantom-dark tracking-wide">
-                        {code}
-                      </code>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => copyCode(code)}
-                        className="gap-1 shrink-0 h-8"
-                      >
-                        {copiedCode === code ? (
-                          <Check className="h-3.5 w-3.5" />
-                        ) : (
-                          <Copy className="h-3.5 w-3.5" />
-                        )}
-                        {copiedCode === code ? "Copié" : "Copier"}
-                      </Button>
-                    </li>
-                  ))}
-                </ul>
+              hasContent ? (
+                <div className="mt-3 space-y-4">
+                  {data.codes.length > 0 && (
+                    <ul className="space-y-2">
+                      {data.codes.map((code) => (
+                        <li key={code} className="flex items-center justify-between gap-3">
+                          <code className="text-base font-bold text-phantom-dark tracking-wide">
+                            {code}
+                          </code>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => copyValue(code)}
+                            className="gap-1 shrink-0 h-8"
+                          >
+                            {copiedValue === code ? (
+                              <Check className="h-3.5 w-3.5" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                            {copiedValue === code ? "Copié" : "Copier"}
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {data.links.length > 0 && (
+                    <ul className="space-y-2">
+                      {data.links.map((link) => (
+                        <li key={link} className="flex items-center justify-between gap-3">
+                          <a
+                            href={link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-phantom-purple hover:underline break-all"
+                          >
+                            {link}
+                          </a>
+                          <div className="flex gap-1 shrink-0">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => copyValue(link)}
+                              className="h-8"
+                            >
+                              {copiedValue === link ? (
+                                <Check className="h-3.5 w-3.5" />
+                              ) : (
+                                <Copy className="h-3.5 w-3.5" />
+                              )}
+                            </Button>
+                            <Button size="sm" variant="outline" asChild className="h-8">
+                              <a href={link} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink className="h-3.5 w-3.5" />
+                              </a>
+                            </Button>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               ) : (
                 <p className="mt-2 text-sm text-phantom-gray">
-                  Aucun code disponible pour le moment. Rejoignez notre{" "}
+                  Aucun code ou lien disponible pour le moment. Rejoignez notre{" "}
                   <a
                     href={siteConfig.links.discord}
                     target="_blank"

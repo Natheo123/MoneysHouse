@@ -22,7 +22,7 @@ export function AppDownloadLinks({ app }: { app: App }) {
       </h2>
       <p className="text-phantom-gray mb-6 text-sm">
         Liens officiels vers les stores et le site de {app.name}. Une fenêtre vous rappellera
-        d&apos;utiliser le code de parrainage avant chaque téléchargement.
+        d&apos;utiliser le code ou le lien de parrainage avant chaque téléchargement.
       </p>
       <div className="flex flex-wrap gap-3">
         {app.downloadLinks.map((link) => (

@@ -12,6 +12,7 @@ const filters: { key: Category | Platform | "all"; label: string }[] = [
   { key: "all", label: "Toutes" },
   { key: "passive", label: "Revenus passifs" },
   { key: "surveys", label: "Sondages" },
+  { key: "games", label: "Jeux" },
   { key: "sms", label: "SMS" },
   { key: "android", label: "Android" },
   { key: "ios", label: "iOS" },

@@ -1,5 +1,5 @@
 export type Platform = "android" | "ios" | "windows" | "linux" | "web";
-export type Category = "passive" | "surveys" | "sms" | "bandwidth";
+export type Category = "passive" | "surveys" | "sms" | "bandwidth" | "games";
 export type Difficulty = "very-easy" | "easy" | "medium" | "hard";
 
 export interface AppLink {
@@ -24,6 +24,7 @@ export interface App {
   categories: Category[];
   downloadLinks: AppLink[];
   referralCodes?: string[];
+  referralLinks?: string[];
   referralFaqHint?: string;
   referralInstructions: string;
   hasReferral?: boolean;

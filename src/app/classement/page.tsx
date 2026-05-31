@@ -11,7 +11,7 @@ import type { App, Category, Platform } from "@/types";
 type Tab = "earnings" | "easy" | "rating";
 
 const platformFilters: Platform[] = ["android", "ios", "windows", "linux"];
-const categoryFilters: Category[] = ["passive", "surveys", "sms"];
+const categoryFilters: Category[] = ["passive", "surveys", "games", "sms"];
 
 export default function ClassementPage() {
   const [tab, setTab] = useState<Tab>("earnings");
@@ -107,7 +107,13 @@ export default function ClassementPage() {
                 variant={categoryFilter === c ? "default" : "outline"}
                 className="cursor-pointer"
               >
-                {c === "passive" ? "Revenus passifs" : c === "surveys" ? "Sondages" : "SMS"}
+                {c === "passive"
+                  ? "Revenus passifs"
+                  : c === "surveys"
+                    ? "Sondages"
+                    : c === "games"
+                      ? "Jeux"
+                      : "SMS"}
               </Badge>
             </button>
           ))}
