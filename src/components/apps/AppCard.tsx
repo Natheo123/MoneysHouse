@@ -53,7 +53,7 @@ export function AppCard({ app, showFavorite = true }: AppCardProps) {
   return (
     <div ref={cardRef}>
       <Card className="overflow-hidden h-full flex flex-col group">
-        <CardContent className="p-6 flex flex-col flex-1">
+        <CardContent className="p-5 sm:p-6 flex flex-col flex-1">
           <div className="flex items-start justify-between mb-4">
             <div
               className="w-14 h-14 rounded-[20px] flex items-center justify-center"
@@ -76,7 +76,7 @@ export function AppCard({ app, showFavorite = true }: AppCardProps) {
             )}
           </div>
           <h3 className="text-xl font-semibold text-phantom-dark mb-2">{app.name}</h3>
-          <div className="mb-2">
+          <div className="mb-2 min-w-0">
             <ReferralBonusBadge appId={app.id} />
           </div>
           <p className="text-phantom-gray text-sm mb-4 flex-1">{app.shortDescription}</p>
@@ -93,18 +93,18 @@ export function AppCard({ app, showFavorite = true }: AppCardProps) {
               </span>
             ))}
           </div>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             {stats.count > 0 ? (
-              <div className="flex items-center gap-1">
-                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+              <div className="flex items-center gap-1 min-w-0">
+                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 shrink-0" />
                 <span className="text-sm font-medium text-phantom-dark">{stats.average}</span>
                 <span className="text-xs text-phantom-gray">({stats.count} avis)</span>
               </div>
             ) : (
               <span className="text-xs text-phantom-gray">Pas encore d&apos;avis</span>
             )}
-            <Link href={`/apps/${app.slug}`}>
-              <Button size="sm" variant="default">
+            <Link href={`/apps/${app.slug}`} className="w-full sm:w-auto">
+              <Button size="sm" variant="default" className="w-full sm:w-auto">
                 Découvrir
                 <ArrowRight className="h-4 w-4" />
               </Button>

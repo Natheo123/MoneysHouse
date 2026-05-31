@@ -35,6 +35,30 @@ html {
   scroll-behavior: auto;
 }
 
+@utility page-shell {
+  padding-top: calc(5.5rem + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
+
+  @media (width >= 640px) {
+    padding-top: calc(7rem + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+    padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+  }
+}
+
+@utility section-x {
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
+
+  @media (width >= 640px) {
+    padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+    padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+  }
+}
+
 body {
   background: var(--phantom-bg);
   color: var(--phantom-dark);

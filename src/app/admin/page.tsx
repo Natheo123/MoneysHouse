@@ -12,6 +12,7 @@ import { GsapScrollReveal } from "@/components/shared/GsapScrollReveal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { PageShell } from "@/components/layout/PageShell";
 
 export default function AdminPage() {
   const { user } = useUser();
@@ -178,8 +179,7 @@ export default function AdminPage() {
     referrals[appId] ?? { codes: [], links: [] };
 
   return (
-    <div className="pt-28 pb-20 px-6">
-      <div className="max-w-3xl mx-auto">
+    <PageShell maxWidth="3xl">
         <GsapScrollReveal>
           <div className="flex items-center gap-3 mb-2">
             <Shield className="h-8 w-8 text-phantom-purple" />
@@ -199,7 +199,7 @@ export default function AdminPage() {
 
         {userIsOwner && (
           <GsapScrollReveal>
-            <section className="mb-12 p-8 rounded-[32px] bg-phantom-surface border border-phantom-dark/5">
+            <section className="mb-12 p-5 sm:p-8 rounded-[24px] sm:rounded-[32px] bg-phantom-surface border border-phantom-dark/5">
               <h2 className="text-xl font-semibold text-phantom-dark mb-2 flex items-center gap-2">
                 <UserPlus className="h-5 w-5" />
                 Gestion des administrateurs
@@ -211,7 +211,7 @@ export default function AdminPage() {
                 sur Vercel pour enregistrer les changements.
               </p>
 
-              <div className="flex gap-2 mb-6">
+              <div className="flex flex-col sm:flex-row gap-2 mb-6">
                 <Input
                   type="email"
                   placeholder="email@exemple.com"
@@ -262,7 +262,7 @@ export default function AdminPage() {
         )}
 
         <GsapScrollReveal>
-          <section className="p-8 rounded-[32px] bg-phantom-surface border border-phantom-dark/5">
+          <section className="p-5 sm:p-8 rounded-[24px] sm:rounded-[32px] bg-phantom-surface border border-phantom-dark/5">
             <h2 className="text-xl font-semibold text-phantom-dark mb-2 flex items-center gap-2">
               <Gift className="h-5 w-5" />
               Parrainage
@@ -360,7 +360,7 @@ export default function AdminPage() {
                         <p className="text-sm text-phantom-gray mb-4">Aucun code enregistré.</p>
                       )}
 
-                      <div className="flex gap-2 mb-6">
+                      <div className="flex flex-col sm:flex-row gap-2 mb-6">
                         <Input
                           value={newCodes[app.id] ?? ""}
                           onChange={(e) =>
@@ -420,7 +420,7 @@ export default function AdminPage() {
                         <p className="text-sm text-phantom-gray mb-4">Aucun lien enregistré.</p>
                       )}
 
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <Input
                           value={newLinks[app.id] ?? ""}
                           onChange={(e) =>
@@ -469,7 +469,6 @@ export default function AdminPage() {
             ← Retour au dashboard
           </Link>
         </div>
-      </div>
-    </div>
+    </PageShell>
   );
 }

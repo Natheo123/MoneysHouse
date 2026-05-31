@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { blogPosts, getBlogPost } from "@/lib/data/blog";
 import { BlogIcon } from "@/components/icons/UiIcons";
+import { PageShell } from "@/components/layout/PageShell";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -29,15 +30,15 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) notFound();
 
   return (
-    <div className="pt-28 pb-20 px-6">
-      <article className="max-w-3xl mx-auto">
-        <div className="mb-8">
+    <PageShell maxWidth="3xl">
+      <article className="w-full">
+        <div className="mb-6 sm:mb-8">
           <Link href="/blog" className="text-phantom-purple hover:underline text-sm">
             ← Retour au blog
           </Link>
         </div>
         <BlogIcon id={post.iconId} size={48} className="mb-6" />
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
           <span className="text-xs font-medium text-phantom-purple bg-phantom-purple/20 px-3 py-1 rounded-full">
             {post.category}
           </span>
@@ -45,13 +46,13 @@ export default async function BlogPostPage({ params }: Props) {
             {post.date} · {post.readTime}
           </span>
         </div>
-        <h1 className="text-4xl md:text-5xl font-normal text-phantom-dark tracking-tight mb-8">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-normal text-phantom-dark tracking-tight mb-6 sm:mb-8">
           {post.title}
         </h1>
-        <div className="prose prose-lg text-phantom-gray leading-relaxed whitespace-pre-line">
+        <div className="text-phantom-gray text-base sm:text-lg leading-relaxed whitespace-pre-line">
           {post.content.trim()}
         </div>
       </article>
-    </div>
+    </PageShell>
   );
 }

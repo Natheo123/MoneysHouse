@@ -22,8 +22,8 @@ export function AppDownloadLinks({ app }: { app: App }) {
         Télécharger & utiliser
       </h2>
       <p className="text-phantom-gray mb-6 text-sm">
-        Liens officiels vers les stores et le site de {app.name}. Chaque bouton affiche le bonus
-        parrainage Money&apos;s House avant l&apos;installation.
+        Liens officiels vérifiés (stores, sites et APK). Chaque bouton affiche le bonus parrainage
+        Money&apos;s House avant l&apos;installation.
       </p>
       <ReferralBonusBanner app={app} />
       <div className="flex flex-wrap gap-3">

@@ -40,9 +40,9 @@ export function CtaSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-32 md:py-48 px-6 overflow-hidden">
+    <section ref={sectionRef} className="py-20 sm:py-32 md:py-48 section-x overflow-hidden">
       <div className="max-w-4xl mx-auto text-center">
-        <p data-cta className="text-phantom-gray text-lg mb-8">
+        <p data-cta className="text-phantom-gray text-base sm:text-lg mb-6 sm:mb-8">
           Rejoins la communauté sur{" "}
           <a
             href={siteConfig.links.discord}
@@ -56,17 +56,18 @@ export function CtaSection() {
         </p>
         <h2
           data-cta
-          className="text-5xl md:text-7xl font-normal text-phantom-dark tracking-tight mb-4"
+          className="text-3xl sm:text-5xl md:text-7xl font-normal text-phantom-dark tracking-tight mb-4"
         >
           Commence maintenant.
         </h2>
         <h2
           data-cta
-          className="text-5xl md:text-7xl font-normal text-phantom-dark tracking-tight mb-12 flex items-center justify-center gap-4 flex-wrap"
+          className="text-3xl sm:text-5xl md:text-7xl font-normal text-phantom-dark tracking-tight mb-8 sm:mb-12 flex items-center justify-center gap-3 sm:gap-4 flex-wrap"
         >
           Rejoins
           <span ref={logoRef} className="inline-block">
-            <MoneyHouseLogo size={56} />
+            <MoneyHouseLogo size={44} className="sm:hidden" />
+            <MoneyHouseLogo size={56} className="hidden sm:block" />
           </span>
           {siteConfig.name}.
         </h2>

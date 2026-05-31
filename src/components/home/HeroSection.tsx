@@ -108,24 +108,24 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative pt-32 pb-20 px-6">
+    <section ref={sectionRef} className="relative pt-24 sm:pt-32 pb-16 sm:pb-20 section-x">
       <div className="max-w-7xl mx-auto">
         <div
           ref={heroRef}
-          className="relative rounded-[40px] bg-phantom-charcoal overflow-hidden min-h-[75vh] flex flex-col items-center justify-center text-center px-8 py-20 will-change-transform"
+          className="relative rounded-[24px] sm:rounded-[40px] bg-phantom-charcoal overflow-hidden min-h-[62vh] sm:min-h-[75vh] flex flex-col items-center justify-center text-center px-4 sm:px-8 py-12 sm:py-20 will-change-transform"
         >
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div
               ref={blob1Ref}
-              className="absolute top-16 left-16 w-72 h-72 rounded-full bg-phantom-purple/40 blur-[80px]"
+              className="absolute top-8 left-4 sm:top-16 sm:left-16 w-40 h-40 sm:w-72 sm:h-72 rounded-full bg-phantom-purple/40 blur-[80px]"
             />
             <div
               ref={blob2Ref}
-              className="absolute bottom-16 right-16 w-96 h-96 rounded-full bg-phantom-blue/30 blur-[100px]"
+              className="absolute bottom-8 right-4 sm:bottom-16 sm:right-16 w-48 h-48 sm:w-96 sm:h-96 rounded-full bg-phantom-blue/30 blur-[100px]"
             />
             <div
               ref={blob3Ref}
-              className="absolute top-1/3 right-1/3 w-64 h-64 rounded-full bg-[#8B7355]/30 blur-[60px]"
+              className="absolute top-1/3 right-1/4 sm:right-1/3 w-40 h-40 sm:w-64 sm:h-64 rounded-full bg-[#8B7355]/30 blur-[60px]"
             />
           </div>
 
@@ -174,7 +174,7 @@ export function HeroSection() {
 
           <div
             data-hero-fade
-            className="relative z-10 grid grid-cols-3 gap-8 mt-16 pt-8 border-t border-phantom-cream/10 w-full max-w-2xl"
+            className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 mt-12 sm:mt-16 pt-6 sm:pt-8 border-t border-phantom-cream/10 w-full max-w-2xl"
           >
             {[
               { value: 5, suffix: "+", label: "Applications testées" },
@@ -182,10 +182,10 @@ export function HeroSection() {
               { value: 5, suffix: "", label: "Apps disponibles" },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
-                <p className="text-3xl md:text-4xl font-semibold text-phantom-cream">
+                <p className="text-2xl sm:text-3xl md:text-4xl font-semibold text-phantom-cream">
                   <GsapAnimatedCounter end={stat.value} suffix={stat.suffix} />
                 </p>
-                <p className="text-sm text-phantom-cream/45 mt-1">{stat.label}</p>
+                <p className="text-xs sm:text-sm text-phantom-cream/45 mt-1">{stat.label}</p>
               </div>
             ))}
           </div>

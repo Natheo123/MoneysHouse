@@ -3,9 +3,10 @@
 import { useState, useMemo } from "react";
 import { apps } from "@/lib/data/apps";
 import { AppCard } from "@/components/apps/AppCard";
-import { ScrollReveal } from "@/components/shared/ScrollReveal";
+import { PageShell } from "@/components/layout/PageShell";
 import { SearchBar } from "@/components/shared/SearchBar";
 import { Badge } from "@/components/ui/badge";
+import { GsapScrollReveal } from "@/components/shared/GsapScrollReveal";
 import type { Category, Platform } from "@/types";
 
 const filters: { key: Category | Platform | "all"; label: string }[] = [
@@ -32,18 +33,17 @@ export default function AppsPage() {
   }, [activeFilter]);
 
   return (
-    <div className="pt-28 pb-20 px-6">
-      <div className="max-w-7xl mx-auto">
-        <ScrollReveal>
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-6xl font-normal text-phantom-dark tracking-tight mb-4">
+    <PageShell>
+        <GsapScrollReveal>
+          <div className="text-center mb-8 sm:mb-12">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-normal text-phantom-dark tracking-tight mb-4">
               Applications
             </h1>
-            <p className="text-phantom-gray text-lg max-w-2xl mx-auto">
+            <p className="text-phantom-gray text-base sm:text-lg max-w-2xl mx-auto px-2">
               Découvrez toutes les applications de revenus passifs testées et approuvées par notre équipe.
             </p>
           </div>
-        </ScrollReveal>
+        </GsapScrollReveal>
 
         <div className="max-w-xl mx-auto mb-8">
           <SearchBar />
@@ -64,12 +64,11 @@ export default function AppsPage() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((app, i) => (
-            <ScrollReveal key={app.id} delay={i * 0.05}>
+            <GsapScrollReveal key={app.id}>
               <AppCard app={app} />
-            </ScrollReveal>
+            </GsapScrollReveal>
           ))}
         </div>
-      </div>
-    </div>
+    </PageShell>
   );
 }

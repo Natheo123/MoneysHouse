@@ -28,19 +28,19 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="bg-phantom-surface border-t border-phantom-dark/5 pt-16 pb-8">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
-          <div className="lg:col-span-2">
+    <footer className="bg-phantom-surface border-t border-phantom-dark/5 pt-12 sm:pt-16 pb-6 sm:pb-8">
+      <div className="max-w-7xl mx-auto section-x">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 sm:gap-12 mb-12 sm:mb-16">
+          <div className="sm:col-span-2 lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-6">
               <MoneyHouseLogo size={40} />
-              <span className="text-xl font-semibold text-phantom-dark">
+              <span className="text-lg sm:text-xl font-semibold text-phantom-dark">
                 {siteConfig.name}
               </span>
             </Link>
-            <div className="flex gap-2">
-              <Input placeholder="Entrez votre email" className="flex-1" />
-              <Button>Inscription</Button>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Input placeholder="Entrez votre email" className="flex-1 min-w-0" />
+              <Button className="w-full sm:w-auto shrink-0">Inscription</Button>
             </div>
             <p className="text-sm text-phantom-gray mt-3">
               Inscrivez-vous à notre newsletter et rejoignez la communauté {siteConfig.name}.
@@ -79,7 +79,7 @@ export function Footer() {
           <p className="text-sm text-phantom-gray">
             © 2026 {siteConfig.name}. Tous droits réservés.
           </p>
-          <div className="flex gap-6 text-sm text-phantom-gray">
+          <div className="flex flex-wrap justify-center md:justify-end gap-4 sm:gap-6 text-sm text-phantom-gray">
             <Link href="/faq" className="hover:text-phantom-purple transition-colors">
               Conditions
             </Link>

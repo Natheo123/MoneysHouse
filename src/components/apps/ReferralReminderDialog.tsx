@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { siteConfig } from "@/lib/config";
+import { openDownloadUrl } from "@/lib/download-links";
 import { useReferrals, hasReferralProgram } from "@/context/ReferralContext";
 import type { App } from "@/types";
 
@@ -48,7 +49,7 @@ export function ReferralReminderDialog({
   };
 
   const continueDownload = () => {
-    window.open(linkUrl, "_blank", "noopener,noreferrer");
+    openDownloadUrl(linkUrl);
     onOpenChange(false);
   };
 
@@ -100,8 +101,8 @@ export function ReferralReminderDialog({
                 {primaryCode && (
                   <div>
                     <p className="text-xs text-phantom-gray mb-1">Code parrain</p>
-                    <div className="flex items-center justify-between gap-3">
-                      <code className="text-2xl font-black text-phantom-dark tracking-wider">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <code className="text-lg sm:text-2xl font-black text-phantom-dark tracking-wider break-all">
                         {primaryCode}
                       </code>
                       <Button

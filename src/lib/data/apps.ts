@@ -1,5 +1,6 @@
 import type { App } from "@/types";
-import { buildAppLogoUrl, buildDomainLogoUrl } from "@/lib/app-logos";
+import { buildAppLogoUrl, buildDomainLogoUrl, localAppLogo } from "@/lib/app-logos";
+import { OFFICIAL_DOWNLOADS } from "@/lib/download-links";
 
 export const apps: App[] = [
   {
@@ -7,7 +8,7 @@ export const apps: App[] = [
     slug: "earnapp",
     name: "EarnApp",
     color: "#AB9FF2",
-    logoUrl: buildAppLogoUrl("https://earnapp.com"),
+    logoUrl: localAppLogo("earnapp.png"),
     description:
       "EarnApp permet de monétiser votre bande passante inutilisée. Installez l'application, laissez-la tourner en arrière-plan et gagnez de l'argent passivement chaque mois.",
     shortDescription: "Partage de bande passante pour des revenus passifs",
@@ -15,14 +16,17 @@ export const apps: App[] = [
     earningsMax: 50,
     difficulty: "very-easy",
     difficultyLabel: "Très facile",
-    platforms: ["android", "ios", "windows", "linux"],
+    platforms: ["android", "windows", "linux"],
     categories: ["passive", "bandwidth"],
     downloadLinks: [
-      { platform: "signup", label: "Créer un compte", url: "https://earnapp.com/" },
-      { platform: "android", label: "Google Play", url: "https://play.google.com/store/apps/details?id=com.earnapp.earn" },
-      { platform: "ios", label: "App Store", url: "https://apps.apple.com/app/earnapp-make-money/id1524366862" },
-      { platform: "windows", label: "Windows", url: "https://earnapp.com/download/" },
-      { platform: "linux", label: "Linux / macOS", url: "https://earnapp.com/download/" },
+      { platform: "signup", label: "Créer un compte", url: OFFICIAL_DOWNLOADS.earnapp.signup },
+      {
+        platform: "android",
+        label: "Télécharger Android",
+        url: OFFICIAL_DOWNLOADS.earnapp.download,
+      },
+      { platform: "windows", label: "Windows", url: OFFICIAL_DOWNLOADS.earnapp.download },
+      { platform: "linux", label: "Linux / macOS", url: OFFICIAL_DOWNLOADS.earnapp.download },
     ],
     referralCodes: [],
     referralBonusTitle: "Bonus de bienvenue EarnApp",
@@ -43,6 +47,7 @@ export const apps: App[] = [
     ],
     disadvantages: [
       "Revenus modestes selon la connexion",
+      "Application iOS bientôt disponible (earnapp.com)",
       "Consommation légère de batterie sur mobile",
       "Non disponible dans certains pays",
     ],
@@ -71,15 +76,18 @@ export const apps: App[] = [
     earningsMax: 40,
     difficulty: "very-easy",
     difficultyLabel: "Très facile",
-    platforms: ["android", "ios", "windows", "linux"],
+    platforms: ["android", "windows", "linux"],
     categories: ["passive", "bandwidth"],
     downloadLinks: [
-      { platform: "signup", label: "Créer un compte", url: "https://dashboard.honeygain.com/sign-up" },
-      { platform: "web", label: "Dashboard", url: "https://dashboard.honeygain.com/" },
-      { platform: "android", label: "Google Play", url: "https://play.google.com/store/apps/details?id=com.honeygain.make.money" },
-      { platform: "ios", label: "App Store", url: "https://apps.apple.com/app/honeygain/id1452720679" },
-      { platform: "windows", label: "Windows", url: "https://www.honeygain.com/download" },
-      { platform: "linux", label: "Linux / macOS", url: "https://www.honeygain.com/download" },
+      { platform: "signup", label: "Créer un compte", url: OFFICIAL_DOWNLOADS.honeygain.signup },
+      { platform: "web", label: "Dashboard", url: OFFICIAL_DOWNLOADS.honeygain.dashboard },
+      {
+        platform: "android",
+        label: "Télécharger Android (APK)",
+        url: OFFICIAL_DOWNLOADS.honeygain.download,
+      },
+      { platform: "windows", label: "Windows", url: OFFICIAL_DOWNLOADS.honeygain.download },
+      { platform: "linux", label: "Linux / macOS", url: OFFICIAL_DOWNLOADS.honeygain.download },
     ],
     referralCodes: [],
     referralBonusTitle: "500 Mo offerts",
@@ -99,13 +107,14 @@ export const apps: App[] = [
       "Paiements réguliers",
     ],
     disadvantages: [
+      "Non disponible sur l'App Store iOS",
       "Minimum de retrait à 20$",
       "Revenus variables selon la région",
       "Peut ralentir légèrement la connexion",
     ],
     tutorial: [
       { step: 1, title: "S'inscrire", description: "Créez votre compte avec le code parrain Money's House." },
-      { step: 2, title: "Télécharger l'app", description: "Installez Honeygain sur vos appareils." },
+      { step: 2, title: "Télécharger l'app", description: "Installez Honeygain depuis le site officiel (APK Android ou app desktop)." },
       { step: 3, title: "Activer le partage", description: "Connectez-vous et activez le partage de bande passante." },
     ],
     faq: [
@@ -118,7 +127,7 @@ export const apps: App[] = [
     slug: "mcmoney",
     name: "McMoney",
     color: "#E2DFFE",
-    logoUrl: buildAppLogoUrl("https://mcmoney.app"),
+    logoUrl: localAppLogo("mcmoney.png"),
     description:
       "McMoney vous rémunère pour recevoir des SMS sur votre téléphone.",
     shortDescription: "Revenus via réception de SMS",
@@ -128,8 +137,13 @@ export const apps: App[] = [
     platforms: ["android"],
     categories: ["sms", "passive"],
     downloadLinks: [
-      { platform: "signup", label: "Site officiel", url: "https://mcmoney.app/" },
-      { platform: "android", label: "Google Play", url: "https://play.google.com/store/apps/details?id=com.textcash.ap" },
+      { platform: "signup", label: "Site officiel", url: OFFICIAL_DOWNLOADS.mcmoney.site },
+      { platform: "web", label: "CM.com McMoney", url: OFFICIAL_DOWNLOADS.mcmoney.site },
+      {
+        platform: "android",
+        label: "Télécharger Android (APK)",
+        url: OFFICIAL_DOWNLOADS.mcmoney.site,
+      },
     ],
     referralCodes: [],
     referralBonusTitle: "Bonus d'inscription McMoney",
@@ -137,13 +151,13 @@ export const apps: App[] = [
       "Entrez notre code parrain à l'inscription et recevez un bonus sur votre premier gain McMoney.",
     referralFaqHint: "Entrez le code à l'inscription dans l'application Android.",
     referralInstructions:
-      "McMoney — lors de l'inscription :\n\n1. Téléchargez l'app depuis le Play Store ou mcmoney.app.\n2. Créez un compte dans l'application.\n3. Cherchez « Referral code » ou « Code d'invitation » dans les paramètres ou à l'inscription.\n4. Entrez le code Money's House avant de valider.\n\nLe code doit être entré lors de la première configuration du compte.",
+      "McMoney — lors de l'inscription :\n\n1. Téléchargez l'APK depuis cm.com/mcmoney et installez l'application.\n2. Créez un compte dans l'application.\n3. Cherchez « Referral code » ou « Code d'invitation » dans les paramètres ou à l'inscription.\n4. Entrez le code Money's House avant de valider.\n\nLe code doit être entré lors de la première configuration du compte.",
     howItWorks:
       "McMoney envoie des SMS de vérification à votre numéro. Vous recevez une rémunération pour chaque SMS reçu.",
     advantages: ["Revenus par SMS reçu", "Aucune action requise", "Paiements rapides"],
     disadvantages: ["Android uniquement", "Nécessite un numéro dédié", "Revenus imprévisibles"],
     tutorial: [
-      { step: 1, title: "Installer McMoney", description: "Téléchargez l'app depuis le Play Store." },
+      { step: 1, title: "Installer McMoney", description: "Téléchargez l'APK depuis cm.com/mcmoney et installez l'application." },
       { step: 2, title: "Entrer le code parrain", description: "Saisissez le code Money's House à l'inscription." },
       { step: 3, title: "Configurer votre numéro", description: "Enregistrez un numéro de téléphone dédié." },
     ],
@@ -157,7 +171,7 @@ export const apps: App[] = [
     slug: "money-sms",
     name: "Money SMS",
     color: "#3C315B",
-    logoUrl: buildAppLogoUrl("https://moneysms.net"),
+    logoUrl: localAppLogo("money-sms.png"),
     description:
       "Money SMS rémunère les utilisateurs pour la réception de SMS de vérification.",
     shortDescription: "Gagnez en recevant des SMS",
@@ -167,23 +181,33 @@ export const apps: App[] = [
     platforms: ["android"],
     categories: ["sms"],
     downloadLinks: [
-      { platform: "signup", label: "Créer un compte", url: "https://moneysms.net/" },
-      { platform: "android", label: "Google Play", url: "https://play.google.com/store/apps/details?id=com.mooncy.sms" },
+      { platform: "signup", label: "Créer un compte", url: OFFICIAL_DOWNLOADS.moneySms.siteFr },
+      { platform: "web", label: "Site officiel", url: OFFICIAL_DOWNLOADS.moneySms.siteFr },
+      {
+        platform: "android",
+        label: "Télécharger l'APK",
+        url: OFFICIAL_DOWNLOADS.moneySms.siteFr,
+      },
+      {
+        platform: "web",
+        label: "Guide d'installation",
+        url: OFFICIAL_DOWNLOADS.moneySms.installGuide,
+      },
     ],
     referralCodes: [],
     referralBonusTitle: "Bonus d'inscription Money SMS",
     referralBonusDescription:
-      "Utilisez notre code parrain sur moneysms.net et recevez un bonus sur votre compte Money SMS.",
-    referralFaqHint: "Saisissez le code sur moneysms.net lors de la création du compte.",
+      "Utilisez notre code parrain sur moneysmsapp.com et recevez un bonus sur votre compte Money SMS.",
+    referralFaqHint: "Saisissez le code sur moneysmsapp.com lors de la création du compte.",
     referralInstructions:
-      "Money SMS — lors de l'inscription :\n\n1. Inscrivez-vous sur moneysms.net.\n2. Lors de la création du compte, un champ « Referral code » est disponible.\n3. Entrez le code Money's House avant de valider.\n4. Téléchargez l'app Android et connectez-vous avec le même compte.\n\nLe code doit être saisi sur le site web avant d'installer l'app.",
+      "Money SMS — lors de l'inscription :\n\n1. Inscrivez-vous sur moneysmsapp.com/fr.\n2. Lors de la création du compte, un champ « Referral code » est disponible.\n3. Entrez le code Money's House avant de valider.\n4. Téléchargez l'app Android et connectez-vous avec le même compte.\n\nLe code doit être saisi sur le site web avant d'installer l'app.",
     howItWorks:
       "Money SMS utilise votre téléphone comme relais pour recevoir des codes de vérification SMS.",
     advantages: ["Totalement automatisé", "Pas de compétences requises", "Retraits flexibles"],
     disadvantages: ["Android seulement", "Volume de SMS variable", "Revenus modestes"],
     tutorial: [
-      { step: 1, title: "Créer un compte", description: "Inscrivez-vous sur moneysms.net avec le code parrain." },
-      { step: 2, title: "Installer et configurer", description: "Installez l'app et autorisez la réception de SMS." },
+      { step: 1, title: "Créer un compte", description: "Inscrivez-vous sur moneysmsapp.com avec le code parrain." },
+      { step: 2, title: "Installer et configurer", description: "Téléchargez l'APK sur moneysmsapp.com puis autorisez la réception de SMS." },
     ],
     faq: [],
     featured: false,
@@ -203,9 +227,9 @@ export const apps: App[] = [
     platforms: ["android", "ios"],
     categories: ["games", "surveys"],
     downloadLinks: [
-      { platform: "signup", label: "Site officiel", url: "https://www.gamby.app/" },
-      { platform: "android", label: "Google Play", url: "https://play.google.com/store/apps/details?id=com.gamby.app" },
-      { platform: "ios", label: "App Store", url: "https://apps.apple.com/app/gamby-sports-prediction-game/id6477860898" },
+      { platform: "signup", label: "Site officiel", url: OFFICIAL_DOWNLOADS.gamby.site },
+      { platform: "android", label: "Google Play", url: OFFICIAL_DOWNLOADS.gamby.androidPlay },
+      { platform: "ios", label: "App Store", url: OFFICIAL_DOWNLOADS.gamby.iosAppStore },
     ],
     referralCodes: [],
     referralBonusTitle: "50 Gambz offerts",
@@ -262,8 +286,16 @@ export const apps: App[] = [
     platforms: ["android", "ios"],
     categories: ["surveys"],
     downloadLinks: [
-      { platform: "android", label: "Google Play", url: "https://play.google.com/store/apps/details?id=com.google.opinionrewards" },
-      { platform: "ios", label: "App Store", url: "https://apps.apple.com/app/google-opinion-rewards/id1220212672" },
+      {
+        platform: "android",
+        label: "Google Play",
+        url: OFFICIAL_DOWNLOADS.googleOpinionRewards.androidPlay,
+      },
+      {
+        platform: "ios",
+        label: "App Store",
+        url: OFFICIAL_DOWNLOADS.googleOpinionRewards.iosAppStore,
+      },
     ],
     referralCodes: [],
     hasReferral: false,

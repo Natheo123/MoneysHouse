@@ -5,6 +5,7 @@ import { apps, getTopByEarnings, getEasiestApps } from "@/lib/data/apps";
 import { getAllRatingStats } from "@/lib/reviews";
 import { AppCard } from "@/components/apps/AppCard";
 import { GsapScrollReveal } from "@/components/shared/GsapScrollReveal";
+import { PageShell } from "@/components/layout/PageShell";
 import { Badge } from "@/components/ui/badge";
 import type { App, Category, Platform } from "@/types";
 
@@ -47,14 +48,13 @@ export default function ClassementPage() {
   ];
 
   return (
-    <div className="pt-28 pb-20 px-6">
-      <div className="max-w-7xl mx-auto">
+    <PageShell>
         <GsapScrollReveal>
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-6xl font-normal text-phantom-dark tracking-tight mb-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-normal text-phantom-dark tracking-tight mb-4">
               Classement
             </h1>
-            <p className="text-phantom-gray text-lg">
+            <p className="text-phantom-gray text-base sm:text-lg">
               Les meilleures applications classées par critères
             </p>
           </div>
@@ -131,7 +131,6 @@ export default function ClassementPage() {
             </GsapScrollReveal>
           ))}
         </div>
-      </div>
-    </div>
+    </PageShell>
   );
 }

@@ -20,6 +20,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { GsapScrollReveal } from "@/components/shared/GsapScrollReveal";
+import { PageShell } from "@/components/layout/PageShell";
 import { formatEarnings } from "@/lib/utils";
 import { useUser } from "@/context/UserContext";
 import { AppLogo } from "@/components/icons/AppLogo";
@@ -65,10 +66,9 @@ export function AppDetailView({ app }: { app: App }) {
   };
 
   return (
-    <div className="pt-28 pb-20 px-6">
-      <div className="max-w-4xl mx-auto">
+    <PageShell maxWidth="4xl">
         <GsapScrollReveal>
-          <div className="rounded-[40px] bg-phantom-dark p-8 md:p-12 mb-12 relative overflow-hidden">
+          <div className="rounded-[24px] sm:rounded-[40px] bg-phantom-dark p-6 sm:p-8 md:p-12 mb-8 sm:mb-12 relative overflow-hidden">
             <div className="absolute inset-0">
               <div
                 className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-30"
@@ -298,8 +298,7 @@ export function AppDetailView({ app }: { app: App }) {
             </Link>
           </div>
         </div>
-      </div>
-    </div>
+    </PageShell>
   );
 }
 

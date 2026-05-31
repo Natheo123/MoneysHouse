@@ -1,3 +1,8 @@
+/** Logo local hébergé dans /public/logos */
+export function localAppLogo(filename: string): string {
+  return `/logos/${filename}`;
+}
+
 /** Icône via le favicon / logo officiel du site (Google Favicon API). */
 export function buildAppLogoUrl(siteUrl: string, size = 128): string {
   const encoded = encodeURIComponent(siteUrl);

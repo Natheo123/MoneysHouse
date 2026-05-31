@@ -10,6 +10,7 @@ import { apps } from "@/lib/data/apps";
 import { AppCard } from "@/components/apps/AppCard";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/shared/ScrollReveal";
+import { PageShell } from "@/components/layout/PageShell";
 
 export default function DashboardPage() {
   const { user, favorites, history, notifications, logout, markNotificationRead } = useUser();
@@ -28,26 +29,25 @@ export default function DashboardPage() {
     .filter(Boolean) as typeof apps;
 
   return (
-    <div className="pt-28 pb-20 px-6">
-      <div className="max-w-7xl mx-auto">
+    <PageShell>
         <ScrollReveal>
-          <div className="flex items-center justify-between mb-12">
-            <div>
-              <h1 className="text-4xl font-normal text-phantom-dark tracking-tight mb-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 sm:mb-12">
+            <div className="min-w-0">
+              <h1 className="text-3xl sm:text-4xl font-normal text-phantom-dark tracking-tight mb-2 truncate">
                 Bonjour, {user.name}
               </h1>
               <p className="text-phantom-gray">Votre tableau de bord Money&apos;s House</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
               {adminReady && isAdmin(user.email) && (
                 <Link href="/admin">
-                  <Button variant="outline" size="sm" className="gap-2">
+                  <Button variant="outline" size="sm" className="gap-2 w-full sm:w-auto">
                     <Shield className="h-4 w-4" />
                     Admin
                   </Button>
                 </Link>
               )}
-              <Button variant="outline" onClick={logout} className="gap-2">
+              <Button variant="outline" onClick={logout} className="gap-2 w-full sm:w-auto">
               <LogOut className="h-4 w-4" />
               Déconnexion
             </Button>
@@ -68,12 +68,12 @@ export default function DashboardPage() {
                   .map((n) => (
                     <div
                       key={n.id}
-                      className="p-4 rounded-[20px] bg-phantom-purple/10 border border-phantom-purple/20 flex items-center justify-between"
+                      className="p-4 rounded-[20px] bg-phantom-purple/10 border border-phantom-purple/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
                     >
-                      <p className="text-phantom-dark text-sm">{n.message}</p>
+                      <p className="text-phantom-dark text-sm flex-1 min-w-0">{n.message}</p>
                       <button
                         onClick={() => markNotificationRead(n.id)}
-                        className="text-xs text-phantom-purple hover:underline"
+                        className="text-xs text-phantom-purple hover:underline shrink-0 self-start sm:self-center"
                       >
                         Marquer lu
                       </button>
@@ -126,7 +126,6 @@ export default function DashboardPage() {
             )}
           </section>
         </ScrollReveal>
-      </div>
-    </div>
+    </PageShell>
   );
 }

@@ -28,6 +28,8 @@ export function AppLogo({ appId, size = 32, className }: AppLogoProps) {
 
   useEffect(() => {
     if (!app) return;
+    if (app.logoUrl?.startsWith("/")) return;
+
     const iosUrl = app.downloadLinks.find((l) => l.platform === "ios")?.url;
     const itunesId = iosUrl ? getItunesAppId(iosUrl) : null;
     if (!itunesId) return;

@@ -74,10 +74,8 @@ function ReferralFaqAnswer() {
                   {data.codes.length > 0 && (
                     <ul className="space-y-2">
                       {data.codes.map((code) => (
-                        <li key={code} className="flex items-center justify-between gap-3">
-                          <code className="text-base font-bold text-phantom-dark tracking-wide">
-                            {code}
-                          </code>
+                        <li key={code} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                          <code className="text-sm font-bold text-phantom-dark break-all">{code}</code>
                           <Button
                             size="sm"
                             variant="outline"
@@ -99,7 +97,7 @@ function ReferralFaqAnswer() {
                   {data.links.length > 0 && (
                     <ul className="space-y-2">
                       {data.links.map((link) => (
-                        <li key={link} className="flex items-center justify-between gap-3">
+                        <li key={link} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
                           <a
                             href={link}
                             target="_blank"

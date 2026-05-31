@@ -46,10 +46,10 @@ export function FeaturedApps() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-24 md:py-32 px-6 bg-phantom-surface">
+    <section ref={sectionRef} className="py-16 sm:py-24 md:py-32 section-x bg-phantom-surface">
       <div className="max-w-7xl mx-auto">
         <div data-featured-title className="text-center mb-16">
-          <h2 className="text-4xl md:text-6xl font-normal text-phantom-dark tracking-tight mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-6xl font-normal text-phantom-dark tracking-tight mb-4">
             Applications populaires
           </h2>
           <p className="text-phantom-gray text-lg">

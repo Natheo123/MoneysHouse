@@ -116,8 +116,8 @@ function StackGroup({
 
   return (
     <section ref={sectionRef} className="py-16 md:py-24">
-      <div data-stack-title className="text-center mb-16 px-6">
-        <h2 className="text-4xl md:text-6xl font-normal text-phantom-dark tracking-tight leading-tight flex items-center justify-center gap-3 flex-wrap">
+      <div data-stack-title className="text-center mb-10 sm:mb-16 section-x">
+        <h2 className="text-3xl sm:text-4xl md:text-6xl font-normal text-phantom-dark tracking-tight leading-tight flex items-center justify-center gap-2 sm:gap-3 flex-wrap px-2">
           {stack.title}{" "}
           <SectionIcon id={stack.id} size={36} className="align-middle" />{" "}
           {stack.subtitle} tous
@@ -130,23 +130,23 @@ function StackGroup({
         </Link>
       </div>
 
-      <div ref={cardsRef} className="relative px-6 max-w-4xl mx-auto">
+      <div ref={cardsRef} className="relative section-x max-w-4xl mx-auto">
         {stack.cards.map((card, i) => (
           <div
             key={card.text}
             data-stack-card
-            className="sticky top-28 md:top-32 mb-6 last:mb-0"
+            className="sticky top-24 sm:top-28 md:top-32 mb-4 sm:mb-6 last:mb-0"
             style={{ zIndex: i + 1 }}
           >
             <Link href={card.href} className="block group">
               <div
-                className="rounded-[40px] p-10 md:p-14 min-h-[280px] md:min-h-[320px] flex flex-col justify-end shadow-xl transition-shadow duration-500 group-hover:shadow-2xl origin-top"
+                className="rounded-[28px] sm:rounded-[40px] p-6 sm:p-10 md:p-14 min-h-[220px] sm:min-h-[280px] md:min-h-[320px] flex flex-col justify-end shadow-xl transition-shadow duration-500 group-hover:shadow-2xl origin-top"
                 style={{ backgroundColor: card.color }}
               >
-                <span className="text-sm font-semibold text-phantom-dark/60 uppercase tracking-wider mb-3">
+                <span className="text-xs sm:text-sm font-semibold text-phantom-dark/60 uppercase tracking-wider mb-2 sm:mb-3">
                   {card.label}
                 </span>
-                <p className="text-2xl md:text-3xl font-medium text-phantom-dark leading-snug max-w-xl">
+                <p className="text-xl sm:text-2xl md:text-3xl font-medium text-phantom-dark leading-snug max-w-xl">
                   {card.text}
                 </p>
                 <span className="inline-flex items-center gap-2 mt-6 text-phantom-dark/70 font-medium group-hover:gap-3 transition-all">
