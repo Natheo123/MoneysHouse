@@ -6,6 +6,13 @@ import { ArrowRight } from "lucide-react";
 import { gsap, registerGsapPlugins } from "@/lib/gsap";
 import { Button } from "@/components/ui/button";
 import { GsapAnimatedCounter } from "@/components/shared/GsapAnimatedCounter";
+import { apps } from "@/lib/data/apps";
+
+const heroStats = [
+  { value: apps.length, suffix: "+", label: "Applications testées" },
+  { value: 10, suffix: "€", label: "Revenus minimum par mois" },
+  { value: apps.length, suffix: "", label: "Apps disponibles" },
+] as const;
 
 const heroLines = [
   "Gagne de l'argent avec",
@@ -176,11 +183,7 @@ export function HeroSection() {
             data-hero-fade
             className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 mt-12 sm:mt-16 pt-6 sm:pt-8 border-t border-phantom-cream/10 w-full max-w-2xl"
           >
-            {[
-              { value: 5, suffix: "+", label: "Applications testées" },
-              { value: 50, suffix: "€", label: "Revenus max/mois" },
-              { value: 5, suffix: "", label: "Apps disponibles" },
-            ].map((stat) => (
+            {heroStats.map((stat) => (
               <div key={stat.label} className="text-center">
                 <p className="text-2xl sm:text-3xl md:text-4xl font-semibold text-phantom-cream">
                   <GsapAnimatedCounter end={stat.value} suffix={stat.suffix} />

@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
 import { useAdmin } from "@/context/AdminContext";
 import { useLenis } from "@/context/LenisContext";
-import { SearchBar } from "@/components/shared/SearchBar";
 import { MoneyHouseLogo } from "@/components/icons/MoneyHouseLogo";
 
 const navLinks = [
@@ -75,13 +74,22 @@ export function Header() {
     const updateFromScroll = (scrollY: number, direction: number) => {
       setScrolled(scrollY > 40);
 
-      if (scrollY < 16) {
+      const delta = scrollY - lastScrollY.current;
+
+      if (scrollY <= 8) {
         setVisible(true);
-      } else if (direction > 0 && scrollY > 72) {
+      } else if (direction > 0 && scrollY > 24) {
         setVisible(false);
         setMobileOpen(false);
       } else if (direction < 0) {
         setVisible(true);
+      } else if (Math.abs(delta) >= 6) {
+        if (delta > 0 && scrollY > 24) {
+          setVisible(false);
+          setMobileOpen(false);
+        } else if (delta < 0) {
+          setVisible(true);
+        }
       }
 
       lastScrollY.current = scrollY;
@@ -163,7 +171,7 @@ export function Header() {
             </span>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center">
             {navLinks.map((link) => (
               <NavLink
                 key={link.href}
@@ -174,10 +182,6 @@ export function Header() {
               />
             ))}
           </nav>
-
-          <div className="hidden lg:block flex-1 max-w-xs min-w-0">
-            <SearchBar />
-          </div>
 
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {user ? (
@@ -253,7 +257,6 @@ export function Header() {
             style={{ top: "calc(4rem + env(safe-area-inset-top, 0px))" }}
           >
             <div className="section-x py-4 space-y-1">
-              <SearchBar className="mb-4" />
               {adminAccess && (
                 <NavLink
                   href="/admin"
