@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { apps } from "@/lib/data/apps";
-import { getAppRatingStats } from "@/lib/reviews";
+import { useReviews } from "@/context/ReviewContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GsapScrollReveal } from "@/components/shared/GsapScrollReveal";
@@ -25,7 +25,8 @@ const platformLabels: Record<string, string> = {
 function useComparisonRows(
   selectedApps: App[],
   t: (key: string, params?: Record<string, string | number>) => string,
-  formatEarnings: (min?: number, max?: number) => string
+  formatEarnings: (min?: number, max?: number) => string,
+  getAppRatingStats: (appId: string) => { average: number; count: number }
 ) {
   return useMemo(
     () => [
@@ -63,7 +64,7 @@ function useComparisonRows(
         values: selectedApps.map((a) => a.downloadLinks.map((l) => l.label).join(", ")),
       },
     ],
-    [selectedApps, t, formatEarnings]
+    [selectedApps, t, formatEarnings, getAppRatingStats]
   );
 }
 
@@ -149,7 +150,8 @@ export default function ComparateurPage() {
     .filter(Boolean)
     .map((app) => getLocalizedApp(app!));
 
-  const rows = useComparisonRows(selectedApps, t, formatEarnings);
+  const { getAppRatingStats } = useReviews();
+  const rows = useComparisonRows(selectedApps, t, formatEarnings, getAppRatingStats);
 
   return (
     <PageShell>

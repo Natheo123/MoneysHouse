@@ -8,6 +8,7 @@ import { UserProvider } from "@/context/UserContext";
 import { AdminProvider } from "@/context/AdminContext";
 import { ReferralProvider } from "@/context/ReferralContext";
 import { ProofProvider } from "@/context/ProofContext";
+import { ReviewProvider } from "@/context/ReviewContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { SmoothScrollProvider } from "@/components/animations/SmoothScrollProvider";
 
@@ -84,11 +85,13 @@ export default function RootLayout({
             <AdminProvider>
               <ReferralProvider>
                 <ProofProvider>
-                  <SmoothScrollProvider>
-                    <Header />
-                    <main className="min-h-screen">{children}</main>
-                    <Footer />
-                  </SmoothScrollProvider>
+                  <ReviewProvider>
+                    <SmoothScrollProvider>
+                      <Header />
+                      <main className="min-h-screen">{children}</main>
+                      <Footer />
+                    </SmoothScrollProvider>
+                  </ReviewProvider>
                 </ProofProvider>
               </ReferralProvider>
             </AdminProvider>

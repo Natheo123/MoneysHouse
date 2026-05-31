@@ -8,6 +8,7 @@ import {
   Check,
   X,
   ChevronRight,
+  Trash2,
 } from "lucide-react";
 import { gsap } from "@/lib/gsap";
 import type { App } from "@/types";
@@ -22,6 +23,7 @@ import {
 import { GsapScrollReveal } from "@/components/shared/GsapScrollReveal";
 import { PageShell } from "@/components/layout/PageShell";
 import { useUser } from "@/context/UserContext";
+import { useAdmin } from "@/context/AdminContext";
 import { AppLogo } from "@/components/icons/AppLogo";
 import { AppDownloadLinks } from "@/components/apps/AppDownloadLinks";
 import { AppProofsGallery } from "@/components/apps/AppProofsGallery";
@@ -42,13 +44,15 @@ export function AppDetailView({ app }: { app: App }) {
   const { getLocalizedApp, formatEarnings } = useLanguage();
   const localizedApp = getLocalizedApp(app);
   const { isFavorite, toggleFavorite, addToHistory, user } = useUser();
-  const { reviews, stats, alreadyReviewed, submitReview } = useAppReviews(
+  const { isAdmin } = useAdmin();
+  const { reviews, stats, alreadyReviewed, submitReview, removeReview } = useAppReviews(
     localizedApp.id,
     user?.id
   );
   const [newRating, setNewRating] = useState(5);
   const [newComment, setNewComment] = useState("");
   const [submitError, setSubmitError] = useState("");
+  const [removingReviewId, setRemovingReviewId] = useState<string | null>(null);
   const { ready: proofsReady, getProofCount } = useProofs();
   const hasProofs = proofsReady && getProofCount(localizedApp.id) > 0;
 
@@ -56,21 +60,30 @@ export function AppDetailView({ app }: { app: App }) {
     addToHistory(localizedApp.id);
   }, [localizedApp.id, addToHistory]);
 
-  const handleSubmitReview = () => {
+  const handleSubmitReview = async () => {
     if (!user || !newComment.trim()) return;
     setSubmitError("");
-    const ok = submitReview({
+    const result = await submitReview({
       userId: user.id,
       userName: user.name,
       rating: newRating,
       comment: newComment.trim(),
     });
-    if (ok) {
+    if (result.ok) {
       setNewComment("");
     } else {
       setSubmitError(t("appDetail.reviewDuplicate"));
     }
   };
+
+  const handleDeleteReview = async (reviewId: string) => {
+    if (!user?.email) return;
+    setRemovingReviewId(reviewId);
+    await removeReview(reviewId, user.email);
+    setRemovingReviewId(null);
+  };
+
+  const showAdminReviewActions = Boolean(user?.email && isAdmin(user.email));
 
   return (
     <PageShell maxWidth="4xl">
@@ -278,12 +291,26 @@ export function AppDetailView({ app }: { app: App }) {
                       key={review.id}
                       className="p-6 rounded-[24px] bg-phantom-surface border border-phantom-dark/5"
                     >
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-2 gap-3">
                         <span className="font-medium text-phantom-dark">{review.userName}</span>
-                        <div className="flex items-center gap-1">
-                          {Array.from({ length: review.rating }).map((_, j) => (
-                            <Star key={j} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          ))}
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
+                            {Array.from({ length: review.rating }).map((_, j) => (
+                              <Star key={j} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                            ))}
+                          </div>
+                          {showAdminReviewActions && (
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteReview(review.id)}
+                              disabled={removingReviewId === review.id}
+                              className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-700 disabled:opacity-50"
+                              title={t("appDetail.deleteReview")}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                              {t("appDetail.deleteReview")}
+                            </button>
+                          )}
                         </div>
                       </div>
                       <p className="text-phantom-gray text-sm mb-1">{review.comment}</p>

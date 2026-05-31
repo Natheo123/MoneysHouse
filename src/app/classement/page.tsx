@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { apps, getTopByEarnings, getEasiestApps } from "@/lib/data/apps";
-import { getAllRatingStats } from "@/lib/reviews";
+import { useReviews, REVIEWS_UPDATED_EVENT } from "@/context/ReviewContext";
 import { AppCard } from "@/components/apps/AppCard";
 import { GsapScrollReveal } from "@/components/shared/GsapScrollReveal";
 import { PageShell } from "@/components/layout/PageShell";
@@ -26,6 +26,7 @@ const categoryLabelKeys: Partial<Record<Category, string>> = {
 export default function ClassementPage() {
   const { t } = useTranslation();
   const { localizedApps } = useLanguage();
+  const { getAllRatingStats, refreshReviews } = useReviews();
   const [tab, setTab] = useState<Tab>("earnings");
   const [platformFilter, setPlatformFilter] = useState<Platform | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<Category | null>(null);
@@ -33,7 +34,16 @@ export default function ClassementPage() {
 
   useEffect(() => {
     setRatingStats(getAllRatingStats());
-  }, []);
+  }, [getAllRatingStats]);
+
+  useEffect(() => {
+    const onUpdate = () => {
+      refreshReviews();
+      setRatingStats(getAllRatingStats());
+    };
+    window.addEventListener(REVIEWS_UPDATED_EVENT, onUpdate);
+    return () => window.removeEventListener(REVIEWS_UPDATED_EVENT, onUpdate);
+  }, [getAllRatingStats, refreshReviews]);
 
   const ranked = useMemo(() => {
     if (tab === "earnings") return getTopByEarnings();

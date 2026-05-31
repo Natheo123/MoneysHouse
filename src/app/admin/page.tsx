@@ -13,6 +13,7 @@ import { AdminProofsSection } from "@/components/admin/AdminProofsSection";
 import { AdminReferralsSection } from "@/components/admin/AdminReferralsSection";
 import { AdminManageSection } from "@/components/admin/AdminManageSection";
 import { AdminTeamSection } from "@/components/admin/AdminTeamSection";
+import { AdminReviewsSection } from "@/components/admin/AdminReviewsSection";
 import { useTranslation } from "@/context/LanguageContext";
 
 export default function AdminPage() {
@@ -88,6 +89,10 @@ export default function AdminPage() {
             <AdminReferralsSection userEmail={user.email} />
           </div>
         </GsapScrollReveal>
+
+        <div className="mb-12">
+          <AdminReviewsSection userEmail={user.email} />
+        </div>
 
         <GsapScrollReveal>
           <div className="mb-12">

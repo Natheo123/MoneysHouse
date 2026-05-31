@@ -1,40 +1,54 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { AppRatingStats, Review } from "@/types";
-import {
-  getReviewsForApp,
-  getAppRatingStats,
-  addReview as persistReview,
-  hasUserReviewedApp,
-} from "@/lib/reviews";
+import { useMemo } from "react";
+import { useReviews } from "@/context/ReviewContext";
 
 export function useAppReviews(appId: string, userId?: string) {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [stats, setStats] = useState<AppRatingStats>({ average: 0, count: 0 });
-  const [alreadyReviewed, setAlreadyReviewed] = useState(false);
+  const {
+    ready,
+    getReviewsForApp,
+    getAppRatingStats,
+    hasUserReviewedApp,
+    addReview,
+    removeReview,
+    refreshReviews,
+  } = useReviews();
 
-  const refresh = () => {
-    setReviews(getReviewsForApp(appId));
-    setStats(getAppRatingStats(appId));
-    if (userId) setAlreadyReviewed(hasUserReviewedApp(appId, userId));
-  };
+  const reviews = getReviewsForApp(appId);
+  const stats = getAppRatingStats(appId);
+  const alreadyReviewed = userId ? hasUserReviewedApp(appId, userId) : false;
 
-  useEffect(() => {
-    refresh();
-  }, [appId, userId]);
-
-  const submitReview = (data: {
-    userId: string;
-    userName: string;
-    rating: number;
-    comment: string;
-  }) => {
-    if (hasUserReviewedApp(appId, data.userId)) return false;
-    persistReview({ appId, ...data });
-    refresh();
-    return true;
-  };
-
-  return { reviews, stats, alreadyReviewed, submitReview, refresh };
+  return useMemo(
+    () => ({
+      ready,
+      reviews,
+      stats,
+      alreadyReviewed,
+      submitReview: async (data: {
+        userId: string;
+        userName: string;
+        rating: number;
+        comment: string;
+      }) => {
+        if (hasUserReviewedApp(appId, data.userId)) {
+          return { ok: false as const, error: "duplicate" as const };
+        }
+        const result = await addReview({ appId, ...data });
+        return result.ok ? { ok: true as const } : { ok: false as const, error: result.error };
+      },
+      removeReview: (reviewId: string, requestedBy: string) => removeReview(reviewId, requestedBy),
+      refresh: refreshReviews,
+    }),
+    [
+      ready,
+      reviews,
+      stats,
+      alreadyReviewed,
+      appId,
+      addReview,
+      removeReview,
+      refreshReviews,
+      hasUserReviewedApp,
+    ]
+  );
 }
