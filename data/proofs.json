@@ -28,5 +28,13 @@
       "url": "https://raw.githubusercontent.com/Natheo123/MoneysHouse/main/public/proofs/money-sms/e6679155-a1f0-412d-bfa3-095dc2dae780.jpg",
       "createdAt": "2026-05-31T16:03:01.579Z"
     }
+  ],
+  "google-opinion-rewards": [
+    {
+      "id": "46011a79-b3ea-45ed-a72a-e0b18ee3344c",
+      "path": "public/proofs/google-opinion-rewards/46011a79-b3ea-45ed-a72a-e0b18ee3344c.jpg",
+      "url": "https://raw.githubusercontent.com/Natheo123/MoneysHouse/main/public/proofs/google-opinion-rewards/46011a79-b3ea-45ed-a72a-e0b18ee3344c.jpg",
+      "createdAt": "2026-05-31T16:06:08.624Z"
+    }
   ]
 }
