@@ -17,6 +17,7 @@ const footerLinks = {
     { href: "/apps/earnapp", label: "EarnApp" },
     { href: "/apps/honeygain", label: "Honeygain" },
     { href: "/apps/gamby", label: "Gamby" },
+    { href: "/apps/attapoll", label: "AttaPoll" },
   ],
   Entreprise: [
     { href: "/faq", label: "À propos" },

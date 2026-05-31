@@ -272,6 +272,67 @@ export const apps: App[] = [
     featured: true,
   },
   {
+    id: "attapoll",
+    slug: "attapoll",
+    name: "AttaPoll",
+    color: "#E53935",
+    logoUrl: localAppLogo("attapoll.png"),
+    description:
+      "AttaPoll vous rémunère pour répondre à des enquêtes rémunérées, jouer à des jeux et tester de nouvelles applications. Gagnez de l'argent depuis votre téléphone et retirez via PayPal, Revolut ou cartes cadeaux.",
+    shortDescription: "Sondages et mini-jeux rémunérés",
+    earningsMin: 5,
+    earningsMax: 35,
+    difficulty: "easy",
+    difficultyLabel: "Facile",
+    platforms: ["android", "ios"],
+    categories: ["surveys", "games"],
+    downloadLinks: [
+      { platform: "signup", label: "Site officiel", url: OFFICIAL_DOWNLOADS.attapoll.siteFrBe },
+      { platform: "web", label: "AttaPoll Belgique", url: OFFICIAL_DOWNLOADS.attapoll.siteFrBe },
+      { platform: "android", label: "Google Play", url: OFFICIAL_DOWNLOADS.attapoll.androidPlay },
+      { platform: "ios", label: "App Store", url: OFFICIAL_DOWNLOADS.attapoll.iosAppStore },
+    ],
+    referralCodes: [],
+    referralBonusTitle: "Bonus de parrainage AttaPoll",
+    referralBonusDescription:
+      "Inscrivez-vous avec notre code parrain AttaPoll et recevez un bonus lors de votre première activité sur l'application.",
+    referralFaqHint:
+      "Entrez le code parrain dans l'application AttaPoll, section « Parrainage » ou « Refer a friend », ou lors de l'inscription si le champ est proposé.",
+    referralInstructions:
+      "AttaPoll — lors de l'inscription :\n\n1. Téléchargez AttaPoll sur le Play Store, l'App Store ou via attapoll.com/fr-be/.\n2. Créez votre compte avec votre email.\n3. Ouvrez le menu Profil ou Paramètres, puis « Parrainage » / « Refer a friend ».\n4. Entrez le code Money's House avant de valider.\n5. Complétez des enquêtes pour cumuler vos gains.\n\nLe code parrain peut être saisi à l'inscription ou depuis votre profil.",
+    howItWorks:
+      "AttaPoll connecte les utilisateurs à des instituts d'études de marché. Vous recevez des enquêtes adaptées à votre profil, des jeux rémunérés et des missions à tester. Chaque activité complétée crédite votre solde AttaPoll.",
+    advantages: [
+      "Retrait dès 3 $",
+      "PayPal, Revolut et cartes cadeaux",
+      "Enquêtes courtes (1 à 15 min)",
+      "Application Android et iOS",
+      "Programme de parrainage",
+    ],
+    disadvantages: [
+      "Revenus variables selon votre profil",
+      "Disponibilité des enquêtes par région",
+      "Nécessite une activité régulière",
+    ],
+    tutorial: [
+      { step: 1, title: "Télécharger AttaPoll", description: "Installez l'app depuis attapoll.com/fr-be/, le Play Store ou l'App Store." },
+      { step: 2, title: "Entrer le code parrain", description: "Saisissez le code Money's House à l'inscription ou dans la section Parrainage." },
+      { step: 3, title: "Compléter des enquêtes", description: "Répondez aux sondages disponibles et cumulez votre solde." },
+      { step: 4, title: "Retirer vos gains", description: "Encaissez dès 3 $ via PayPal, Revolut ou carte cadeau." },
+    ],
+    faq: [
+      {
+        question: "AttaPoll est-il disponible en Belgique ?",
+        answer: "Oui, AttaPoll est disponible en Belgique et dans de nombreux pays. Le site attapoll.com/fr-be/ propose la version francophone pour la Belgique.",
+      },
+      {
+        question: "Quel est le minimum de retrait ?",
+        answer: "Le seuil minimum de retrait est de 3 $, avec des options PayPal, Revolut ou cartes cadeaux selon votre région.",
+      },
+    ],
+    featured: true,
+  },
+  {
     id: "google-opinion-rewards",
     slug: "google-opinion-rewards",
     name: "Google Opinion Rewards",

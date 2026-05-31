@@ -28,6 +28,12 @@ export const OFFICIAL_DOWNLOADS = {
       "https://play.google.com/store/apps/details?id=com.google.android.apps.paidtasks&hl=fr",
     iosAppStore: "https://apps.apple.com/fr/app/google-opinion-rewards/id1227019728",
   },
+  attapoll: {
+    siteFrBe: "https://attapoll.com/fr-be/",
+    androidPlay:
+      "https://play.google.com/store/apps/details?id=com.requapp.requ&hl=fr",
+    iosAppStore: "https://apps.apple.com/fr/app/attapoll-sondages-remuneres/id1107631390",
+  },
 } as const;
 
 export function isNativeStoreUrl(url: string): boolean {
