@@ -5,19 +5,40 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
   type ReactNode,
 } from "react";
+import {
+  ADMIN_ROLE_LABELS,
+  canChangeAdminRoles,
+  canManageAdmins,
+  type AdminMember,
+  type AdminRole,
+} from "@/lib/admin-shared";
 import { normalizeEmail, OWNER_EMAIL, isOwnerEmail } from "@/lib/admin-utils";
 
 interface AdminContextType {
   adminEmails: string[];
+  adminMembers: AdminMember[];
   ready: boolean;
   isAdmin: (email: string) => boolean;
   isOwner: (email: string) => boolean;
+  getRole: (email: string) => AdminRole | "owner" | null;
+  canManageAdmins: (email: string) => boolean;
+  canChangeRoles: (email: string) => boolean;
   refreshAdmins: () => Promise<void>;
-  addAdmin: (email: string, requestedBy: string) => Promise<{ ok: boolean; error?: string }>;
+  addAdmin: (
+    email: string,
+    requestedBy: string,
+    role?: AdminRole
+  ) => Promise<{ ok: boolean; error?: string }>;
   removeAdmin: (email: string, requestedBy: string) => Promise<{ ok: boolean; error?: string }>;
+  setAdminRole: (
+    email: string,
+    role: AdminRole,
+    requestedBy: string
+  ) => Promise<{ ok: boolean; error?: string }>;
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
@@ -37,7 +58,7 @@ async function migrateLegacyAdmins(requestedBy: string): Promise<void> {
       await fetch("/api/admins", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "add", email, requestedBy }),
+        body: JSON.stringify({ action: "add", email, role: "member", requestedBy }),
       });
     }
     localStorage.removeItem(LEGACY_ADMINS_KEY);
@@ -48,6 +69,7 @@ async function migrateLegacyAdmins(requestedBy: string): Promise<void> {
 
 export function AdminProvider({ children }: { children: ReactNode }) {
   const [adminEmails, setAdminEmails] = useState<string[]>([normalizeEmail(OWNER_EMAIL)]);
+  const [adminMembers, setAdminMembers] = useState<AdminMember[]>([]);
   const [ready, setReady] = useState(false);
   const [migrated, setMigrated] = useState(false);
 
@@ -55,9 +77,12 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     try {
       const res = await fetch("/api/admins", { cache: "no-store" });
       if (res.ok) {
-        const data = (await res.json()) as { emails?: string[] };
+        const data = (await res.json()) as { emails?: string[]; admins?: AdminMember[] };
         if (Array.isArray(data.emails) && data.emails.length > 0) {
           setAdminEmails(data.emails.map(normalizeEmail));
+        }
+        if (Array.isArray(data.admins)) {
+          setAdminMembers(data.admins);
         }
       }
     } finally {
@@ -97,20 +122,52 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
   const isOwner = useCallback((email: string) => isOwnerEmail(email), []);
 
+  const getRole = useCallback(
+    (email: string): AdminRole | "owner" | null => {
+      const normalized = normalizeEmail(email);
+      if (isOwnerEmail(normalized)) return "owner";
+      return adminMembers.find((m) => m.email === normalized)?.role ?? null;
+    },
+    [adminMembers]
+  );
+
+  const canManageAdminsFor = useCallback(
+    (email: string) => {
+      const role = getRole(email);
+      return role !== null && canManageAdmins(role);
+    },
+    [getRole]
+  );
+
+  const canChangeRolesFor = useCallback(
+    (email: string) => {
+      const role = getRole(email);
+      return role !== null && canChangeAdminRoles(role);
+    },
+    [getRole]
+  );
+
   const addAdmin = useCallback(
-    async (email: string, requestedBy: string) => {
+    async (email: string, requestedBy: string, role: AdminRole = "member") => {
       const res = await fetch("/api/admins", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "add",
           email,
+          role,
           requestedBy: normalizeEmail(requestedBy),
         }),
       });
-      const data = (await res.json()) as { ok: boolean; error?: string; emails?: string[] };
-      if (data.ok && data.emails) {
-        setAdminEmails(data.emails.map(normalizeEmail));
+      const data = (await res.json()) as {
+        ok: boolean;
+        error?: string;
+        emails?: string[];
+        admins?: AdminMember[];
+      };
+      if (data.ok) {
+        if (data.emails) setAdminEmails(data.emails.map(normalizeEmail));
+        if (data.admins) setAdminMembers(data.admins);
       }
       return { ok: data.ok, error: data.error };
     },
@@ -128,30 +185,80 @@ export function AdminProvider({ children }: { children: ReactNode }) {
           requestedBy: normalizeEmail(requestedBy),
         }),
       });
-      const data = (await res.json()) as { ok: boolean; error?: string; emails?: string[] };
-      if (data.ok && data.emails) {
-        setAdminEmails(data.emails.map(normalizeEmail));
+      const data = (await res.json()) as {
+        ok: boolean;
+        error?: string;
+        emails?: string[];
+        admins?: AdminMember[];
+      };
+      if (data.ok) {
+        if (data.emails) setAdminEmails(data.emails.map(normalizeEmail));
+        if (data.admins) setAdminMembers(data.admins);
       }
       return { ok: data.ok, error: data.error };
     },
     []
   );
 
-  return (
-    <AdminContext.Provider
-      value={{
-        adminEmails,
-        ready,
-        isAdmin,
-        isOwner,
-        refreshAdmins,
-        addAdmin,
-        removeAdmin,
-      }}
-    >
-      {children}
-    </AdminContext.Provider>
+  const setAdminRole = useCallback(
+    async (email: string, role: AdminRole, requestedBy: string) => {
+      const res = await fetch("/api/admins", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "setRole",
+          email,
+          role,
+          requestedBy: normalizeEmail(requestedBy),
+        }),
+      });
+      const data = (await res.json()) as {
+        ok: boolean;
+        error?: string;
+        emails?: string[];
+        admins?: AdminMember[];
+      };
+      if (data.ok) {
+        if (data.emails) setAdminEmails(data.emails.map(normalizeEmail));
+        if (data.admins) setAdminMembers(data.admins);
+      }
+      return { ok: data.ok, error: data.error };
+    },
+    []
   );
+
+  const value = useMemo(
+    () => ({
+      adminEmails,
+      adminMembers,
+      ready,
+      isAdmin,
+      isOwner,
+      getRole,
+      canManageAdmins: canManageAdminsFor,
+      canChangeRoles: canChangeRolesFor,
+      refreshAdmins,
+      addAdmin,
+      removeAdmin,
+      setAdminRole,
+    }),
+    [
+      adminEmails,
+      adminMembers,
+      ready,
+      isAdmin,
+      isOwner,
+      getRole,
+      canManageAdminsFor,
+      canChangeRolesFor,
+      refreshAdmins,
+      addAdmin,
+      removeAdmin,
+      setAdminRole,
+    ]
+  );
+
+  return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;
 }
 
 export function useAdmin() {
@@ -160,4 +267,4 @@ export function useAdmin() {
   return ctx;
 }
 
-export { OWNER_EMAIL } from "@/lib/admin-utils";
+export { OWNER_EMAIL, ADMIN_ROLE_LABELS };

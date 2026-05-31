@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { Camera, Trash2, Upload } from "lucide-react";
 import { apps } from "@/lib/data/apps";
 import { useProofs } from "@/context/ProofContext";
+import { AdminAppSearchSelect } from "@/components/admin/AdminAppSearchSelect";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -24,6 +25,19 @@ export function AdminProofsSection({ userEmail }: AdminProofsSectionProps) {
 
   const appProofs = getProofsForApp(selectedAppId);
   const selectedApp = apps.find((a) => a.id === selectedAppId);
+
+  const appOptions = useMemo(
+    () =>
+      apps.map((app) => ({
+        id: app.id,
+        name: app.name,
+        subtitle:
+          (proofs[app.id]?.length ?? 0) > 0
+            ? `${proofs[app.id]?.length} preuve${(proofs[app.id]?.length ?? 0) > 1 ? "s" : ""}`
+            : "Aucune preuve",
+      })),
+    [proofs]
+  );
 
   const flashSaved = () => {
     setSaved(true);
@@ -77,24 +91,14 @@ export function AdminProofsSection({ userEmail }: AdminProofsSectionProps) {
       {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
       <div className="mb-6">
-        <label htmlFor="proof-app-select" className="text-xs text-phantom-gray uppercase tracking-wide mb-2 block">
-          Application
-        </label>
-        <select
-          id="proof-app-select"
+        <AdminAppSearchSelect
+          apps={appOptions}
           value={selectedAppId}
-          onChange={(e) => {
-            setSelectedAppId(e.target.value);
+          onChange={(appId) => {
+            setSelectedAppId(appId);
             setError("");
           }}
-          className="w-full rounded-[16px] border border-phantom-dark/10 bg-phantom-bg px-4 py-3 text-phantom-dark focus:outline-none focus:ring-2 focus:ring-phantom-purple"
-        >
-          {apps.map((app) => (
-            <option key={app.id} value={app.id}>
-              {app.name} ({proofs[app.id]?.length ?? 0} preuve{(proofs[app.id]?.length ?? 0) !== 1 ? "s" : ""})
-            </option>
-          ))}
-        </select>
+        />
       </div>
 
       <div className="rounded-[20px] bg-phantom-bg p-5 mb-6 space-y-4">

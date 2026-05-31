@@ -1,6 +1,6 @@
 {
-  "emails": [
-    "shosanun@gmail.com",
-    "baboudj17@gmail.com"
+  "admins": [
+    { "email": "shosanun@gmail.com", "role": "member" },
+    { "email": "baboudj17@gmail.com", "role": "member" }
   ]
 }

@@ -34,6 +34,13 @@ export const OFFICIAL_DOWNLOADS = {
       "https://play.google.com/store/apps/details?id=com.requapp.requ&hl=fr",
     iosAppStore: "https://apps.apple.com/fr/app/attapoll-sondages-remuneres/id1107631390",
   },
+  eureka: {
+    site: "https://eurekasurveys.com/",
+    androidPlay:
+      "https://play.google.com/store/apps/details?id=com.eureka.android&hl=fr",
+    iosAppStore:
+      "https://apps.apple.com/fr/app/eureka-earn-money-for-surveys/id1466346433",
+  },
 } as const;
 
 export function isNativeStoreUrl(url: string): boolean {

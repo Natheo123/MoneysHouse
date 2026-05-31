@@ -333,6 +333,67 @@ export const apps: App[] = [
     featured: true,
   },
   {
+    id: "eureka",
+    slug: "eureka",
+    name: "Eureka Surveys",
+    color: "#50E3A4",
+    logoUrl: localAppLogo("eureka.png"),
+    description:
+      "Eureka Surveys vous rémunère pour répondre à des sondages, participer au sondage quotidien et effectuer des check-ins marque. Gagnez de l'argent sur mobile ou sur eurekasurveys.com et retirez via PayPal, virement ou cartes cadeaux.",
+    shortDescription: "Sondages rémunérés et sondage quotidien",
+    earningsMin: 5,
+    earningsMax: 40,
+    difficulty: "easy",
+    difficultyLabel: "Facile",
+    platforms: ["android", "ios", "web"],
+    categories: ["surveys", "games"],
+    downloadLinks: [
+      { platform: "signup", label: "Site officiel", url: OFFICIAL_DOWNLOADS.eureka.site },
+      { platform: "web", label: "Eureka Surveys", url: OFFICIAL_DOWNLOADS.eureka.site },
+      { platform: "android", label: "Google Play", url: OFFICIAL_DOWNLOADS.eureka.androidPlay },
+      { platform: "ios", label: "App Store", url: OFFICIAL_DOWNLOADS.eureka.iosAppStore },
+    ],
+    referralCodes: [],
+    referralBonusTitle: "Bonus de bienvenue Eureka",
+    referralBonusDescription:
+      "Inscrivez-vous avec notre code parrain Eureka et recevez un bonus sur votre compte dès votre inscription.",
+    referralFaqHint:
+      "Entrez le code parrain lors de l'inscription dans l'app ou sur eurekasurveys.com, section parrainage.",
+    referralInstructions:
+      "Eureka Surveys — lors de l'inscription :\n\n1. Téléchargez Eureka sur le Play Store, l'App Store ou rendez-vous sur eurekasurveys.com.\n2. Créez votre compte avec votre email.\n3. Cherchez « Referral code » ou « Code parrain » à l'inscription ou dans les paramètres.\n4. Entrez le code Money's House avant de valider.\n5. Complétez des sondages et le sondage quotidien pour cumuler vos gains.\n\nLe code parrain peut être saisi à l'inscription ou depuis votre profil.",
+    howItWorks:
+      "Eureka connecte les utilisateurs à des instituts d'études de marché. Vous gagnez en répondant à des sondages, en participant au daily poll gratuit et via les check-ins marque. Les récompenses sont versées en argent réel ou cartes cadeaux.",
+    advantages: [
+      "1 $ offert sur le premier sondage",
+      "Sondage quotidien gratuit",
+      "PayPal, virement et cartes cadeaux",
+      "Application Android, iOS et site web",
+      "Programme de parrainage",
+    ],
+    disadvantages: [
+      "Disponibilité des sondages selon le profil",
+      "Certaines enquêtes peuvent disqualifier en cours de route",
+      "Support principalement en anglais",
+    ],
+    tutorial: [
+      { step: 1, title: "Télécharger Eureka", description: "Installez l'app ou créez un compte sur eurekasurveys.com." },
+      { step: 2, title: "Entrer le code parrain", description: "Saisissez le code Money's House à l'inscription." },
+      { step: 3, title: "Compléter des sondages", description: "Répondez aux enquêtes et au daily poll chaque jour." },
+      { step: 4, title: "Retirer vos gains", description: "Encaissez via PayPal, virement ou carte cadeau." },
+    ],
+    faq: [
+      {
+        question: "Eureka Surveys est-il fiable ?",
+        answer: "Eureka est édité par SocialLoop LLC et propose des retraits PayPal et cartes cadeaux. Comme tout site de sondages, les gains dépendent de votre profil et de la disponibilité des enquêtes.",
+      },
+      {
+        question: "Puis-je utiliser Eureka sur ordinateur ?",
+        answer: "Oui, eurekasurveys.com permet de répondre aux sondages depuis un navigateur, en plus des apps Android et iOS.",
+      },
+    ],
+    featured: true,
+  },
+  {
     id: "google-opinion-rewards",
     slug: "google-opinion-rewards",
     name: "Google Opinion Rewards",
