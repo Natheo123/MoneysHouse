@@ -1,5 +1,5 @@
 import type { App } from "@/types";
-import { buildAppLogoUrl, buildDomainLogoUrl, localAppLogo } from "@/lib/app-logos";
+import { buildAppLogoUrl, localAppLogo } from "@/lib/app-logos";
 import { OFFICIAL_DOWNLOADS } from "@/lib/download-links";
 
 export const apps: App[] = [
@@ -276,7 +276,7 @@ export const apps: App[] = [
     slug: "google-opinion-rewards",
     name: "Google Opinion Rewards",
     color: "#F5F2FF",
-    logoUrl: buildDomainLogoUrl("google.com"),
+    logoUrl: localAppLogo("google-opinion-rewards.png"),
     description:
       "Google Opinion Rewards vous récompense pour répondre à de courts sondages.",
     shortDescription: "Récompenses via sondages Google",
