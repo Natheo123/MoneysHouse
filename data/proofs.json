@@ -36,5 +36,13 @@
       "url": "https://raw.githubusercontent.com/Natheo123/MoneysHouse/main/public/proofs/google-opinion-rewards/46011a79-b3ea-45ed-a72a-e0b18ee3344c.jpg",
       "createdAt": "2026-05-31T16:06:08.624Z"
     }
+  ],
+  "honeygain": [
+    {
+      "id": "a369b9be-ed46-4012-af2a-0b71158037d1",
+      "path": "public/proofs/honeygain/a369b9be-ed46-4012-af2a-0b71158037d1.png",
+      "url": "https://raw.githubusercontent.com/Natheo123/MoneysHouse/main/public/proofs/honeygain/a369b9be-ed46-4012-af2a-0b71158037d1.png",
+      "createdAt": "2026-05-31T16:06:22.005Z"
+    }
   ]
 }
