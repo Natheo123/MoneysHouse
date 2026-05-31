@@ -2,9 +2,9 @@ import type { FAQItem } from "@/types";
 
 export const faqItems: FAQItem[] = [
   {
+    id: "referral",
     question: "Comment utiliser un code de parrainage Money's House ?",
-    answer:
-      "Avant chaque téléchargement, une fenêtre vous rappelle d'utiliser notre code parrainage. Copiez-le, puis suivez les instructions spécifiques à chaque application :\n\n• EarnApp : entrez le code lors de l'inscription sur earnapp.com, ou utilisez le lien earnapp.com/i/VOTRE_CODE.\n\n• Honeygain : saisissez le code dans le champ « Referral code » sur dashboard.honeygain.com/sign-up, ou via r.honeygain.com/VOTRECODE.\n\n• McMoney : entrez le code à l'inscription dans l'application Android.\n\n• Money SMS : saisissez le code sur moneysms.net lors de la création du compte.\n\n• Google Opinion Rewards : pas de parrainage disponible.\n\nConsultez la fiche de chaque application pour le guide détaillé.",
+    answer: "",
   },
   {
     question: "Est-ce légal de gagner de l'argent avec ces applications ?",
@@ -44,6 +44,6 @@ export const faqItems: FAQItem[] = [
   {
     question: "Combien de temps avant le premier paiement ?",
     answer:
-      "Comptez 2 à 4 semaines pour atteindre le seuil minimum de retrait. EarnApp permet un retrait dès 5$.",
+      "Comptez 2 à 4 semaines pour atteindre le seuil minimum de retrait. EarnApp permet un retrait dès 10$.",
   },
 ];

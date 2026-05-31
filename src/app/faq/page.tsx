@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
 import { faqItems } from "@/lib/data/faq";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { FaqAccordion } from "@/components/faq/FaqAccordion";
 
 export const metadata: Metadata = {
   title: "FAQ — Questions fréquentes sur les revenus passifs",
@@ -27,14 +22,7 @@ export default function FAQPage() {
         </div>
 
         <div className="rounded-[32px] bg-phantom-surface border border-phantom-dark/5 p-8">
-          <Accordion type="single" collapsible className="w-full">
-            {faqItems.map((item, i) => (
-              <AccordionItem key={i} value={`faq-${i}`}>
-                <AccordionTrigger>{item.question}</AccordionTrigger>
-                <AccordionContent className="whitespace-pre-line">{item.answer}</AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+          <FaqAccordion items={faqItems} />
         </div>
       </div>
     </div>

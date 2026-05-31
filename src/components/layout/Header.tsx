@@ -7,7 +7,7 @@ import { gsap, registerGsapPlugins } from "@/lib/gsap";
 import { siteConfig } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/context/UserContext";
-import { isAdmin } from "@/lib/admin";
+import { useAdmin } from "@/context/AdminContext";
 import { SearchBar } from "@/components/shared/SearchBar";
 import { MoneyHouseLogo } from "@/components/icons/MoneyHouseLogo";
 
@@ -52,8 +52,9 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { user, notifications } = useUser();
+  const { isAdmin, ready: adminReady } = useAdmin();
   const unread = notifications.filter((n) => !n.read).length;
-  const adminAccess = user ? isAdmin(user.email) : false;
+  const adminAccess = adminReady && user ? isAdmin(user.email) : false;
 
   useLayoutEffect(() => {
     registerGsapPlugins();

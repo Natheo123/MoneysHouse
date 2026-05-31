@@ -24,6 +24,7 @@ export interface App {
   categories: Category[];
   downloadLinks: AppLink[];
   referralCodes?: string[];
+  referralFaqHint?: string;
   referralInstructions: string;
   hasReferral?: boolean;
   howItWorks: string;
@@ -56,6 +57,7 @@ export interface Review {
 }
 
 export interface FAQItem {
+  id?: string;
   question: string;
   answer: string;
 }

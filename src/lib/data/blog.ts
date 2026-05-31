@@ -66,7 +66,7 @@ Nous évaluons chaque app sur : fiabilité des paiements, facilité d'utilisatio
 | Critère | EarnApp | Honeygain |
 |---------|---------|-----------|
 | Revenus max | 50€/mois | 40€/mois |
-| Minimum retrait | 5$ | 20$ |
+| Minimum retrait | 10$ | 20$ |
 | Interface | Simple | Très intuitive |
 | Parrainage | Oui | Oui (généreux) |
 

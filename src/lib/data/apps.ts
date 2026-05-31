@@ -23,6 +23,8 @@ export const apps: App[] = [
       { platform: "linux", label: "Linux / macOS", url: "https://earnapp.com/download/" },
     ],
     referralCodes: [],
+    referralFaqHint:
+      "Entrez le code lors de l'inscription sur earnapp.com, ou utilisez le lien earnapp.com/i/VOTRE_CODE.",
     referralInstructions:
       "EarnApp — lors de l'inscription :\n\n1. Rendez-vous sur earnapp.com et créez un compte.\n2. Si un champ « Referral code » apparaît, collez le code Money's House.\n3. Vous pouvez aussi utiliser un lien parrain : https://earnapp.com/i/VOTRE_CODE\n4. Installez l'application et connectez-vous avec le même compte.\n\nLe code doit être entré avant ou pendant la création du compte.",
     howItWorks:
@@ -43,7 +45,7 @@ export const apps: App[] = [
       { step: 1, title: "Créer un compte", description: "Inscrivez-vous sur earnapp.com avec votre email." },
       { step: 2, title: "Entrer le code parrain", description: "Utilisez le code Money's House lors de l'inscription." },
       { step: 3, title: "Installer l'application", description: "Téléchargez EarnApp pour votre plateforme." },
-      { step: 4, title: "Retirer vos gains", description: "Atteignez 5$ minimum et retirez via PayPal." },
+      { step: 4, title: "Retirer vos gains", description: "Atteignez 10$ minimum et retirez via PayPal." },
     ],
     faq: [
       { question: "Est-ce sécurisé ?", answer: "Oui, EarnApp ne collecte aucune donnée personnelle et utilise uniquement votre bande passante inutilisée." },
@@ -74,6 +76,8 @@ export const apps: App[] = [
       { platform: "linux", label: "Linux / macOS", url: "https://www.honeygain.com/download" },
     ],
     referralCodes: [],
+    referralFaqHint:
+      "Saisissez le code dans le champ « Referral code » sur dashboard.honeygain.com/sign-up, ou via r.honeygain.com/VOTRECODE.",
     referralInstructions:
       "Honeygain — lors de l'inscription :\n\n1. Allez sur dashboard.honeygain.com/sign-up.\n2. Remplissez email et mot de passe.\n3. Entrez le code Money's House dans le champ « Referral code ».\n4. Alternative : lien parrain https://r.honeygain.com/VOTRECODE\n5. Téléchargez l'app et connectez-vous.\n\nLe code doit être saisi au moment de l'inscription.",
     howItWorks:
@@ -118,6 +122,7 @@ export const apps: App[] = [
       { platform: "android", label: "Google Play", url: "https://play.google.com/store/apps/details?id=com.textcash.ap" },
     ],
     referralCodes: [],
+    referralFaqHint: "Entrez le code à l'inscription dans l'application Android.",
     referralInstructions:
       "McMoney — lors de l'inscription :\n\n1. Téléchargez l'app depuis le Play Store ou mcmoney.app.\n2. Créez un compte dans l'application.\n3. Cherchez « Referral code » ou « Code d'invitation » dans les paramètres ou à l'inscription.\n4. Entrez le code Money's House avant de valider.\n\nLe code doit être entré lors de la première configuration du compte.",
     howItWorks:
@@ -152,6 +157,7 @@ export const apps: App[] = [
       { platform: "android", label: "Google Play", url: "https://play.google.com/store/apps/details?id=com.mooncy.sms" },
     ],
     referralCodes: [],
+    referralFaqHint: "Saisissez le code sur moneysms.net lors de la création du compte.",
     referralInstructions:
       "Money SMS — lors de l'inscription :\n\n1. Inscrivez-vous sur moneysms.net.\n2. Lors de la création du compte, un champ « Referral code » est disponible.\n3. Entrez le code Money's House avant de valider.\n4. Téléchargez l'app Android et connectez-vous avec le même compte.\n\nLe code doit être saisi sur le site web avant d'installer l'app.",
     howItWorks:

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Heart, Clock, Bell, LogOut, Shield } from "lucide-react";
 import { useUser } from "@/context/UserContext";
-import { isAdmin } from "@/lib/admin";
+import { useAdmin } from "@/context/AdminContext";
 import { apps } from "@/lib/data/apps";
 import { AppCard } from "@/components/apps/AppCard";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { ScrollReveal } from "@/components/shared/ScrollReveal";
 
 export default function DashboardPage() {
   const { user, favorites, history, notifications, logout, markNotificationRead } = useUser();
+  const { isAdmin, ready: adminReady } = useAdmin();
   const router = useRouter();
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export default function DashboardPage() {
               <p className="text-phantom-gray">Votre tableau de bord Money&apos;s House</p>
             </div>
             <div className="flex items-center gap-2">
-              {isAdmin(user.email) && (
+              {adminReady && isAdmin(user.email) && (
                 <Link href="/admin">
                   <Button variant="outline" size="sm" className="gap-2">
                     <Shield className="h-4 w-4" />

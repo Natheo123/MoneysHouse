@@ -23,8 +23,16 @@ function loadOverrides(): Record<string, string[] | string> {
   }
 }
 
+export const REFERRAL_CODES_UPDATED_EVENT = "referral-codes-updated";
+
+function notifyReferralCodesChanged(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(REFERRAL_CODES_UPDATED_EVENT));
+}
+
 function saveOverrides(overrides: Record<string, string[]>): void {
   localStorage.setItem(REFERRAL_CODES_KEY, JSON.stringify(overrides));
+  notifyReferralCodesChanged();
 }
 
 function getDefaultCodes(appId: string): string[] {

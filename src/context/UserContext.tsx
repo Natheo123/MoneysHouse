@@ -54,7 +54,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   );
 
   const login = (email: string, _password: string) => {
-    const u = { id: "1", name: email.split("@")[0], email };
+    const normalized = email.trim().toLowerCase();
+    const u = { id: "1", name: normalized.split("@")[0], email: normalized };
     setUser(u);
     persist(u, favorites, history, notifications);
   };
@@ -65,7 +66,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   const register = (name: string, email: string, _password: string) => {
-    const u = { id: "1", name, email };
+    const normalized = email.trim().toLowerCase();
+    const u = { id: "1", name, email: normalized };
     setUser(u);
     setNotifications([
       {

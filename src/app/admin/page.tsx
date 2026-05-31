@@ -5,15 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Shield, UserPlus, Trash2, Gift, Crown, Plus } from "lucide-react";
 import { useUser } from "@/context/UserContext";
+import { useAdmin, OWNER_EMAIL } from "@/context/AdminContext";
 import { apps } from "@/lib/data/apps";
-import {
-  getAllAdminEmails,
-  addAdmin,
-  removeAdmin,
-  isAdmin,
-  isOwner,
-  OWNER_EMAIL,
-} from "@/lib/admin";
 import {
   getAllReferralCodes,
   addReferralCode,
@@ -26,47 +19,59 @@ import { Badge } from "@/components/ui/badge";
 
 export default function AdminPage() {
   const { user } = useUser();
+  const {
+    adminEmails,
+    ready: adminReady,
+    isAdmin,
+    isOwner,
+    addAdmin,
+    removeAdmin,
+  } = useAdmin();
   const router = useRouter();
-  const [admins, setAdmins] = useState<string[]>([]);
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [adminError, setAdminError] = useState("");
   const [referralCodes, setReferralCodes] = useState<Record<string, string[]>>({});
   const [newCodes, setNewCodes] = useState<Record<string, string>>({});
   const [referralError, setReferralError] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState(false);
+  const [addingAdmin, setAddingAdmin] = useState(false);
 
   useEffect(() => {
     if (!user) {
       router.push("/connexion");
       return;
     }
-    if (!isAdmin(user.email)) {
+    if (adminReady && !isAdmin(user.email)) {
       router.push("/dashboard");
-      return;
     }
-    setAdmins(getAllAdminEmails());
-    setReferralCodes(getAllReferralCodes());
-  }, [user, router]);
+  }, [user, router, adminReady, isAdmin]);
 
-  if (!user || !isAdmin(user.email)) return null;
+  useEffect(() => {
+    if (user && isAdmin(user.email)) {
+      setReferralCodes(getAllReferralCodes());
+    }
+  }, [user, isAdmin]);
+
+  if (!user || !adminReady || !isAdmin(user.email)) return null;
 
   const userIsOwner = isOwner(user.email);
 
-  const handleAddAdmin = () => {
+  const handleAddAdmin = async () => {
     setAdminError("");
-    const result = addAdmin(newAdminEmail, user.email);
+    setAddingAdmin(true);
+    const result = await addAdmin(newAdminEmail, user.email);
+    setAddingAdmin(false);
     if (result.ok) {
-      setAdmins(getAllAdminEmails());
       setNewAdminEmail("");
     } else {
       setAdminError(result.error ?? "Erreur");
     }
   };
 
-  const handleRemoveAdmin = (email: string) => {
-    const result = removeAdmin(email, user.email);
-    if (result.ok) setAdmins(getAllAdminEmails());
-    else setAdminError(result.error ?? "Erreur");
+  const handleRemoveAdmin = async (email: string) => {
+    const result = await removeAdmin(email, user.email);
+    if (!result.ok) setAdminError(result.error ?? "Erreur");
+    else setAdminError("");
   };
 
   const flashSaved = () => {
@@ -127,8 +132,8 @@ export default function AdminPage() {
                 Gestion des administrateurs
               </h2>
               <p className="text-sm text-phantom-gray mb-6">
-                Propriétaire : {OWNER_EMAIL}. Ajoutez des admins par email — ils auront accès à
-                ce panneau et pourront gérer les codes parrainage.
+                Propriétaire : {OWNER_EMAIL}. Les admins ajoutés ici ont accès sur tous les
+                appareils une fois connectés avec le même email.
               </p>
 
               <div className="flex gap-2 mb-6">
@@ -137,16 +142,22 @@ export default function AdminPage() {
                   placeholder="email@exemple.com"
                   value={newAdminEmail}
                   onChange={(e) => setNewAdminEmail(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleAddAdmin();
+                  }}
                   className="flex-1"
                 />
-                <Button onClick={handleAddAdmin} disabled={!newAdminEmail.trim()}>
-                  Ajouter
+                <Button
+                  onClick={handleAddAdmin}
+                  disabled={!newAdminEmail.trim() || addingAdmin}
+                >
+                  {addingAdmin ? "Ajout..." : "Ajouter"}
                 </Button>
               </div>
               {adminError && <p className="text-red-500 text-sm mb-4">{adminError}</p>}
 
               <ul className="space-y-2">
-                {admins.map((email) => (
+                {adminEmails.map((email) => (
                   <li
                     key={email}
                     className="flex items-center justify-between p-4 rounded-[20px] bg-phantom-bg"
