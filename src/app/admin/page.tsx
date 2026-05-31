@@ -6,17 +6,8 @@ import Link from "next/link";
 import { Shield, UserPlus, Trash2, Gift, Crown, Plus } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { useAdmin, OWNER_EMAIL } from "@/context/AdminContext";
+import { useReferrals, type AppReferrals } from "@/context/ReferralContext";
 import { apps } from "@/lib/data/apps";
-import {
-  getAllReferralData,
-  getReferralBonus,
-  addReferralCode,
-  removeReferralCode,
-  addReferralLink,
-  removeReferralLink,
-  setReferralBonus,
-  type AppReferrals,
-} from "@/lib/referrals";
 import { GsapScrollReveal } from "@/components/shared/GsapScrollReveal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,16 +23,27 @@ export default function AdminPage() {
     addAdmin,
     removeAdmin,
   } = useAdmin();
+  const {
+    ready: referralsReady,
+    referrals,
+    getReferralBonus,
+    addReferralCode,
+    removeReferralCode,
+    addReferralLink,
+    removeReferralLink,
+    setReferralBonus,
+    refreshReferrals,
+  } = useReferrals();
   const router = useRouter();
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [adminError, setAdminError] = useState("");
-  const [referralData, setReferralData] = useState<Record<string, AppReferrals>>({});
   const [bonusFields, setBonusFields] = useState<Record<string, { title: string; description: string }>>({});
   const [newCodes, setNewCodes] = useState<Record<string, string>>({});
   const [newLinks, setNewLinks] = useState<Record<string, string>>({});
   const [referralError, setReferralError] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState(false);
   const [addingAdmin, setAddingAdmin] = useState(false);
+  const [savingReferral, setSavingReferral] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -54,15 +56,14 @@ export default function AdminPage() {
   }, [user, router, adminReady, isAdmin]);
 
   useEffect(() => {
-    if (user && isAdmin(user.email)) {
-      setReferralData(getAllReferralData());
+    if (user && isAdmin(user.email) && referralsReady) {
       const bonuses: Record<string, { title: string; description: string }> = {};
       for (const app of apps.filter((a) => a.hasReferral !== false)) {
         bonuses[app.id] = getReferralBonus(app.id) ?? { title: "", description: "" };
       }
       setBonusFields(bonuses);
     }
-  }, [user, isAdmin]);
+  }, [user, isAdmin, referralsReady, referrals, getReferralBonus]);
 
   if (!user || !adminReady || !isAdmin(user.email)) return null;
 
@@ -91,57 +92,63 @@ export default function AdminPage() {
     setTimeout(() => setSaved(false), 2000);
   };
 
-  const handleAddReferralCode = (appId: string) => {
+  const handleAddReferralCode = async (appId: string) => {
     const code = newCodes[appId]?.trim() ?? "";
     if (!code) return;
 
-    const added = addReferralCode(appId, code);
-    if (!added) {
+    setSavingReferral(`${appId}-code`);
+    const result = await addReferralCode(appId, code, user.email);
+    setSavingReferral(null);
+
+    if (!result.ok) {
       setReferralError((prev) => ({
         ...prev,
-        [`${appId}-code`]: "Code vide ou déjà enregistré.",
+        [`${appId}-code`]: result.error ?? "Code vide ou déjà enregistré.",
       }));
       return;
     }
 
-    setReferralData(getAllReferralData());
     setNewCodes((prev) => ({ ...prev, [appId]: "" }));
     setReferralError((prev) => ({ ...prev, [`${appId}-code`]: "" }));
     flashSaved();
   };
 
-  const handleRemoveReferralCode = (appId: string, code: string) => {
-    removeReferralCode(appId, code);
-    setReferralData(getAllReferralData());
+  const handleRemoveReferralCode = async (appId: string, code: string) => {
+    setSavingReferral(`${appId}-code`);
+    await removeReferralCode(appId, code, user.email);
+    setSavingReferral(null);
     flashSaved();
   };
 
-  const handleAddReferralLink = (appId: string) => {
+  const handleAddReferralLink = async (appId: string) => {
     const link = newLinks[appId]?.trim() ?? "";
     if (!link) return;
 
-    const added = addReferralLink(appId, link);
-    if (!added) {
+    setSavingReferral(`${appId}-link`);
+    const result = await addReferralLink(appId, link, user.email);
+    setSavingReferral(null);
+
+    if (!result.ok) {
       setReferralError((prev) => ({
         ...prev,
-        [`${appId}-link`]: "Lien invalide ou déjà enregistré.",
+        [`${appId}-link`]: result.error ?? "Lien invalide ou déjà enregistré.",
       }));
       return;
     }
 
-    setReferralData(getAllReferralData());
     setNewLinks((prev) => ({ ...prev, [appId]: "" }));
     setReferralError((prev) => ({ ...prev, [`${appId}-link`]: "" }));
     flashSaved();
   };
 
-  const handleRemoveReferralLink = (appId: string, link: string) => {
-    removeReferralLink(appId, link);
-    setReferralData(getAllReferralData());
+  const handleRemoveReferralLink = async (appId: string, link: string) => {
+    setSavingReferral(`${appId}-link`);
+    await removeReferralLink(appId, link, user.email);
+    setSavingReferral(null);
     flashSaved();
   };
 
-  const handleSaveBonus = (appId: string) => {
+  const handleSaveBonus = async (appId: string) => {
     const fields = bonusFields[appId];
     if (!fields?.title.trim()) {
       setReferralError((prev) => ({
@@ -150,10 +157,25 @@ export default function AdminPage() {
       }));
       return;
     }
-    setReferralBonus(appId, fields);
+
+    setSavingReferral(`${appId}-bonus`);
+    const result = await setReferralBonus(appId, fields, user.email);
+    setSavingReferral(null);
+
+    if (!result.ok) {
+      setReferralError((prev) => ({
+        ...prev,
+        [`${appId}-bonus`]: result.error ?? "Erreur lors de l'enregistrement.",
+      }));
+      return;
+    }
+
     setReferralError((prev) => ({ ...prev, [`${appId}-bonus`]: "" }));
     flashSaved();
   };
+
+  const getReferralDataForApp = (appId: string): AppReferrals =>
+    referrals[appId] ?? { codes: [], links: [] };
 
   return (
     <div className="pt-28 pb-20 px-6">
@@ -247,8 +269,14 @@ export default function AdminPage() {
             </h2>
             <p className="text-sm text-phantom-gray mb-6">
               Définissez le bonus marketing affiché (ex. « 50 Gambz offerts »), puis ajoutez codes et
-              liens par application. Visible dans la popup, les listes et la FAQ.
+              liens par application. Visible pour tous les visiteurs (popup, listes, FAQ). Les
+              changements sont enregistrés sur le serveur via{" "}
+              <code className="text-xs bg-phantom-bg px-1.5 py-0.5 rounded">GITHUB_TOKEN</code>.
             </p>
+
+            {!referralsReady && (
+              <p className="text-sm text-phantom-gray mb-4">Chargement des parrainages…</p>
+            )}
 
             {saved && (
               <p className="text-green-600 text-sm mb-4">Parrainage enregistré avec succès.</p>
@@ -258,7 +286,7 @@ export default function AdminPage() {
               {apps
                 .filter((a) => a.hasReferral !== false)
                 .map((app) => {
-                  const data = referralData[app.id] ?? { codes: [], links: [] };
+                  const data = getReferralDataForApp(app.id);
                   return (
                     <div key={app.id} className="rounded-[20px] bg-phantom-bg p-5">
                       <p className="text-phantom-dark font-medium mb-4">{app.name}</p>
@@ -293,8 +321,13 @@ export default function AdminPage() {
                           }
                           placeholder="Ex. : Inscrivez-vous avec notre code et recevez 50 Gambz sur Gamby."
                         />
-                        <Button size="sm" variant="outline" onClick={() => handleSaveBonus(app.id)}>
-                          Enregistrer le bonus
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleSaveBonus(app.id)}
+                          disabled={savingReferral === `${app.id}-bonus`}
+                        >
+                          {savingReferral === `${app.id}-bonus` ? "Enregistrement…" : "Enregistrer le bonus"}
                         </Button>
                         {referralError[`${app.id}-bonus`] && (
                           <p className="text-red-500 text-sm">{referralError[`${app.id}-bonus`]}</p>
@@ -314,6 +347,7 @@ export default function AdminPage() {
                               </code>
                               <button
                                 onClick={() => handleRemoveReferralCode(app.id, code)}
+                                disabled={savingReferral === `${app.id}-code`}
                                 className="p-2 rounded-full hover:bg-red-100 text-phantom-gray hover:text-red-500 transition-colors shrink-0"
                                 title="Supprimer"
                               >
@@ -344,7 +378,7 @@ export default function AdminPage() {
                         <Button
                           size="sm"
                           onClick={() => handleAddReferralCode(app.id)}
-                          disabled={!(newCodes[app.id]?.trim())}
+                          disabled={!(newCodes[app.id]?.trim()) || savingReferral === `${app.id}-code`}
                           className="gap-1 shrink-0"
                         >
                           <Plus className="h-4 w-4" />
@@ -373,6 +407,7 @@ export default function AdminPage() {
                               </a>
                               <button
                                 onClick={() => handleRemoveReferralLink(app.id, link)}
+                                disabled={savingReferral === `${app.id}-link`}
                                 className="p-2 rounded-full hover:bg-red-100 text-phantom-gray hover:text-red-500 transition-colors shrink-0"
                                 title="Supprimer"
                               >
@@ -403,7 +438,7 @@ export default function AdminPage() {
                         <Button
                           size="sm"
                           onClick={() => handleAddReferralLink(app.id)}
-                          disabled={!(newLinks[app.id]?.trim())}
+                          disabled={!(newLinks[app.id]?.trim()) || savingReferral === `${app.id}-link`}
                           className="gap-1 shrink-0"
                         >
                           <Plus className="h-4 w-4" />
@@ -417,6 +452,15 @@ export default function AdminPage() {
                   );
                 })}
             </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-6"
+              onClick={() => refreshReferrals()}
+            >
+              Actualiser depuis le serveur
+            </Button>
           </section>
         </GsapScrollReveal>
 

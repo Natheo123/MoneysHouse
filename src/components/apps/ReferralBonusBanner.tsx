@@ -1,31 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
-import { getReferralBonus, hasReferralProgram, REFERRAL_CODES_UPDATED_EVENT } from "@/lib/referrals";
+import { useReferrals, hasReferralProgram } from "@/context/ReferralContext";
 import type { App } from "@/types";
 
 export function ReferralBonusBanner({ app }: { app: App }) {
-  const [bonus, setBonus] = useState<{ title: string; description: string } | null>(null);
+  const { ready, getReferralBonus } = useReferrals();
 
-  const refresh = useCallback(() => {
-    if (!hasReferralProgram(app.id)) {
-      setBonus(null);
-      return;
-    }
-    setBonus(getReferralBonus(app.id));
-  }, [app.id]);
+  if (!ready || !hasReferralProgram(app.id)) return null;
 
-  useEffect(() => {
-    refresh();
-    window.addEventListener("storage", refresh);
-    window.addEventListener(REFERRAL_CODES_UPDATED_EVENT, refresh);
-    return () => {
-      window.removeEventListener("storage", refresh);
-      window.removeEventListener(REFERRAL_CODES_UPDATED_EVENT, refresh);
-    };
-  }, [refresh]);
-
+  const bonus = getReferralBonus(app.id);
   if (!bonus) return null;
 
   return (

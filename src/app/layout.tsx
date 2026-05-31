@@ -6,6 +6,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { UserProvider } from "@/context/UserContext";
 import { AdminProvider } from "@/context/AdminContext";
+import { ReferralProvider } from "@/context/ReferralContext";
 import { SmoothScrollProvider } from "@/components/animations/SmoothScrollProvider";
 
 const inter = Inter({
@@ -78,11 +79,13 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`}>
         <UserProvider>
           <AdminProvider>
-            <SmoothScrollProvider>
-              <Header />
-              <main className="min-h-screen">{children}</main>
-              <Footer />
-            </SmoothScrollProvider>
+            <ReferralProvider>
+              <SmoothScrollProvider>
+                <Header />
+                <main className="min-h-screen">{children}</main>
+                <Footer />
+              </SmoothScrollProvider>
+            </ReferralProvider>
           </AdminProvider>
         </UserProvider>
       </body>

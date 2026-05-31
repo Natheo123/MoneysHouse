@@ -1,5 +1,5 @@
 import type { App } from "@/types";
-import { buildPlayStoreLogoUrl } from "@/lib/app-logos";
+import { buildAppLogoUrl, buildDomainLogoUrl } from "@/lib/app-logos";
 
 export const apps: App[] = [
   {
@@ -7,7 +7,7 @@ export const apps: App[] = [
     slug: "earnapp",
     name: "EarnApp",
     color: "#AB9FF2",
-    logoUrl: buildPlayStoreLogoUrl("com.earnapp.earn"),
+    logoUrl: buildAppLogoUrl("https://earnapp.com"),
     description:
       "EarnApp permet de monétiser votre bande passante inutilisée. Installez l'application, laissez-la tourner en arrière-plan et gagnez de l'argent passivement chaque mois.",
     shortDescription: "Partage de bande passante pour des revenus passifs",
@@ -63,7 +63,7 @@ export const apps: App[] = [
     slug: "honeygain",
     name: "Honeygain",
     color: "#4878D8",
-    logoUrl: buildPlayStoreLogoUrl("com.honeygain.make.money"),
+    logoUrl: buildAppLogoUrl("https://www.honeygain.com"),
     description:
       "Honeygain est l'une des applications les plus populaires pour monétiser votre bande passante.",
     shortDescription: "Monétisez votre bande passante inutilisée",
@@ -118,7 +118,7 @@ export const apps: App[] = [
     slug: "mcmoney",
     name: "McMoney",
     color: "#E2DFFE",
-    logoUrl: buildPlayStoreLogoUrl("com.textcash.ap"),
+    logoUrl: buildAppLogoUrl("https://mcmoney.app"),
     description:
       "McMoney vous rémunère pour recevoir des SMS sur votre téléphone.",
     shortDescription: "Revenus via réception de SMS",
@@ -157,7 +157,7 @@ export const apps: App[] = [
     slug: "money-sms",
     name: "Money SMS",
     color: "#3C315B",
-    logoUrl: buildPlayStoreLogoUrl("com.mooncy.sms"),
+    logoUrl: buildAppLogoUrl("https://moneysms.net"),
     description:
       "Money SMS rémunère les utilisateurs pour la réception de SMS de vérification.",
     shortDescription: "Gagnez en recevant des SMS",
@@ -193,7 +193,7 @@ export const apps: App[] = [
     slug: "gamby",
     name: "Gamby",
     color: "#22C55E",
-    logoUrl: buildPlayStoreLogoUrl("com.gamby.app"),
+    logoUrl: buildAppLogoUrl("https://www.gamby.app"),
     description:
       "Gamby est l'application de pronostics sportifs 100 % gratuite qui récompense vos bonnes prédictions. Football, tennis, basket, MMA, eSport… gagnez des Gambz convertibles en argent réel, sans parier ni déposer d'argent.",
     shortDescription: "Pronostics sportifs gratuits rémunérés",
@@ -252,7 +252,7 @@ export const apps: App[] = [
     slug: "google-opinion-rewards",
     name: "Google Opinion Rewards",
     color: "#F5F2FF",
-    logoUrl: buildPlayStoreLogoUrl("com.google.opinionrewards"),
+    logoUrl: buildDomainLogoUrl("google.com"),
     description:
       "Google Opinion Rewards vous récompense pour répondre à de courts sondages.",
     shortDescription: "Récompenses via sondages Google",

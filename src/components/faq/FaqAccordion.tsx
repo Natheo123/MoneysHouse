@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import { Copy, Check, ExternalLink } from "lucide-react";
+import Link from "next/link";
 import {
   Accordion,
   AccordionContent,
@@ -12,13 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { apps } from "@/lib/data/apps";
 import { siteConfig } from "@/lib/config";
-import {
-  getAllReferralData,
-  getReferralBonus,
-  hasReferralProgram,
-  REFERRAL_CODES_UPDATED_EVENT,
-  type AppReferrals,
-} from "@/lib/referrals";
+import { useReferrals, hasReferralProgram } from "@/context/ReferralContext";
 import type { FAQItem } from "@/types";
 
 interface FaqAccordionProps {
@@ -26,28 +20,18 @@ interface FaqAccordionProps {
 }
 
 function ReferralFaqAnswer() {
-  const [dataByApp, setDataByApp] = useState<Record<string, AppReferrals>>({});
+  const { ready, referrals, getReferralData, getReferralBonus } = useReferrals();
   const [copiedValue, setCopiedValue] = useState<string | null>(null);
-
-  const refresh = useCallback(() => {
-    setDataByApp(getAllReferralData());
-  }, []);
-
-  useEffect(() => {
-    refresh();
-    window.addEventListener("storage", refresh);
-    window.addEventListener(REFERRAL_CODES_UPDATED_EVENT, refresh);
-    return () => {
-      window.removeEventListener("storage", refresh);
-      window.removeEventListener(REFERRAL_CODES_UPDATED_EVENT, refresh);
-    };
-  }, [refresh]);
 
   const copyValue = async (value: string) => {
     await navigator.clipboard.writeText(value);
     setCopiedValue(value);
     setTimeout(() => setCopiedValue(null), 2000);
   };
+
+  if (!ready) {
+    return <p className="text-sm text-phantom-gray">Chargement des codes parrain…</p>;
+  }
 
   return (
     <div className="space-y-4">
@@ -57,7 +41,7 @@ function ReferralFaqAnswer() {
       </p>
 
       {apps.map((app) => {
-        const data = dataByApp[app.id] ?? { codes: [], links: [] };
+        const data = referrals[app.id] ?? getReferralData(app.id);
         const bonus = getReferralBonus(app.id);
         const withReferral = hasReferralProgram(app.id);
         const hasContent = data.codes.length > 0 || data.links.length > 0;

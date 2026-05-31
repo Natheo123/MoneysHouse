@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { siteConfig } from "@/lib/config";
-import { getReferralData, getReferralBonus, hasReferralProgram } from "@/lib/referrals";
+import { useReferrals, hasReferralProgram } from "@/context/ReferralContext";
 import type { App } from "@/types";
 
 interface ReferralReminderDialogProps {
@@ -29,17 +29,15 @@ export function ReferralReminderDialog({
   open,
   onOpenChange,
 }: ReferralReminderDialogProps) {
+  const { ready, getReferralData, getReferralBonus, refreshReferrals } = useReferrals();
   const [copiedValue, setCopiedValue] = useState<string | null>(null);
-  const [referrals, setReferrals] = useState({ codes: [] as string[], links: [] as string[] });
-  const [bonus, setBonus] = useState<{ title: string; description: string } | null>(null);
 
   useEffect(() => {
-    if (open) {
-      setReferrals(getReferralData(app.id));
-      setBonus(getReferralBonus(app.id));
-    }
-  }, [open, app.id]);
+    if (open) refreshReferrals();
+  }, [open, refreshReferrals]);
 
+  const referrals = getReferralData(app.id);
+  const bonus = getReferralBonus(app.id);
   const hasContent = referrals.codes.length > 0 || referrals.links.length > 0;
   const showReferral = hasReferralProgram(app.id) && (hasContent || bonus);
 
@@ -65,7 +63,9 @@ export function ReferralReminderDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
-        {showReferral && bonus ? (
+        {!ready ? (
+          <p className="text-sm text-phantom-gray py-4">Chargement du parrainage…</p>
+        ) : showReferral && bonus ? (
           <>
             <div
               className="rounded-[24px] p-5 mb-2 -mt-1 border border-white/20"
@@ -171,7 +171,6 @@ export function ReferralReminderDialog({
             <p className="text-sm text-phantom-gray mb-4">
               Utilisez notre parrainage avant de continuer vers {linkLabel}.
             </p>
-            {/* fallback minimal if no bonus configured */}
             {referrals.codes.map((code) => (
               <div key={code} className="flex justify-between items-center p-3 rounded-[16px] bg-phantom-bg">
                 <code className="font-bold">{code}</code>
@@ -213,14 +212,14 @@ export function ReferralReminderDialog({
         </details>
 
         <div className="flex flex-col gap-3">
-          {showReferral && primaryCode && (
+          {ready && showReferral && primaryCode && (
             <Button onClick={copyAndContinue} className="w-full gap-2">
               <Copy className="h-4 w-4" />
               Copier le code &amp; continuer
               <ArrowRight className="h-4 w-4" />
             </Button>
           )}
-          {showReferral && !primaryCode && primaryLink && (
+          {ready && showReferral && !primaryCode && primaryLink && (
             <Button asChild className="w-full gap-2">
               <a href={primaryLink} target="_blank" rel="noopener noreferrer" onClick={() => onOpenChange(false)}>
                 Utiliser le lien parrain
@@ -230,7 +229,7 @@ export function ReferralReminderDialog({
           )}
           <Button
             onClick={continueDownload}
-            variant={showReferral && (primaryCode || primaryLink) ? "outline" : "default"}
+            variant={ready && showReferral && (primaryCode || primaryLink) ? "outline" : "default"}
             className="w-full"
           >
             {showReferral ? `Continuer vers ${linkLabel}` : `Ouvrir ${linkLabel}`}

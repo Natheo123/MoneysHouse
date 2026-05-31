@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { apps } from "@/lib/data/apps";
-import { buildAppLogoUrl, buildPlayStoreLogoUrl, getPlayStorePackageId } from "@/lib/app-logos";
+import { getItunesAppId, resolveAppLogoUrls } from "@/lib/app-logos";
 import { cn } from "@/lib/utils";
 
 interface AppLogoProps {
@@ -12,33 +12,46 @@ interface AppLogoProps {
   className?: string;
 }
 
-function getLogoCandidates(appId: string): string[] {
-  const app = apps.find((a) => a.id === appId);
-  if (!app) return [];
-
-  const candidates: string[] = [];
-  if (app.logoUrl) candidates.push(app.logoUrl);
-
-  const androidUrl = app.downloadLinks.find((l) => l.platform === "android")?.url;
-  if (androidUrl) {
-    const packageId = getPlayStorePackageId(androidUrl);
-    if (packageId) candidates.push(buildPlayStoreLogoUrl(packageId));
-    candidates.push(buildAppLogoUrl(androidUrl));
-  }
-
-  const iosUrl = app.downloadLinks.find((l) => l.platform === "ios")?.url;
-  if (iosUrl) candidates.push(buildAppLogoUrl(iosUrl));
-
-  const signupUrl = app.downloadLinks.find((l) => l.platform === "signup")?.url;
-  if (signupUrl) candidates.push(buildAppLogoUrl(signupUrl));
-
-  return [...new Set(candidates)];
-}
-
 export function AppLogo({ appId, size = 32, className }: AppLogoProps) {
   const app = apps.find((a) => a.id === appId);
-  const candidates = getLogoCandidates(appId);
+  const baseCandidates = useMemo(
+    () => (app ? resolveAppLogoUrls(app) : []),
+    [app]
+  );
+  const [candidates, setCandidates] = useState<string[]>(baseCandidates);
   const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    setCandidates(baseCandidates);
+    setIndex(0);
+  }, [baseCandidates]);
+
+  useEffect(() => {
+    if (!app) return;
+    const iosUrl = app.downloadLinks.find((l) => l.platform === "ios")?.url;
+    const itunesId = iosUrl ? getItunesAppId(iosUrl) : null;
+    if (!itunesId) return;
+
+    let cancelled = false;
+    fetch(`/api/app-icon?appId=${encodeURIComponent(app.id)}`, { cache: "force-cache" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { ok?: boolean; url?: string } | null) => {
+        if (cancelled || !data?.ok || !data.url) return;
+        const artworkUrl = data.url;
+        setCandidates((prev) => {
+          if (prev[0] === artworkUrl) return prev;
+          return [artworkUrl, ...prev.filter((u) => u !== artworkUrl)];
+        });
+        setIndex(0);
+      })
+      .catch(() => {
+        // garde les favicons du site officiel
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [app]);
 
   const src = candidates[index];
 
