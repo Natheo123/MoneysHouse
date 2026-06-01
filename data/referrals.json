@@ -54,5 +54,11 @@
     ],
     "bonusTitle": "Recevez 0,40€ Bonus de parrainage AttaPoll",
     "bonusDescription": "Inscrivez-vous avec notre code parrain AttaPoll et recevez un bonus lors de votre première activité sur l'application."
+  },
+  "eureka": {
+    "codes": [],
+    "links": [],
+    "bonusTitle": "0,80€ dès inscription Bonus de bienvenue Eureka",
+    "bonusDescription": "Inscrivez-vous avec notre code parrain Eureka et recevez un bonus sur votre compte dès votre inscription."
   }
 }
