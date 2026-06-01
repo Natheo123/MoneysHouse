@@ -1,6 +1,7 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
+import { siteConfig } from "@/lib/config";
 import type { TeamMemberPublic } from "@/lib/team-shared";
 import { useTranslation } from "@/context/LanguageContext";
 
@@ -74,18 +75,16 @@ export function TeamMemberCard({ member }: { member: TeamMemberPublic }) {
           </div>
         </div>
 
-        {/* Bouton profil Discord */}
-        {profile?.profileUrl && (
-          <a
-            href={profile.profileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-[#5865F2] hover:bg-[#4752c4] px-4 py-2.5 text-sm font-medium text-white transition-colors"
-          >
-            {t("team.viewDiscord")}
-            <ExternalLink className="h-3.5 w-3.5 opacity-80" />
-          </a>
-        )}
+        {/* Lien serveur Discord */}
+        <a
+          href={siteConfig.links.discord}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-[#5865F2] hover:bg-[#4752c4] px-4 py-2.5 text-sm font-medium text-white transition-colors"
+        >
+          {t("team.viewDiscord")}
+          <ExternalLink className="h-3.5 w-3.5 opacity-80" />
+        </a>
       </div>
     </article>
   );

@@ -1,3 +1,4 @@
+import { siteConfig } from "@/lib/config";
 import type { DiscordProfile } from "@/lib/team-shared";
 
 interface DiscordApiUser {
@@ -44,7 +45,7 @@ export async function fetchDiscordProfile(discordId: string): Promise<DiscordPro
       avatarUrl: avatarUrl(user),
       bannerUrl: bannerUrl(user),
       accentColor: user.accent_color ?? null,
-      profileUrl: `https://discord.com/users/${user.id}`,
+      profileUrl: siteConfig.links.discord,
     };
   } catch {
     return null;
