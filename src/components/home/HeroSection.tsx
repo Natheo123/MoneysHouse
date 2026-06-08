@@ -6,13 +6,14 @@ import { ArrowRight } from "lucide-react";
 import { gsap, registerGsapPlugins } from "@/lib/gsap";
 import { Button } from "@/components/ui/button";
 import { GsapAnimatedCounter } from "@/components/shared/GsapAnimatedCounter";
-import { apps } from "@/lib/data/apps";
+import { useApps } from "@/context/AppsContext";
 import { useLanguage, useTranslation } from "@/context/LanguageContext";
 import { eurToUsd } from "@/lib/i18n";
 
 export function HeroSection() {
   const { t } = useTranslation();
   const { locale } = useLanguage();
+  const { apps } = useApps();
   const sectionRef = useRef<HTMLElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -32,7 +33,7 @@ export function HeroSection() {
       },
       { value: apps.length, suffix: "", label: t("hero.statAvailable") },
     ],
-    [t, locale]
+    [t, locale, apps.length]
   );
 
   useLayoutEffect(() => {

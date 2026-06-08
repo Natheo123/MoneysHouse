@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/config";
-import { apps } from "@/lib/data/apps";
+import { getAllAppsServer } from "@/lib/apps-catalog";
 import { blogPosts } from "@/lib/data/blog";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = siteConfig.url;
 
   const staticPages = [
@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/blog",
     "/faq",
     "/equipe",
+    "/partenaires",
     "/a-propos",
     "/confidentialite",
     "/conditions",
@@ -27,6 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: path === "" ? 1 : 0.8,
   }));
 
+  const apps = await getAllAppsServer();
   const appPages = apps.map((app) => ({
     url: `${baseUrl}/apps/${app.slug}`,
     lastModified: new Date(),

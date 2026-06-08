@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useMemo, useRef, useLayoutEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import { gsap, registerGsapPlugins } from "@/lib/gsap";
-import { getFeaturedApps } from "@/lib/data/apps";
 import { SectionIcon, type SectionIconId } from "@/components/icons/UiIcons";
+import { useApps } from "@/context/AppsContext";
 import { useLanguage, useTranslation } from "@/context/LanguageContext";
 
 type StackConfig = {
@@ -126,6 +126,7 @@ function StackGroup({ stack }: { stack: StackConfig }) {
 export function PhantomStackSection() {
   const { t } = useTranslation();
   const { getLocalizedApp } = useLanguage();
+  const { getFeaturedApps } = useApps();
 
   const stacks = useMemo<StackConfig[]>(() => {
     const featured = getFeaturedApps().slice(0, 3).map(getLocalizedApp);
@@ -181,7 +182,7 @@ export function PhantomStackSection() {
         ],
       },
     ];
-  }, [t, getLocalizedApp]);
+  }, [t, getLocalizedApp, getFeaturedApps]);
 
   return (
     <div className="relative">

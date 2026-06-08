@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { apps } from "@/lib/data/apps";
 import { useReviews } from "@/context/ReviewContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -110,7 +109,7 @@ function MobileCompareCards({
               {app.downloadLinks.slice(0, 2).map((link) => (
                 <ReferralDownloadButton
                   key={link.url}
-                  app={apps.find((a) => a.id === app.id) ?? app}
+                  app={app}
                   link={link}
                   size="sm"
                   variant="outline"
@@ -134,7 +133,7 @@ function MobileCompareCards({
 
 export default function ComparateurPage() {
   const { t } = useTranslation();
-  const { getLocalizedApp, formatEarnings } = useLanguage();
+  const { localizedApps, getLocalizedApp, formatEarnings } = useLanguage();
   const [selected, setSelected] = useState<string[]>([]);
 
   const toggleApp = (id: string) => {
@@ -146,9 +145,8 @@ export default function ComparateurPage() {
   };
 
   const selectedApps = selected
-    .map((id) => apps.find((a) => a.id === id))
-    .filter(Boolean)
-    .map((app) => getLocalizedApp(app!));
+    .map((id) => localizedApps.find((a) => a.id === id))
+    .filter(Boolean) as App[];
 
   const { getAppRatingStats } = useReviews();
   const rows = useComparisonRows(selectedApps, t, formatEarnings, getAppRatingStats);
@@ -167,17 +165,16 @@ export default function ComparateurPage() {
       </GsapScrollReveal>
 
       <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-12">
-        {apps.map((app) => {
-          const displayApp = getLocalizedApp(app);
+        {localizedApps.map((displayApp) => {
           return (
-            <button key={app.id} onClick={() => toggleApp(app.id)} type="button">
+            <button key={displayApp.id} onClick={() => toggleApp(displayApp.id)} type="button">
               <Badge
-                variant={selected.includes(app.id) ? "default" : "outline"}
+                variant={selected.includes(displayApp.id) ? "default" : "outline"}
                 className="cursor-pointer px-3 sm:px-4 py-2 text-xs sm:text-sm flex items-center gap-2 max-w-full"
               >
-                <AppLogo appId={app.id} size={20} />
+                <AppLogo appId={displayApp.id} size={20} />
                 <span className="truncate max-w-[120px] sm:max-w-none">{displayApp.name}</span>
-                {selected.includes(app.id) && <X className="h-3 w-3 shrink-0" />}
+                {selected.includes(displayApp.id) && <X className="h-3 w-3 shrink-0" />}
               </Badge>
             </button>
           );
@@ -222,7 +219,7 @@ export default function ComparateurPage() {
                         {app.downloadLinks.slice(0, 2).map((link) => (
                           <ReferralDownloadButton
                             key={link.url}
-                            app={apps.find((a) => a.id === app.id) ?? app}
+                            app={app}
                             link={link}
                             size="sm"
                             variant="outline"

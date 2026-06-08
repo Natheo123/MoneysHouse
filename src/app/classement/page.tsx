@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { apps, getTopByEarnings, getEasiestApps } from "@/lib/data/apps";
+import { getTopByEarningsFromList, getEasiestAppsFromList } from "@/lib/apps-catalog";
+import { useApps } from "@/context/AppsContext";
 import { useReviews, REVIEWS_UPDATED_EVENT } from "@/context/ReviewContext";
 import { AppCard } from "@/components/apps/AppCard";
 import { GsapScrollReveal } from "@/components/shared/GsapScrollReveal";
@@ -26,6 +27,7 @@ const categoryLabelKeys: Partial<Record<Category, string>> = {
 export default function ClassementPage() {
   const { t } = useTranslation();
   const { localizedApps } = useLanguage();
+  const { apps } = useApps();
   const { getAllRatingStats, refreshReviews } = useReviews();
   const [tab, setTab] = useState<Tab>("earnings");
   const [platformFilter, setPlatformFilter] = useState<Platform | null>(null);
@@ -46,15 +48,15 @@ export default function ClassementPage() {
   }, [getAllRatingStats, refreshReviews]);
 
   const ranked = useMemo(() => {
-    if (tab === "earnings") return getTopByEarnings();
-    if (tab === "easy") return getEasiestApps();
+    if (tab === "earnings") return getTopByEarningsFromList(apps);
+    if (tab === "easy") return getEasiestAppsFromList(apps);
     return [...apps].sort((a, b) => {
       const ra = ratingStats[a.id]?.average ?? 0;
       const rb = ratingStats[b.id]?.average ?? 0;
       if (rb !== ra) return rb - ra;
       return (ratingStats[b.id]?.count ?? 0) - (ratingStats[a.id]?.count ?? 0);
     });
-  }, [tab, ratingStats]);
+  }, [tab, ratingStats, apps]);
 
   const filtered = ranked.filter((app) => {
     if (platformFilter && !app.platforms.includes(platformFilter)) return false;

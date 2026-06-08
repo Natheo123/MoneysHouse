@@ -22,7 +22,7 @@ import {
 } from "@/lib/i18n";
 import type { App } from "@/types";
 import type { FAQItem } from "@/types";
-import { apps } from "@/lib/data/apps";
+import { useApps } from "@/context/AppsContext";
 
 interface LanguageContextValue {
   locale: Locale;
@@ -45,6 +45,7 @@ function readStoredLocale(): Locale {
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
+  const { apps } = useApps();
   const [locale, setLocaleState] = useState<Locale>("fr");
   const [ready, setReady] = useState(false);
 
@@ -70,7 +71,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     [dict]
   );
 
-  const localizedApps = useMemo(() => localizeApps(apps, locale), [locale]);
+  const localizedApps = useMemo(() => localizeApps(apps, locale), [apps, locale]);
   const getLocalizedApp = useCallback((app: App) => localizeApp(app, locale), [locale]);
   const faqItems = useMemo(() => getFaqItems(locale), [locale]);
   const formatEarnings = useCallback(

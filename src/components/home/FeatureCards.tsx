@@ -4,12 +4,13 @@ import Link from "next/link";
 import { useRef, useLayoutEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import { gsap, registerGsapPlugins } from "@/lib/gsap";
-import { getFeaturedApps } from "@/lib/data/apps";
 import { AppCard } from "@/components/apps/AppCard";
+import { useApps } from "@/context/AppsContext";
 import { useTranslation } from "@/context/LanguageContext";
 
 export function FeaturedApps() {
   const { t } = useTranslation();
+  const { getFeaturedApps } = useApps();
   const sectionRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const featured = getFeaturedApps();

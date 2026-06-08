@@ -1,0 +1,101 @@
+import { promises as fs } from "fs";
+import path from "path";
+import {
+  normalizeCustomApp,
+  parseStoredCustomApps,
+  type StoredCustomApp,
+} from "@/lib/custom-apps-shared";
+import {
+  hasGitHubPersistence,
+  persistenceSetupHint,
+  readStoredCustomAppsFromGitHub,
+  writeStoredCustomAppsToGitHub,
+  type StoredCustomApps,
+} from "@/lib/custom-apps-github";
+
+const CUSTOM_APPS_PATH = path.join(process.cwd(), "data", "custom-apps.json");
+
+async function readFileCustomApps(): Promise<StoredCustomApp[]> {
+  try {
+    const content = await fs.readFile(CUSTOM_APPS_PATH, "utf-8");
+    return parseStoredCustomApps(JSON.parse(content));
+  } catch {
+    return [];
+  }
+}
+
+async function writeFileCustomApps(apps: StoredCustomApp[]): Promise<void> {
+  await fs.mkdir(path.dirname(CUSTOM_APPS_PATH), { recursive: true });
+  await fs.writeFile(CUSTOM_APPS_PATH, `${JSON.stringify(apps, null, 2)}\n`, "utf-8");
+}
+
+async function readStored(): Promise<StoredCustomApps> {
+  if (hasGitHubPersistence()) {
+    try {
+      const github = await readStoredCustomAppsFromGitHub();
+      if (github) return github;
+    } catch {
+      // fallback fichier
+    }
+  }
+  return { apps: await readFileCustomApps(), source: "file" };
+}
+
+async function writeStored(stored: StoredCustomApps, apps: StoredCustomApp[]): Promise<void> {
+  if (hasGitHubPersistence()) {
+    await writeStoredCustomAppsToGitHub(apps, stored.sha);
+    return;
+  }
+  await writeFileCustomApps(apps);
+}
+
+async function mutate(
+  fn: (current: StoredCustomApp[]) => { apps: StoredCustomApp[]; error?: string }
+): Promise<{ ok: boolean; error?: string; apps?: StoredCustomApp[] }> {
+  try {
+    const stored = await readStored();
+    const { apps: next, error } = fn(stored.apps);
+    if (error) return { ok: false, error };
+    await writeStored(stored, next);
+    return { ok: true, apps: next };
+  } catch (error) {
+    const hint = persistenceSetupHint();
+    const detail = error instanceof Error ? error.message : "Erreur inconnue.";
+    return { ok: false, error: hint ? `${detail} ${hint}` : detail };
+  }
+}
+
+export async function getCustomAppsServer(): Promise<StoredCustomApp[]> {
+  const stored = await readStored();
+  return stored.apps;
+}
+
+export async function upsertCustomAppServer(
+  raw: unknown
+): Promise<{ ok: boolean; error?: string; apps?: StoredCustomApp[]; app?: StoredCustomApp }> {
+  const app = normalizeCustomApp(raw);
+  if (!app) return { ok: false, error: "Données d'application invalides." };
+
+  const result = await mutate((current) => {
+    const idx = current.findIndex((a) => a.id === app.id);
+    const next = [...current];
+    if (idx >= 0) next[idx] = app;
+    else next.unshift(app);
+    return { apps: next };
+  });
+
+  if (!result.ok) return result;
+  return { ...result, app };
+}
+
+export async function removeCustomAppServer(
+  appId: string
+): Promise<{ ok: boolean; error?: string; apps?: StoredCustomApp[] }> {
+  const id = appId.trim();
+  return mutate((current) => {
+    if (!current.some((a) => a.id === id)) {
+      return { apps: current, error: "Application introuvable." };
+    }
+    return { apps: current.filter((a) => a.id !== id) };
+  });
+}

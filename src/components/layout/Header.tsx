@@ -20,6 +20,7 @@ const navLinkKeys = [
   { href: "/blog", labelKey: "nav.blog" },
   { href: "/faq", labelKey: "nav.faq" },
   { href: "/equipe", labelKey: "nav.team" },
+  { href: "/partenaires", labelKey: "nav.partners" },
 ] as const;
 
 function NavLink({
@@ -74,56 +75,30 @@ export function Header() {
   }, []);
 
   useEffect(() => {
-    const handleScroll = (scrollY: number, direction: number) => {
+    const updateNavbarOnScroll = (scrollY: number) => {
+      const delta = scrollY - lastScrollY.current;
       setScrolled(scrollY > 40);
 
-      if (scrollY <= 12) {
+      if (scrollY <= 16) {
         setVisible(true);
-        return;
-      }
-
-      if (direction > 0 && scrollY > 48) {
+      } else if (delta > 2) {
         setVisible(false);
         setMobileOpen(false);
-      } else if (direction < 0) {
+      } else if (delta < -2) {
         setVisible(true);
       }
-    };
 
-    const onLenisScroll = (payload: unknown) => {
-      if (typeof payload === "object" && payload !== null && "scroll" in payload) {
-        const e = payload as { scroll: number; direction?: number };
-        const direction =
-          e.direction !== undefined && e.direction !== 0
-            ? e.direction
-            : e.scroll > lastScrollY.current
-              ? 1
-              : e.scroll < lastScrollY.current
-                ? -1
-                : 0;
-        handleScroll(e.scroll, direction);
-        lastScrollY.current = e.scroll;
-        return;
-      }
-
-      if (lenis) {
-        const scrollY = lenis.scroll;
-        const direction =
-          lenis.direction !== 0
-            ? lenis.direction
-            : scrollY > lastScrollY.current
-              ? 1
-              : scrollY < lastScrollY.current
-                ? -1
-                : 0;
-        handleScroll(scrollY, direction);
-        lastScrollY.current = scrollY;
-      }
+      lastScrollY.current = scrollY;
     };
 
     if (lenis) {
+      const onLenisScroll = () => {
+        updateNavbarOnScroll(lenis.scroll);
+      };
+
       lenis.on("scroll", onLenisScroll);
-      handleScroll(lenis.scroll, 0);
+      updateNavbarOnScroll(lenis.scroll);
+
       return () => {
         lenis.off("scroll", onLenisScroll);
       };
@@ -134,17 +109,14 @@ export function Header() {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(() => {
-        const scrollY = window.scrollY;
-        const direction =
-          scrollY > lastScrollY.current ? 1 : scrollY < lastScrollY.current ? -1 : 0;
-        handleScroll(scrollY, direction);
-        lastScrollY.current = scrollY;
+        updateNavbarOnScroll(window.scrollY);
         ticking = false;
       });
     };
 
     window.addEventListener("scroll", onWindowScroll, { passive: true });
-    onWindowScroll();
+    updateNavbarOnScroll(window.scrollY);
+
     return () => window.removeEventListener("scroll", onWindowScroll);
   }, [lenis]);
 
@@ -167,7 +139,7 @@ export function Header() {
       <header
         ref={headerRef}
         className={`fixed top-0 left-0 right-0 z-50 transition-transform duration-300 ease-out will-change-transform ${
-          visible ? "translate-y-0" : "-translate-y-full pointer-events-none"
+          visible ? "translate-y-0" : "-translate-y-full"
         } ${
           scrolled || mobileOpen
             ? "bg-phantom-surface/90 backdrop-blur-xl border-b border-phantom-dark/8 shadow-sm py-3"
