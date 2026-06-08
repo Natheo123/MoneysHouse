@@ -1,1 +1,19 @@
-[]
+[
+  {
+    "id": "partner-1780944389275",
+    "slug": "partner-1780944389275",
+    "name": "tesdt",
+    "tagline": "tdsfv",
+    "description": "tefs",
+    "logoUrl": "https://raw.githubusercontent.com/Natheo123/MoneysHouse/main/public/uploads/partners/partner-1780944389275.png",
+    "websiteUrl": "https://moneys-house.vercel.app/admin",
+    "discordUrl": "https://discord.gg/PEx9NHPPM",
+    "offers": [
+      "hfdghh"
+    ],
+    "promoText": "hdfhf",
+    "featured": true,
+    "order": 0,
+    "createdAt": "2026-06-08"
+  }
+]
