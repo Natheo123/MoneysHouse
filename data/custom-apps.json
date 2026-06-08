@@ -123,6 +123,9 @@
     "featured": false,
     "custom": true,
     "sourceUrl": "https://freecash.com/fr",
-    "discordStatus": "pending"
+    "discordStatus": "published",
+    "discordFrChannelId": "1513631049664565308",
+    "discordEnChannelId": "1513631057000403145",
+    "discordPublishedAt": "2026-06-08T19:49:28.959Z"
   }
 ]
