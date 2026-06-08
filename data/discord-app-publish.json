@@ -47,7 +47,10 @@
     "requestedAt": "2026-06-08T20:08:03.401Z"
   },
   "attapoll": {
-    "discordStatus": "pending",
+    "discordStatus": "published",
+    "discordFrChannelId": "1513635976092717096",
+    "discordEnChannelId": "1513635991200465147",
+    "discordPublishedAt": "2026-06-08T20:09:05.471Z",
     "requestedAt": "2026-06-08T20:08:07.227Z"
   },
   "eureka": {
