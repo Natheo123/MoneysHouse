@@ -44,7 +44,7 @@ export function ReferralReminderDialog({
   const referrals = getReferralData(app.id);
   const bonus = getReferralBonus(app.id);
   const hasContent = referrals.codes.length > 0 || referrals.links.length > 0;
-  const showReferral = hasReferralProgram(app.id) && (hasContent || bonus);
+  const showReferral = hasReferralProgram(app.id, app) && (hasContent || bonus);
 
   const bonusTitle =
     locale === "en" && localizedApp.referralBonusTitle
@@ -197,7 +197,7 @@ export function ReferralReminderDialog({
               </div>
             ))}
           </>
-        ) : hasReferralProgram(app.id) ? (
+        ) : hasReferralProgram(app.id, app) ? (
           <>
             <DialogHeader>
               <DialogTitle>{t("referralDialog.soonTitle")}</DialogTitle>

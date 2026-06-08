@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Trash2, Save, Search, MessageCircle } from "lucide-react";
+import { Sparkles, Trash2, Save, Search, MessageCircle, RotateCcw } from "lucide-react";
 import { useApps } from "@/context/AppsContext";
 import { slugifyAppName, type StoredCustomApp } from "@/lib/custom-apps-shared";
+import type { App } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
@@ -13,10 +14,36 @@ interface AdminAppsSectionProps {
   userEmail: string;
 }
 
+function AppRowLogo({ app }: { app: App }) {
+  if (app.logoUrl) {
+    return (
+      <img
+        src={app.logoUrl}
+        alt=""
+        className="w-10 h-10 rounded-xl object-cover border border-phantom-dark/10 bg-white shrink-0"
+      />
+    );
+  }
+
+  return (
+    <div className="w-10 h-10 rounded-xl bg-phantom-lavender/50 flex items-center justify-center text-sm font-bold text-phantom-purple shrink-0">
+      {app.name.charAt(0)}
+    </div>
+  );
+}
+
 export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
   const { t } = useTranslation();
-  const { customApps, researchApp, upsertCustomApp, removeCustomApp, requestDiscordPublish } =
-    useApps();
+  const {
+    apps,
+    hiddenApps,
+    researchApp,
+    upsertCustomApp,
+    deleteApp,
+    restoreApp,
+    requestDiscordPublish,
+    isCustomApp,
+  } = useApps();
   const [sourceUrl, setSourceUrl] = useState("");
   const [nameHint, setNameHint] = useState("");
   const [draft, setDraft] = useState<StoredCustomApp | null>(null);
@@ -25,6 +52,8 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [discordLoadingId, setDiscordLoadingId] = useState<string | null>(null);
+  const [deleteLoadingId, setDeleteLoadingId] = useState<string | null>(null);
+  const [restoreLoadingId, setRestoreLoadingId] = useState<string | null>(null);
 
   const discordStatusLabel = (status?: string) => {
     if (status === "published") return t("admin.appsDiscordPublished");
@@ -40,6 +69,24 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
     const result = await requestDiscordPublish(appId, userEmail);
     setDiscordLoadingId(null);
     if (!result.ok) setError(result.error ?? t("admin.appsDiscordError"));
+  };
+
+  const removeApp = async (app: App) => {
+    if (!window.confirm(t("admin.appsDeleteConfirm", { name: app.name }))) return;
+    setDeleteLoadingId(app.id);
+    setError("");
+    const result = await deleteApp(app.id, userEmail);
+    setDeleteLoadingId(null);
+    if (!result.ok) setError(result.error ?? t("admin.appsDeleteError"));
+    if (draft?.id === app.id) setDraft(null);
+  };
+
+  const restoreHiddenApp = async (appId: string) => {
+    setRestoreLoadingId(appId);
+    setError("");
+    const result = await restoreApp(appId, userEmail);
+    setRestoreLoadingId(null);
+    if (!result.ok) setError(result.error ?? t("admin.appsDeleteError"));
   };
 
   const runResearch = async () => {
@@ -83,6 +130,43 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
     setHints([]);
     setError("");
   };
+
+  const renderAppActions = (app: App, custom?: StoredCustomApp) => (
+    <div className="flex flex-wrap gap-2 shrink-0 justify-end">
+      {custom &&
+      custom.discordStatus !== "published" &&
+      custom.discordStatus !== "pending" ? (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={discordLoadingId === app.id}
+          onClick={() => publishToDiscord(app.id)}
+        >
+          <MessageCircle className="h-4 w-4 mr-1" />
+          {discordLoadingId === app.id
+            ? t("admin.appsDiscordSending")
+            : t("admin.appsDiscordPublish")}
+        </Button>
+      ) : null}
+      {custom ? (
+        <Button type="button" variant="outline" size="sm" onClick={() => loadForEdit(custom)}>
+          {t("admin.appsEdit")}
+        </Button>
+      ) : null}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="text-red-600"
+        disabled={deleteLoadingId === app.id}
+        onClick={() => removeApp(app)}
+      >
+        <Trash2 className="h-4 w-4 mr-1" />
+        {t("admin.appsDelete")}
+      </Button>
+    </div>
+  );
 
   return (
     <section className="rounded-[32px] bg-phantom-surface border border-phantom-dark/5 p-6 md:p-8">
@@ -162,7 +246,10 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
               placeholder="Revenus min"
               value={draft.earningsMin ?? ""}
               onChange={(e) =>
-                setDraft({ ...draft, earningsMin: e.target.value ? Number(e.target.value) : undefined })
+                setDraft({
+                  ...draft,
+                  earningsMin: e.target.value ? Number(e.target.value) : undefined,
+                })
               }
             />
             <Input
@@ -170,7 +257,10 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
               placeholder="Revenus max"
               value={draft.earningsMax ?? ""}
               onChange={(e) =>
-                setDraft({ ...draft, earningsMax: e.target.value ? Number(e.target.value) : undefined })
+                setDraft({
+                  ...draft,
+                  earningsMax: e.target.value ? Number(e.target.value) : undefined,
+                })
               }
             />
           </div>
@@ -189,66 +279,76 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
         </div>
       )}
 
-      {customApps.length > 0 && (
+      {apps.length > 0 && (
         <div className="mt-8">
-          <h3 className="font-medium text-phantom-dark mb-3">{t("admin.appsCustomList")}</h3>
+          <h3 className="font-medium text-phantom-dark mb-3">{t("admin.appsCatalogList")}</h3>
           <div className="space-y-2">
-            {customApps.map((app) => (
+            {apps.map((app) => {
+              const custom = isCustomApp(app.id)
+                ? ({ ...app, custom: true } as StoredCustomApp)
+                : undefined;
+
+              return (
+                <div
+                  key={app.id}
+                  className="flex items-center justify-between gap-3 p-3 rounded-[16px] bg-phantom-bg border border-phantom-dark/5"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <AppRowLogo app={app} />
+                    <div className="min-w-0">
+                      <p className="font-medium text-phantom-dark truncate">
+                        {app.name}
+                        <span className="ml-2 text-xs font-normal text-phantom-gray">
+                          {custom ? t("admin.appsCustom") : t("admin.appsBuiltin")}
+                        </span>
+                      </p>
+                      <p className="text-xs text-phantom-gray">/apps/{app.slug}</p>
+                      {custom && (
+                        <>
+                          <p className="text-xs text-phantom-purple mt-0.5">
+                            Discord : {discordStatusLabel(custom.discordStatus)}
+                          </p>
+                          {custom.discordError && (
+                            <p className="text-xs text-red-500 truncate">{custom.discordError}</p>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  {renderAppActions(app, custom)}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {hiddenApps.length > 0 && (
+        <div className="mt-8">
+          <h3 className="font-medium text-phantom-dark mb-3">{t("admin.appsHiddenList")}</h3>
+          <div className="space-y-2">
+            {hiddenApps.map((app) => (
               <div
                 key={app.id}
-                className="flex items-center justify-between gap-3 p-3 rounded-[16px] bg-phantom-bg border border-phantom-dark/5"
+                className="flex items-center justify-between gap-3 p-3 rounded-[16px] bg-phantom-bg/70 border border-dashed border-phantom-dark/10"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  {app.logoUrl ? (
-                    <img
-                      src={app.logoUrl}
-                      alt=""
-                      className="w-10 h-10 rounded-xl object-cover border border-phantom-dark/10 bg-white shrink-0"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-xl bg-phantom-lavender/50 flex items-center justify-center text-sm font-bold text-phantom-purple shrink-0">
-                      {app.name.charAt(0)}
-                    </div>
-                  )}
+                  <AppRowLogo app={app} />
                   <div className="min-w-0">
                     <p className="font-medium text-phantom-dark truncate">{app.name}</p>
                     <p className="text-xs text-phantom-gray">/apps/{app.slug}</p>
-                    <p className="text-xs text-phantom-purple mt-0.5">
-                      Discord : {discordStatusLabel(app.discordStatus)}
-                    </p>
-                    {app.discordError && (
-                      <p className="text-xs text-red-500 truncate">{app.discordError}</p>
-                    )}
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-2 shrink-0 justify-end">
-                  {app.discordStatus !== "published" && app.discordStatus !== "pending" ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      disabled={discordLoadingId === app.id}
-                      onClick={() => publishToDiscord(app.id)}
-                    >
-                      <MessageCircle className="h-4 w-4 mr-1" />
-                      {discordLoadingId === app.id
-                        ? t("admin.appsDiscordSending")
-                        : t("admin.appsDiscordPublish")}
-                    </Button>
-                  ) : null}
-                  <Button type="button" variant="outline" size="sm" onClick={() => loadForEdit(app)}>
-                    {t("admin.appsEdit")}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="text-red-600"
-                    onClick={() => removeCustomApp(app.id, userEmail)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={restoreLoadingId === app.id}
+                  onClick={() => restoreHiddenApp(app.id)}
+                >
+                  <RotateCcw className="h-4 w-4 mr-1" />
+                  {t("admin.appsRestore")}
+                </Button>
               </div>
             ))}
           </div>

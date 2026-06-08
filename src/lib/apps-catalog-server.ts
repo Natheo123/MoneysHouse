@@ -1,15 +1,16 @@
 import "server-only";
 
-import { apps as staticApps } from "@/lib/data/apps";
+import { mergeCatalogApps } from "@/lib/apps-merge";
 import { getCustomAppsServer } from "@/lib/custom-apps-store";
+import { getHiddenAppIdsServer } from "@/lib/hidden-apps-store";
 import type { App } from "@/types";
 
 export async function getAllAppsServer(): Promise<App[]> {
-  const custom = await getCustomAppsServer();
-  const staticIds = new Set(staticApps.map((a) => a.id));
-  const staticSlugs = new Set(staticApps.map((a) => a.slug));
-  const extra = custom.filter((c) => !staticIds.has(c.id) && !staticSlugs.has(c.slug));
-  return [...staticApps, ...extra];
+  const [custom, hiddenIds] = await Promise.all([
+    getCustomAppsServer(),
+    getHiddenAppIdsServer(),
+  ]);
+  return mergeCatalogApps(custom, hiddenIds);
 }
 
 export async function getAppBySlugServer(slug: string): Promise<App | undefined> {

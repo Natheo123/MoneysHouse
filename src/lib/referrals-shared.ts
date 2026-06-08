@@ -83,46 +83,55 @@ export function normalizeAppReferrals(data: AppReferrals): AppReferrals {
 
 import { apps } from "@/lib/data/apps";
 
-export function hasReferralProgram(appId: string): boolean {
-  const app = apps.find((a) => a.id === appId);
-  return app?.hasReferral !== false;
+import type { App } from "@/types";
+
+export function hasReferralProgram(
+  appId: string,
+  app?: Pick<App, "hasReferral"> | null
+): boolean {
+  if (app !== undefined) return app?.hasReferral !== false;
+  const staticApp = apps.find((a) => a.id === appId);
+  if (staticApp) return staticApp.hasReferral !== false;
+  return true;
 }
 
 export function mergeReferralsWithAppDefaults(
   appId: string,
-  stored: Record<string, AppReferrals>
+  stored: Record<string, AppReferrals>,
+  app?: App | null
 ): AppReferrals {
-  const app = apps.find((a) => a.id === appId);
+  const resolved = app ?? apps.find((a) => a.id === appId) ?? null;
   if (!(appId in stored)) {
     return {
-      codes: app?.referralCodes?.filter(Boolean) ?? [],
-      links: app?.referralLinks?.filter(Boolean) ?? [],
-      bonusTitle: app?.referralBonusTitle,
-      bonusDescription: app?.referralBonusDescription,
+      codes: resolved?.referralCodes?.filter(Boolean) ?? [],
+      links: resolved?.referralLinks?.filter(Boolean) ?? [],
+      bonusTitle: resolved?.referralBonusTitle,
+      bonusDescription: resolved?.referralBonusDescription,
     };
   }
   const entry = stored[appId];
   return {
     codes: entry.codes,
     links: entry.links,
-    bonusTitle: entry.bonusTitle || app?.referralBonusTitle,
-    bonusDescription: entry.bonusDescription || app?.referralBonusDescription,
+    bonusTitle: entry.bonusTitle || resolved?.referralBonusTitle,
+    bonusDescription: entry.bonusDescription || resolved?.referralBonusDescription,
   };
 }
 
 export function getReferralBonusFromData(
   appId: string,
-  data: AppReferrals
+  data: AppReferrals,
+  app?: App | null
 ): ReferralBonus | null {
-  if (!hasReferralProgram(appId)) return null;
-  const app = apps.find((a) => a.id === appId);
-  const title = data.bonusTitle || app?.referralBonusTitle;
+  const resolved = app ?? apps.find((a) => a.id === appId) ?? null;
+  if (!hasReferralProgram(appId, resolved)) return null;
+  const title = data.bonusTitle || resolved?.referralBonusTitle;
   if (!title) return null;
   return {
     title,
     description:
       data.bonusDescription ||
-      app?.referralBonusDescription ||
+      resolved?.referralBonusDescription ||
       "Utilisez notre code ou lien parrain pour débloquer ce bonus à l'inscription.",
   };
 }

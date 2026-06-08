@@ -45,7 +45,7 @@ function ReferralFaqAnswer() {
         const baseApp = apps.find((a) => a.id === localizedApp.id) ?? localizedApp;
         const data = referrals[localizedApp.id] ?? getReferralData(localizedApp.id);
         const bonus = getReferralBonus(localizedApp.id);
-        const withReferral = hasReferralProgram(localizedApp.id);
+        const withReferral = hasReferralProgram(localizedApp.id, localizedApp);
         const hasContent = data.codes.length > 0 || data.links.length > 0;
 
         const bonusTitle =

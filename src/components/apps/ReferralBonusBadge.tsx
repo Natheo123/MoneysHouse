@@ -2,20 +2,21 @@
 
 import { Sparkles } from "lucide-react";
 import { useReferrals, hasReferralProgram } from "@/context/ReferralContext";
-import { apps } from "@/lib/data/apps";
+import { useApps } from "@/context/AppsContext";
 import { useLanguage, useTranslation } from "@/context/LanguageContext";
 
 export function ReferralBonusBadge({ appId }: { appId: string }) {
   const { t } = useTranslation();
   const { getLocalizedApp, locale } = useLanguage();
+  const { apps } = useApps();
   const { ready, getReferralBonus } = useReferrals();
+  const app = apps.find((entry) => entry.id === appId);
 
-  if (!ready || !hasReferralProgram(appId)) return null;
+  if (!ready || !hasReferralProgram(appId, app)) return null;
 
   const bonus = getReferralBonus(appId);
   if (!bonus) return null;
 
-  const app = apps.find((a) => a.id === appId);
   const localizedApp = app ? getLocalizedApp(app) : null;
   const title =
     locale === "en" && localizedApp?.referralBonusTitle

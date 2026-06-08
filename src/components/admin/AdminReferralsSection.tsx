@@ -2,19 +2,23 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Gift, Plus, Trash2 } from "lucide-react";
-import { apps } from "@/lib/data/apps";
+import { useApps } from "@/context/AppsContext";
 import { useReferrals, type AppReferrals } from "@/context/ReferralContext";
 import { AdminAppSearchSelect } from "@/components/admin/AdminAppSearchSelect";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-const referralApps = apps.filter((a) => a.hasReferral !== false);
 
 interface AdminReferralsSectionProps {
   userEmail: string;
 }
 
 export function AdminReferralsSection({ userEmail }: AdminReferralsSectionProps) {
+  const { apps: catalogApps } = useApps();
+  const referralApps = useMemo(
+    () => catalogApps.filter((app) => app.hasReferral !== false),
+    [catalogApps]
+  );
+
   const {
     ready: referralsReady,
     referrals,
@@ -27,7 +31,17 @@ export function AdminReferralsSection({ userEmail }: AdminReferralsSectionProps)
     refreshReferrals,
   } = useReferrals();
 
-  const [selectedAppId, setSelectedAppId] = useState(referralApps[0]?.id ?? "");
+  const [selectedAppId, setSelectedAppId] = useState("");
+
+  useEffect(() => {
+    if (!selectedAppId && referralApps[0]?.id) {
+      setSelectedAppId(referralApps[0].id);
+      return;
+    }
+    if (selectedAppId && !referralApps.some((app) => app.id === selectedAppId)) {
+      setSelectedAppId(referralApps[0]?.id ?? "");
+    }
+  }, [referralApps, selectedAppId]);
   const [bonusFields, setBonusFields] = useState<Record<string, { title: string; description: string }>>({});
   const [newCode, setNewCode] = useState("");
   const [newLink, setNewLink] = useState("");
@@ -42,7 +56,7 @@ export function AdminReferralsSection({ userEmail }: AdminReferralsSectionProps)
       bonuses[app.id] = getReferralBonus(app.id) ?? { title: "", description: "" };
     }
     setBonusFields(bonuses);
-  }, [referralsReady, referrals, getReferralBonus]);
+  }, [referralsReady, referrals, getReferralBonus, referralApps]);
 
   const appOptions = useMemo(
     () =>
@@ -61,7 +75,7 @@ export function AdminReferralsSection({ userEmail }: AdminReferralsSectionProps)
           subtitle: parts.length > 0 ? parts.join(" · ") : "Aucun parrainage configuré",
         };
       }),
-    [referrals]
+    [referrals, referralApps]
   );
 
   const selectedApp = referralApps.find((a) => a.id === selectedAppId);

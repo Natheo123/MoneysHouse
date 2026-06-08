@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { apps as staticApps } from "@/lib/data/apps";
+import { mergeCatalogApps, resolveAppById } from "@/lib/apps-merge";
 import type { StoredCustomApp } from "@/lib/custom-apps-shared";
 import type { App } from "@/types";
 
@@ -19,6 +19,8 @@ interface AppsContextType {
   ready: boolean;
   apps: App[];
   customApps: StoredCustomApp[];
+  hiddenAppIds: string[];
+  hiddenApps: App[];
   refreshApps: () => Promise<void>;
   getAppBySlug: (slug: string) => App | undefined;
   getFeaturedApps: () => App[];
@@ -28,7 +30,8 @@ interface AppsContextType {
     app: StoredCustomApp,
     requestedBy: string
   ) => Promise<{ ok: boolean; error?: string }>;
-  removeCustomApp: (appId: string, requestedBy: string) => Promise<{ ok: boolean; error?: string }>;
+  deleteApp: (appId: string, requestedBy: string) => Promise<{ ok: boolean; error?: string }>;
+  restoreApp: (appId: string, requestedBy: string) => Promise<{ ok: boolean; error?: string }>;
   requestDiscordPublish: (
     appId: string,
     requestedBy: string
@@ -41,27 +44,36 @@ interface AppsContextType {
     | { ok: true; draft: StoredCustomApp; hints: string[] }
     | { ok: false; error?: string }
   >;
+  isCustomApp: (appId: string) => boolean;
 }
 
 const AppsContext = createContext<AppsContextType | undefined>(undefined);
 
-function mergeApps(custom: StoredCustomApp[]): App[] {
-  const staticIds = new Set(staticApps.map((a) => a.id));
-  const staticSlugs = new Set(staticApps.map((a) => a.slug));
-  const extra = custom.filter((c) => !staticIds.has(c.id) && !staticSlugs.has(c.slug));
-  return [...staticApps, ...extra];
+type CatalogPayload = {
+  apps?: StoredCustomApp[];
+  hiddenIds?: string[];
+};
+
+function applyCatalogPayload(
+  data: CatalogPayload,
+  setCustomApps: (apps: StoredCustomApp[]) => void,
+  setHiddenAppIds: (ids: string[]) => void
+) {
+  if (Array.isArray(data.apps)) setCustomApps(data.apps);
+  if (Array.isArray(data.hiddenIds)) setHiddenAppIds(data.hiddenIds);
 }
 
 export function AppsProvider({ children }: { children: ReactNode }) {
   const [customApps, setCustomApps] = useState<StoredCustomApp[]>([]);
+  const [hiddenAppIds, setHiddenAppIds] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
 
   const refreshApps = useCallback(async () => {
     try {
       const res = await fetch("/api/apps?custom=1", { cache: "no-store" });
       if (res.ok) {
-        const data = (await res.json()) as { apps?: StoredCustomApp[] };
-        setCustomApps(Array.isArray(data.apps) ? data.apps : []);
+        const data = (await res.json()) as CatalogPayload;
+        applyCatalogPayload(data, setCustomApps, setHiddenAppIds);
       }
     } finally {
       setReady(true);
@@ -72,7 +84,23 @@ export function AppsProvider({ children }: { children: ReactNode }) {
     refreshApps();
   }, [refreshApps]);
 
-  const apps = useMemo(() => mergeApps(customApps), [customApps]);
+  const apps = useMemo(
+    () => mergeCatalogApps(customApps, hiddenAppIds),
+    [customApps, hiddenAppIds]
+  );
+
+  const hiddenApps = useMemo(
+    () =>
+      hiddenAppIds
+        .map((id) => resolveAppById(id, customApps))
+        .filter((app): app is App => Boolean(app)),
+    [hiddenAppIds, customApps]
+  );
+
+  const isCustomApp = useCallback(
+    (appId: string) => customApps.some((app) => app.id === appId),
+    [customApps]
+  );
 
   const getAppBySlug = useCallback((slug: string) => apps.find((a) => a.slug === slug), [apps]);
 
@@ -89,32 +117,43 @@ export function AppsProvider({ children }: { children: ReactNode }) {
 
   const notify = () => window.dispatchEvent(new Event(APPS_UPDATED_EVENT));
 
-  const upsertCustomApp = useCallback(
-    async (app: StoredCustomApp, requestedBy: string) => {
-      const res = await fetch("/api/apps", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "upsert", app, requestedBy }),
-      });
-      const data = (await res.json()) as { ok: boolean; error?: string; apps?: StoredCustomApp[] };
-      if (data.ok && data.apps) {
-        setCustomApps(data.apps);
-        notify();
-      }
-      return { ok: data.ok, error: data.error };
-    },
-    []
-  );
-
-  const removeCustomApp = useCallback(async (appId: string, requestedBy: string) => {
+  const upsertCustomApp = useCallback(async (app: StoredCustomApp, requestedBy: string) => {
     const res = await fetch("/api/apps", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "remove", appId, requestedBy }),
+      body: JSON.stringify({ action: "upsert", app, requestedBy }),
     });
-    const data = (await res.json()) as { ok: boolean; error?: string; apps?: StoredCustomApp[] };
-    if (data.ok && data.apps) {
-      setCustomApps(data.apps);
+    const data = (await res.json()) as { ok: boolean; error?: string } & CatalogPayload;
+    if (data.ok) {
+      applyCatalogPayload(data, setCustomApps, setHiddenAppIds);
+      notify();
+    }
+    return { ok: data.ok, error: data.error };
+  }, []);
+
+  const deleteApp = useCallback(async (appId: string, requestedBy: string) => {
+    const res = await fetch("/api/apps", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "delete", appId, requestedBy }),
+    });
+    const data = (await res.json()) as { ok: boolean; error?: string } & CatalogPayload;
+    if (data.ok) {
+      applyCatalogPayload(data, setCustomApps, setHiddenAppIds);
+      notify();
+    }
+    return { ok: data.ok, error: data.error };
+  }, []);
+
+  const restoreApp = useCallback(async (appId: string, requestedBy: string) => {
+    const res = await fetch("/api/apps", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "restore", appId, requestedBy }),
+    });
+    const data = (await res.json()) as { ok: boolean; error?: string } & CatalogPayload;
+    if (data.ok) {
+      applyCatalogPayload(data, setCustomApps, setHiddenAppIds);
       notify();
     }
     return { ok: data.ok, error: data.error };
@@ -126,9 +165,9 @@ export function AppsProvider({ children }: { children: ReactNode }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "request-discord", appId, requestedBy }),
     });
-    const data = (await res.json()) as { ok: boolean; error?: string; apps?: StoredCustomApp[] };
-    if (data.ok && data.apps) {
-      setCustomApps(data.apps);
+    const data = (await res.json()) as { ok: boolean; error?: string } & CatalogPayload;
+    if (data.ok) {
+      applyCatalogPayload(data, setCustomApps, setHiddenAppIds);
       notify();
     }
     return { ok: data.ok, error: data.error };
@@ -150,29 +189,37 @@ export function AppsProvider({ children }: { children: ReactNode }) {
       ready,
       apps,
       customApps,
+      hiddenAppIds,
+      hiddenApps,
       refreshApps,
       getAppBySlug,
       getFeaturedApps,
       getTopByEarnings,
       getEasiestApps,
       upsertCustomApp,
-      removeCustomApp,
+      deleteApp,
+      restoreApp,
       requestDiscordPublish,
       researchApp,
+      isCustomApp,
     }),
     [
       ready,
       apps,
       customApps,
+      hiddenAppIds,
+      hiddenApps,
       refreshApps,
       getAppBySlug,
       getFeaturedApps,
       getTopByEarnings,
       getEasiestApps,
       upsertCustomApp,
-      removeCustomApp,
+      deleteApp,
+      restoreApp,
       requestDiscordPublish,
       researchApp,
+      isCustomApp,
     ]
   );
 

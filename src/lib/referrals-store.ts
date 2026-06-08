@@ -1,6 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
-import { apps } from "@/lib/data/apps";
+import { getAllAppsServer } from "@/lib/apps-catalog-server";
 import {
   isValidLink,
   mergeReferralsWithAppDefaults,
@@ -67,10 +67,11 @@ async function writeStoredReferrals(
 
 export async function getAllReferralDataServer(): Promise<Record<string, AppReferrals>> {
   const stored = await readStoredReferrals();
+  const catalog = await getAllAppsServer();
   const result: Record<string, AppReferrals> = {};
-  for (const app of apps) {
+  for (const app of catalog) {
     if (app.hasReferral === false) continue;
-    result[app.id] = mergeReferralsWithAppDefaults(app.id, stored.data);
+    result[app.id] = mergeReferralsWithAppDefaults(app.id, stored.data, app);
   }
   return result;
 }

@@ -9,7 +9,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { apps } from "@/lib/data/apps";
+import { apps as staticApps } from "@/lib/data/apps";
+import { useApps } from "@/context/AppsContext";
 import { normalizeEmail } from "@/lib/admin-utils";
 import {
   REFERRAL_CODES_UPDATED_EVENT,
@@ -105,6 +106,7 @@ async function postReferralAction(
 }
 
 export function ReferralProvider({ children }: { children: ReactNode }) {
+  const { apps: catalogApps } = useApps();
   const [referrals, setReferrals] = useState<Record<string, AppReferrals>>({});
   const [ready, setReady] = useState(false);
   const [migrated, setMigrated] = useState(false);
@@ -185,14 +187,20 @@ export function ReferralProvider({ children }: { children: ReactNode }) {
     })();
   }, [migrated, ready]);
 
+  const findCatalogApp = useCallback(
+    (appId: string) => catalogApps.find((app) => app.id === appId) ?? staticApps.find((app) => app.id === appId),
+    [catalogApps]
+  );
+
   const getReferralData = useCallback(
-    (appId: string) => referrals[appId] ?? mergeReferralsWithAppDefaults(appId, {}),
-    [referrals]
+    (appId: string) =>
+      referrals[appId] ?? mergeReferralsWithAppDefaults(appId, {}, findCatalogApp(appId)),
+    [referrals, findCatalogApp]
   );
 
   const getReferralBonus = useCallback(
-    (appId: string) => getReferralBonusFromData(appId, getReferralData(appId)),
-    [getReferralData]
+    (appId: string) => getReferralBonusFromData(appId, getReferralData(appId), findCatalogApp(appId)),
+    [getReferralData, findCatalogApp]
   );
 
   const hasReferralContent = useCallback(
@@ -311,8 +319,3 @@ export function useReferrals() {
 
 export { hasReferralProgram, REFERRAL_CODES_UPDATED_EVENT };
 export type { AppReferrals, ReferralBonus };
-
-/** Toutes les apps avec parrainage — pratique pour l'admin et la FAQ */
-export function getReferralAppIds(): string[] {
-  return apps.filter((a) => a.hasReferral !== false).map((a) => a.id);
-}
