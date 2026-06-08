@@ -26,7 +26,10 @@
     "requestedAt": "2026-06-08T20:07:54.478Z"
   },
   "mcmoney": {
-    "discordStatus": "pending",
+    "discordStatus": "published",
+    "discordFrChannelId": "1513635874598813708",
+    "discordEnChannelId": "1513635883847520346",
+    "discordPublishedAt": "2026-06-08T20:08:40.498Z",
     "requestedAt": "2026-06-08T20:07:57.621Z"
   },
   "money-sms": {
