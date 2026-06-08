@@ -7,6 +7,8 @@
     "logoUrl": "https://raw.githubusercontent.com/Natheo123/MoneysHouse/main/public/uploads/apps/smsricher.png",
     "description": "Gagnez de l'argent facilement avec SMSRicher ! Téléchargez l'application gratuite et gagnez de l'argent simplement en recevant des SMS.",
     "shortDescription": "gagnez de l'argent simplement en recevant des SMS.",
+    "earningsMin": 1,
+    "earningsMax": 10,
     "difficulty": "easy",
     "difficultyLabel": "Facile",
     "platforms": [
