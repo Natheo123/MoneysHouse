@@ -9,6 +9,12 @@
   "inbox": {
     "naxnatheo@gmail.com": [
       {
+        "id": "b38c4861-43d2-44da-b756-2b45bb74247d",
+        "message": "test",
+        "read": false,
+        "createdAt": "2026-06-08T22:26:09.448Z"
+      },
+      {
         "id": "6f14aefb-d297-4b50-91d1-027858bd1568",
         "message": "test",
         "read": false,
