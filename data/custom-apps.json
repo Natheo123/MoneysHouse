@@ -121,6 +121,7 @@
     "featured": false,
     "custom": true,
     "sourceUrl": "https://freecash.com/fr",
-    "discordStatus": "pending"
+    "discordStatus": "failed",
+    "discordError": "Supplied parameter is not a cached User or Role."
   }
 ]
