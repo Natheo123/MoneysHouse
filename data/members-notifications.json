@@ -11,7 +11,7 @@
       {
         "id": "b38c4861-43d2-44da-b756-2b45bb74247d",
         "message": "test",
-        "read": false,
+        "read": true,
         "createdAt": "2026-06-08T22:26:09.448Z"
       },
       {
