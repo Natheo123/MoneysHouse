@@ -268,6 +268,7 @@ export const fr = {
     appsRestore: "Restaurer",
     appsEdit: "Modifier",
     appsDiscordPublish: "Publier sur Discord",
+    appsDiscordRefresh: "Mettre à jour Discord",
     appsDiscordSending: "Envoi…",
     appsDiscordConfirm:
       "Créer les salons Discord FR et EN avec le guide d'installation ? Le bot doit être en ligne.",

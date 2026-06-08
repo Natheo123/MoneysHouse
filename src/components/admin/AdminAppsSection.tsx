@@ -133,9 +133,7 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
 
   const renderAppActions = (app: App, custom?: StoredCustomApp) => (
     <div className="flex flex-wrap gap-2 shrink-0 justify-end">
-      {custom &&
-      custom.discordStatus !== "published" &&
-      custom.discordStatus !== "pending" ? (
+      {custom && custom.discordStatus !== "pending" ? (
         <Button
           type="button"
           variant="outline"
@@ -146,7 +144,9 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
           <MessageCircle className="h-4 w-4 mr-1" />
           {discordLoadingId === app.id
             ? t("admin.appsDiscordSending")
-            : t("admin.appsDiscordPublish")}
+            : custom.discordStatus === "published"
+              ? t("admin.appsDiscordRefresh")
+              : t("admin.appsDiscordPublish")}
         </Button>
       ) : null}
       {custom ? (

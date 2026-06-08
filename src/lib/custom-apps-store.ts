@@ -127,8 +127,15 @@ export async function requestDiscordPublishServer(
 
     const app = current[idx];
     if (app.discordStatus === "published") {
-      return { apps: current, error: "Cette application est déjà publiée sur Discord." };
+      const next = [...current];
+      next[idx] = {
+        ...app,
+        discordStatus: "pending",
+        discordError: undefined,
+      };
+      return { apps: next };
     }
+
     if (app.discordStatus === "pending") {
       return { apps: current, error: "Publication Discord déjà en attente." };
     }

@@ -2,6 +2,7 @@ import type { App } from "@/types";
 import type { Locale } from "./types";
 import { appsEn } from "./apps-en";
 import { convertCurrencyInText } from "./currency";
+import { translateCustomFrenchText, translateLinkLabel } from "./custom-app-en";
 
 function applyEnCurrencyToApp(app: App): App {
   const c = (text: string) => convertCurrencyInText(text, "en");
@@ -35,6 +36,42 @@ function applyEnCurrencyToApp(app: App): App {
   };
 }
 
+function applyCustomEnglishCopy(app: App): App {
+  return {
+    ...app,
+    description: translateCustomFrenchText(app.description),
+    shortDescription: translateCustomFrenchText(app.shortDescription),
+    howItWorks: app.howItWorks ? translateCustomFrenchText(app.howItWorks) : app.howItWorks,
+    referralInstructions: app.referralInstructions
+      ? translateCustomFrenchText(app.referralInstructions)
+      : app.referralInstructions,
+    advantages: app.advantages?.map(translateCustomFrenchText),
+    disadvantages: app.disadvantages?.map(translateCustomFrenchText),
+    tutorial: app.tutorial?.map((step) => ({
+      ...step,
+      title: translateCustomFrenchText(step.title),
+      description: translateCustomFrenchText(step.description),
+    })),
+    faq: app.faq?.map((item) => ({
+      ...item,
+      question: translateCustomFrenchText(item.question),
+      answer: translateCustomFrenchText(item.answer),
+    })),
+    downloadLinks: app.downloadLinks?.map((link) => ({
+      ...link,
+      label: translateLinkLabel(link.label),
+    })),
+    difficultyLabel:
+      app.difficultyLabel === "Facile"
+        ? "Easy"
+        : app.difficultyLabel === "Moyen"
+          ? "Medium"
+          : app.difficultyLabel === "Difficile"
+            ? "Hard"
+            : app.difficultyLabel,
+  };
+}
+
 export function localizeApp(app: App, locale: Locale): App {
   if (locale === "fr") return app;
 
@@ -60,14 +97,7 @@ export function localizeApp(app: App, locale: Locale): App {
               ] ?? app.earningsLabel)
             : undefined),
       }
-    : {
-        ...app,
-        earningsLabel: app.earningsLabel
-          ? ({ Variables: "Varies", "Récompenses Google Play": "Google Play rewards" }[
-              app.earningsLabel
-            ] ?? app.earningsLabel)
-          : app.earningsLabel,
-      };
+    : applyCustomEnglishCopy(app);
 
   return applyEnCurrencyToApp(merged);
 }
