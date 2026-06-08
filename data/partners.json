@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "id": "partner-1780939771299",
+    "slug": "partner-1780939771299",
+    "name": "tesd",
+    "tagline": "un test",
+    "description": "ceci est un test",
+    "websiteUrl": "https://moneys-house.vercel.app/admin",
+    "discordUrl": "https://discord.gg/PEx9NHPPM",
+    "offers": [
+      "test"
+    ],
+    "featured": false,
+    "order": 0,
+    "createdAt": "2026-06-08"
+  }
+]
