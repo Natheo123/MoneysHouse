@@ -22,5 +22,9 @@
   "mcmoney": {
     "discordStatus": "pending",
     "requestedAt": "2026-06-08T20:07:57.621Z"
+  },
+  "money-sms": {
+    "discordStatus": "pending",
+    "requestedAt": "2026-06-08T20:08:01.248Z"
   }
 }
