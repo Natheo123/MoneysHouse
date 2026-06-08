@@ -19,7 +19,10 @@
     "requestedAt": "2026-06-08T20:07:52.915Z"
   },
   "honeygain": {
-    "discordStatus": "pending",
+    "discordStatus": "published",
+    "discordFrChannelId": "1513635846014767285",
+    "discordEnChannelId": "1513635854415954052",
+    "discordPublishedAt": "2026-06-08T20:08:32.592Z",
     "requestedAt": "2026-06-08T20:07:54.478Z"
   },
   "mcmoney": {
