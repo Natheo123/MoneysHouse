@@ -49,8 +49,8 @@ export function FeaturedApps() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-16 sm:py-24 md:py-32 section-x bg-phantom-surface">
-      <div className="max-w-7xl mx-auto">
+    <section ref={sectionRef} className="py-16 sm:py-24 md:py-32 section-x bg-phantom-surface overflow-x-clip">
+      <div className="max-w-7xl mx-auto w-full min-w-0">
         <div data-featured-title className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-6xl font-normal text-phantom-dark tracking-tight mb-4">
             {t("home.featuredTitle")}
@@ -61,7 +61,7 @@ export function FeaturedApps() {
         </div>
         <div ref={gridRef} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {featured.map((app) => (
-            <div key={app.id} data-app-card>
+            <div key={app.id} data-app-card className="min-w-0">
               <AppCard app={app} />
             </div>
           ))}

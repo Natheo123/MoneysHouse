@@ -185,7 +185,7 @@ export function PhantomStackSection() {
   }, [t, getLocalizedApp, getFeaturedApps]);
 
   return (
-    <div className="relative">
+    <div className="relative overflow-x-clip">
       {stacks.map((stack) => (
         <StackGroup key={stack.id} stack={stack} />
       ))}

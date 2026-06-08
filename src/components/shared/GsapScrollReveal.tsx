@@ -2,6 +2,7 @@
 
 import { useRef, useLayoutEffect, ReactNode } from "react";
 import { gsap, registerGsapPlugins } from "@/lib/gsap";
+import { cn } from "@/lib/utils";
 
 interface GsapScrollRevealProps {
   children: ReactNode;
@@ -48,7 +49,7 @@ export function GsapScrollReveal({
   }, [delay, y, scale]);
 
   return (
-    <div ref={ref} className={className}>
+    <div ref={ref} className={cn("min-w-0 w-full", className)}>
       {children}
     </div>
   );

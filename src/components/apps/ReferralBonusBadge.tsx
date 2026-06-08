@@ -24,9 +24,11 @@ export function ReferralBonusBadge({ appId }: { appId: string }) {
       : bonus.title;
 
   return (
-    <span className="inline-flex items-center gap-1 text-xs font-semibold text-phantom-dark bg-phantom-purple/25 px-2.5 py-1 rounded-full max-w-full truncate">
-      <Sparkles className="h-3 w-3 text-phantom-purple" />
-      {title} {t("referral.withOurCode")}
+    <span className="flex w-full min-w-0 items-center gap-1 text-xs font-semibold text-phantom-dark bg-phantom-purple/25 px-2.5 py-1 rounded-full overflow-hidden">
+      <Sparkles className="h-3 w-3 shrink-0 text-phantom-purple" />
+      <span className="truncate">
+        {title} {t("referral.withOurCode")}
+      </span>
     </span>
   );
 }

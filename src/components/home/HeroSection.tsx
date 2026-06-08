@@ -123,8 +123,8 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative pt-24 sm:pt-32 pb-16 sm:pb-20 section-x">
-      <div className="max-w-7xl mx-auto">
+    <section ref={sectionRef} className="relative pt-24 sm:pt-32 pb-16 sm:pb-20 section-x overflow-x-clip">
+      <div className="max-w-7xl mx-auto w-full min-w-0">
         <div
           ref={heroRef}
           className="relative rounded-[24px] sm:rounded-[40px] bg-phantom-charcoal overflow-hidden min-h-[52vh] sm:min-h-[62vh] md:min-h-[75vh] flex flex-col items-center justify-center text-center px-4 sm:px-8 py-10 sm:py-20 will-change-transform"

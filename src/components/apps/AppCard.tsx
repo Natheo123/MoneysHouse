@@ -57,9 +57,9 @@ export function AppCard({ app, showFavorite = true }: AppCardProps) {
   }, []);
 
   return (
-    <div ref={cardRef}>
-      <Card className="overflow-hidden h-full flex flex-col group">
-        <CardContent className="p-5 sm:p-6 flex flex-col flex-1">
+    <div ref={cardRef} className="min-w-0 w-full h-full">
+      <Card className="overflow-hidden h-full w-full min-w-0 flex flex-col group">
+        <CardContent className="p-5 sm:p-6 flex flex-col flex-1 min-w-0">
           <div className="flex items-start justify-between mb-4">
             <div
               className="w-14 h-14 rounded-[20px] flex items-center justify-center"
@@ -81,11 +81,11 @@ export function AppCard({ app, showFavorite = true }: AppCardProps) {
               </button>
             )}
           </div>
-          <h3 className="text-xl font-semibold text-phantom-dark mb-2">{localizedApp.name}</h3>
-          <div className="mb-2 min-w-0">
+          <h3 className="text-xl font-semibold text-phantom-dark mb-2 break-words">{localizedApp.name}</h3>
+          <div className="mb-2 min-w-0 w-full">
             <ReferralBonusBadge appId={localizedApp.id} />
           </div>
-          <p className="text-phantom-gray text-sm mb-4 flex-1">{localizedApp.shortDescription}</p>
+          <p className="text-phantom-gray text-sm mb-4 flex-1 break-words">{localizedApp.shortDescription}</p>
           <div className="flex flex-wrap gap-2 mb-4">
             <Badge variant="secondary">
               {localizedApp.earningsMin != null || localizedApp.earningsMax != null

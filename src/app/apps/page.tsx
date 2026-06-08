@@ -64,9 +64,9 @@ export default function AppsPage() {
         ))}
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 min-w-0">
         {filtered.map((app) => (
-          <GsapScrollReveal key={app.id}>
+          <GsapScrollReveal key={app.id} className="min-w-0">
             <AppCard app={app} />
           </GsapScrollReveal>
         ))}
