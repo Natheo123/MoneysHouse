@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { siteConfig } from "@/lib/config";
 import { openDownloadUrl } from "@/lib/download-links";
+import { useUser } from "@/context/UserContext";
+import { logSiteEvent } from "@/lib/site-event-log-client";
 import { useReferrals, hasReferralProgram } from "@/context/ReferralContext";
 import { useLanguage, useTranslation } from "@/context/LanguageContext";
 import type { App } from "@/types";
@@ -20,6 +22,7 @@ interface ReferralReminderDialogProps {
   app: App;
   linkLabel: string;
   linkUrl: string;
+  linkPlatform?: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -28,10 +31,12 @@ export function ReferralReminderDialog({
   app,
   linkLabel,
   linkUrl,
+  linkPlatform,
   open,
   onOpenChange,
 }: ReferralReminderDialogProps) {
   const { t } = useTranslation();
+  const { user } = useUser();
   const { getLocalizedApp, locale } = useLanguage();
   const localizedApp = getLocalizedApp(app);
   const { ready, getReferralData, getReferralBonus, refreshReferrals } = useReferrals();
@@ -62,6 +67,17 @@ export function ReferralReminderDialog({
   };
 
   const continueDownload = () => {
+    logSiteEvent({
+      type: "app-link",
+      appId: app.id,
+      appName: app.name,
+      appSlug: app.slug,
+      linkLabel,
+      linkUrl,
+      platform: linkPlatform,
+      userName: user?.name,
+      userEmail: user?.email,
+    });
     openDownloadUrl(linkUrl);
     onOpenChange(false);
   };

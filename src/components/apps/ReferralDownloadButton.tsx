@@ -44,6 +44,7 @@ export function ReferralDownloadButton({
         app={app}
         linkLabel={link.label}
         linkUrl={link.url}
+        linkPlatform={link.platform}
         open={open}
         onOpenChange={setOpen}
       />

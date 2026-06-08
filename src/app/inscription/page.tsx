@@ -4,10 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
+import { useTranslation } from "@/context/LanguageContext";
 import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useTranslation } from "@/context/LanguageContext";
+import { logSiteEvent } from "@/lib/site-event-log-client";
 
 export default function InscriptionPage() {
   const { t } = useTranslation();
@@ -25,6 +26,11 @@ export default function InscriptionPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     register(name, email, password);
+    logSiteEvent({
+      type: "signup",
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+    });
     router.push("/dashboard");
   };
 
