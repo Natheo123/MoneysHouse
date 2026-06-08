@@ -1,4 +1,5 @@
 {
-  "enabled": false,
-  "paypalUrl": ""
+  "enabled": true,
+  "paypalUrl": "https://paypal.me/MoneyHouse315",
+  "updatedAt": "2026-06-08"
 }
