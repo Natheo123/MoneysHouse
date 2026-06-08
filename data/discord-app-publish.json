@@ -12,7 +12,10 @@
     "discordPublishedAt": "2026-06-08T20:00:28.402Z"
   },
   "earnapp": {
-    "discordStatus": "pending",
+    "discordStatus": "published",
+    "discordFrChannelId": "1513635818860712157",
+    "discordEnChannelId": "1513635826414911568",
+    "discordPublishedAt": "2026-06-08T20:08:26.338Z",
     "requestedAt": "2026-06-08T20:07:52.915Z"
   },
   "honeygain": {
