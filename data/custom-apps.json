@@ -58,7 +58,8 @@
     "featured": false,
     "custom": true,
     "sourceUrl": "https://www.smsricher.com/guide?code=bN39Rn&lang=en",
-    "discordStatus": "pending"
+    "discordStatus": "failed",
+    "discordError": "Supplied parameter is not a cached User or Role."
   },
   {
     "id": "freecash",
