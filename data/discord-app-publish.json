@@ -54,7 +54,10 @@
     "requestedAt": "2026-06-08T20:08:07.227Z"
   },
   "eureka": {
-    "discordStatus": "pending",
+    "discordStatus": "published",
+    "discordFrChannelId": "1513636011207561367",
+    "discordEnChannelId": "1513636019692638440",
+    "discordPublishedAt": "2026-06-08T20:09:13.981Z",
     "requestedAt": "2026-06-08T20:08:12.229Z"
   },
   "google-opinion-rewards": {
