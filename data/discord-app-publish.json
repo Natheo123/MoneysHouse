@@ -56,5 +56,9 @@
   "eureka": {
     "discordStatus": "pending",
     "requestedAt": "2026-06-08T20:08:12.229Z"
+  },
+  "google-opinion-rewards": {
+    "discordStatus": "pending",
+    "requestedAt": "2026-06-08T20:09:09.037Z"
   }
 }
