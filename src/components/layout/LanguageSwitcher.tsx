@@ -7,7 +7,13 @@ import { LOCALE_LABELS, type Locale } from "@/lib/i18n";
 
 const options: Locale[] = ["fr", "en"];
 
-export function LanguageSwitcher({ className }: { className?: string }) {
+export function LanguageSwitcher({
+  className,
+  compact = false,
+}: {
+  className?: string;
+  compact?: boolean;
+}) {
   const { locale, setLocale, t } = useLanguage();
 
   return (
@@ -36,7 +42,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
             aria-label={option === "fr" ? t("language.french") : t("language.english")}
           >
             <FlagIcon locale={option} />
-            <span>{LOCALE_LABELS[option]}</span>
+            {!compact && <span>{LOCALE_LABELS[option]}</span>}
           </button>
         );
       })}

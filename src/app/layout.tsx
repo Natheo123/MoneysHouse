@@ -11,8 +11,10 @@ import { ProofProvider } from "@/context/ProofContext";
 import { ReviewProvider } from "@/context/ReviewContext";
 import { AppsProvider } from "@/context/AppsContext";
 import { PartnersProvider } from "@/context/PartnersContext";
+import { TipsProvider } from "@/context/TipsContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { SmoothScrollProvider } from "@/components/animations/SmoothScrollProvider";
+import { TipsSupport } from "@/components/tips/TipsSupport";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -84,6 +86,7 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`}>
         <AppsProvider>
           <PartnersProvider>
+            <TipsProvider>
             <LanguageProvider>
               <UserProvider>
                 <AdminProvider>
@@ -93,14 +96,16 @@ export default function RootLayout({
                         <SmoothScrollProvider>
                           <Header />
                           <main className="min-h-screen">{children}</main>
-                          <Footer />
-                        </SmoothScrollProvider>
-                      </ReviewProvider>
-                    </ProofProvider>
-                  </ReferralProvider>
-                </AdminProvider>
-              </UserProvider>
+                      <Footer />
+                      <TipsSupport />
+                    </SmoothScrollProvider>
+                  </ReviewProvider>
+                </ProofProvider>
+              </ReferralProvider>
+            </AdminProvider>
+          </UserProvider>
             </LanguageProvider>
+            </TipsProvider>
           </PartnersProvider>
         </AppsProvider>
       </body>

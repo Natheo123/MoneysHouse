@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { apps } from "@/lib/data/apps";
+import { getAllAppsServer } from "@/lib/apps-catalog-server";
 import { getItunesAppId } from "@/lib/app-logos";
 
 export const revalidate = 86400;
 
 export async function GET(request: NextRequest) {
   const appId = request.nextUrl.searchParams.get("appId");
+  const apps = await getAllAppsServer();
   const app = apps.find((a) => a.id === appId);
   if (!app) {
     return NextResponse.json({ ok: false, error: "Application introuvable." }, { status: 404 });

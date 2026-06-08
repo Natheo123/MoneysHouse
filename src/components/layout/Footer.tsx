@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MoneyHouseLogo } from "@/components/icons/MoneyHouseLogo";
 import { useTranslation } from "@/context/LanguageContext";
+import { useTips } from "@/context/TipsContext";
 
 export function Footer() {
   const { t } = useTranslation();
+  const { settings: tipsSettings } = useTips();
 
   const footerSections = [
     {
@@ -111,6 +113,16 @@ export function Footer() {
             >
               Discord
             </a>
+            {tipsSettings.enabled && tipsSettings.paypalUrl && (
+              <a
+                href={tipsSettings.paypalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-phantom-purple transition-colors"
+              >
+                {t("tips.cta")}
+              </a>
+            )}
           </div>
         </div>
       </div>

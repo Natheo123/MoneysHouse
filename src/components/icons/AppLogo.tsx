@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { apps } from "@/lib/data/apps";
+import { useApps } from "@/context/AppsContext";
 import { getItunesAppId, resolveAppLogoUrls } from "@/lib/app-logos";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +12,7 @@ interface AppLogoProps {
 }
 
 export function AppLogo({ appId, size = 32, className }: AppLogoProps) {
+  const { apps } = useApps();
   const app = apps.find((a) => a.id === appId);
   const baseCandidates = useMemo(
     () => (app ? resolveAppLogoUrls(app) : []),
@@ -73,14 +73,16 @@ export function AppLogo({ appId, size = 32, className }: AppLogoProps) {
   }
 
   return (
-    <Image
+    // img natif : accepte toute URL de logo saisie manuellement en admin
+    <img
       src={src}
       alt={`Logo ${app.name}`}
       width={size}
       height={size}
       className={cn("rounded-[22%] object-cover bg-white shrink-0", className)}
       onError={() => setIndex((prev) => prev + 1)}
-      unoptimized
+      loading="lazy"
+      decoding="async"
     />
   );
 }

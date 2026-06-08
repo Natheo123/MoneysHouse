@@ -40,7 +40,8 @@ export function normalizeCustomApp(raw: unknown): StoredCustomApp | null {
     slug,
     name,
     color: typeof o.color === "string" ? o.color : "#AB9FF2",
-    logoUrl: typeof o.logoUrl === "string" ? o.logoUrl : undefined,
+    logoUrl:
+      typeof o.logoUrl === "string" && o.logoUrl.trim() ? o.logoUrl.trim() : undefined,
     description: typeof o.description === "string" ? o.description : name,
     shortDescription:
       typeof o.shortDescription === "string" ? o.shortDescription : name,

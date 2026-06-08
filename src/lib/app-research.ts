@@ -156,7 +156,11 @@ export async function researchAppFromUrl(
     ];
 
     hints.push("Titre et description extraits des balises meta du site.");
-    if (image) hints.push("Logo/image détectée (Open Graph).");
+    if (image) {
+      hints.push("Logo/image détectée (Open Graph) — vérifiez l'aperçu ou remplacez l'URL si besoin.");
+    } else {
+      hints.push("Logo non détecté automatiquement — ajoutez une URL d'image manuellement avant publication.");
+    }
     if (draft.platforms.length) hints.push(`Plateformes détectées : ${draft.platforms.join(", ")}`);
     hints.push("Vérifiez et corrigez les champs avant de publier.");
 

@@ -122,6 +122,31 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
             value={draft.shortDescription}
             onChange={(e) => setDraft({ ...draft, shortDescription: e.target.value })}
           />
+          <div>
+            <p className="text-xs text-phantom-gray mb-2">{t("admin.appsLogoHint")}</p>
+            <div className="flex gap-3 items-center">
+              <Input
+                placeholder={t("admin.appsLogoPlaceholder")}
+                value={draft.logoUrl ?? ""}
+                onChange={(e) => setDraft({ ...draft, logoUrl: e.target.value.trim() || undefined })}
+                className="flex-1"
+              />
+              {draft.logoUrl ? (
+                <img
+                  src={draft.logoUrl}
+                  alt=""
+                  className="w-14 h-14 rounded-2xl object-cover border border-phantom-dark/10 bg-white shrink-0"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
+                />
+              ) : (
+                <div className="w-14 h-14 rounded-2xl bg-phantom-lavender/50 flex items-center justify-center text-lg font-bold text-phantom-purple shrink-0">
+                  {draft.name.charAt(0) || "?"}
+                </div>
+              )}
+            </div>
+          </div>
           <div className="grid gap-3 sm:grid-cols-3">
             <Input
               placeholder="Couleur (#AB9FF2)"
@@ -169,9 +194,22 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
                 key={app.id}
                 className="flex items-center justify-between gap-3 p-3 rounded-[16px] bg-phantom-bg border border-phantom-dark/5"
               >
-                <div className="min-w-0">
-                  <p className="font-medium text-phantom-dark truncate">{app.name}</p>
-                  <p className="text-xs text-phantom-gray">/apps/{app.slug}</p>
+                <div className="flex items-center gap-3 min-w-0">
+                  {app.logoUrl ? (
+                    <img
+                      src={app.logoUrl}
+                      alt=""
+                      className="w-10 h-10 rounded-xl object-cover border border-phantom-dark/10 bg-white shrink-0"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-xl bg-phantom-lavender/50 flex items-center justify-center text-sm font-bold text-phantom-purple shrink-0">
+                      {app.name.charAt(0)}
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="font-medium text-phantom-dark truncate">{app.name}</p>
+                    <p className="text-xs text-phantom-gray">/apps/{app.slug}</p>
+                  </div>
                 </div>
                 <div className="flex gap-2 shrink-0">
                   <Button type="button" variant="outline" size="sm" onClick={() => loadForEdit(app)}>
