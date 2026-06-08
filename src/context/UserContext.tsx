@@ -27,16 +27,37 @@ interface UserContextType {
   markNotificationRead: (id: string) => void;
   isFavorite: (appId: string) => boolean;
   refreshNotifications: () => Promise<void>;
+  updateName: (name: string) => Promise<{ ok: boolean; error?: string }>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-async function registerMemberOnServer(email: string, name: string): Promise<void> {
-  await fetch("/api/members/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, name }),
-  }).catch(() => undefined);
+async function registerMemberOnServer(email: string, name: string): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const res = await fetch("/api/members/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, name }),
+    });
+    const data = (await res.json()) as { ok?: boolean; error?: string };
+    return { ok: data.ok === true, error: data.error };
+  } catch {
+    return { ok: false, error: "Erreur réseau." };
+  }
+}
+
+async function fetchMemberProfileFromServer(email: string): Promise<string | null> {
+  try {
+    const res = await fetch(`/api/members/profile?email=${encodeURIComponent(email)}`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { profile?: { name?: string } | null };
+    const name = data.profile?.name?.trim();
+    return name || null;
+  } catch {
+    return null;
+  }
 }
 
 async function fetchNotificationsFromServer(email: string): Promise<Notification[]> {
@@ -75,8 +96,21 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setUser(data.user ?? null);
       setFavorites(data.favorites || []);
       setHistory(data.history || []);
+
+      const storedUser = data.user;
+      if (storedUser?.email) {
+        void fetchMemberProfileFromServer(storedUser.email).then((serverName) => {
+          if (!serverName || serverName === storedUser.name) return;
+          setUser((current) => {
+            if (!current || current.email !== storedUser.email) return current;
+            const updated = { ...current, name: serverName };
+            persist(updated, data.favorites || [], data.history || []);
+            return updated;
+          });
+        });
+      }
     }
-  }, []);
+  }, [persist]);
 
   useEffect(() => {
     if (!user?.email) {
@@ -106,6 +140,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const u = { id: normalized, name: normalized.split("@")[0], email: normalized };
     setUser(u);
     persist(u, favorites, history);
+
+    void fetchMemberProfileFromServer(normalized).then((serverName) => {
+      if (!serverName) return;
+      setUser((current) => {
+        if (!current || current.email !== normalized) return current;
+        const updated = { ...current, name: serverName };
+        persist(updated, favorites, history);
+        return updated;
+      });
+    });
   };
 
   const logout = () => {
@@ -153,6 +197,25 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   const isFavorite = (appId: string) => favorites.includes(appId);
 
+  const updateName = useCallback(
+    async (name: string): Promise<{ ok: boolean; error?: string }> => {
+      const trimmed = name.trim();
+      if (!user?.email) return { ok: false, error: "Non connecté." };
+      if (!trimmed) return { ok: false, error: "Le prénom est obligatoire." };
+
+      const updated = { ...user, name: trimmed };
+      setUser(updated);
+      persist(updated, favorites, history);
+
+      const result = await registerMemberOnServer(user.email, trimmed);
+      if (!result.ok) {
+        return { ok: false, error: result.error ?? "Impossible de mettre à jour le profil." };
+      }
+      return { ok: true };
+    },
+    [user, favorites, history, persist]
+  );
+
   return (
     <UserContext.Provider
       value={{
@@ -168,6 +231,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         markNotificationRead,
         isFavorite,
         refreshNotifications,
+        updateName,
       }}
     >
       {children}

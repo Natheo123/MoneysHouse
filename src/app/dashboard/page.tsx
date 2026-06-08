@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Heart, Clock, Bell, LogOut, Shield } from "lucide-react";
+import { Heart, Clock, Bell, LogOut, Shield, User, Save } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { useAdmin } from "@/context/AdminContext";
 import { apps } from "@/lib/data/apps";
 import { AppCard } from "@/components/apps/AppCard";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ScrollReveal } from "@/components/shared/ScrollReveal";
 import { PageShell } from "@/components/layout/PageShell";
 import { useLanguage, useTranslation } from "@/context/LanguageContext";
@@ -16,15 +17,37 @@ import { useLanguage, useTranslation } from "@/context/LanguageContext";
 export default function DashboardPage() {
   const { t } = useTranslation();
   const { localizedApps } = useLanguage();
-  const { user, favorites, history, notifications, logout, markNotificationRead } = useUser();
+  const { user, favorites, history, notifications, logout, markNotificationRead, updateName } =
+    useUser();
   const { isAdmin, ready: adminReady } = useAdmin();
   const router = useRouter();
+  const [nameDraft, setNameDraft] = useState("");
+  const [profileError, setProfileError] = useState("");
+  const [profileSuccess, setProfileSuccess] = useState("");
+  const [savingProfile, setSavingProfile] = useState(false);
 
   useEffect(() => {
     if (!user) router.push("/connexion");
   }, [user, router]);
 
+  useEffect(() => {
+    if (user) setNameDraft(user.name);
+  }, [user]);
+
   if (!user) return null;
+
+  const handleSaveProfile = async () => {
+    setProfileError("");
+    setProfileSuccess("");
+    setSavingProfile(true);
+    const result = await updateName(nameDraft);
+    setSavingProfile(false);
+    if (!result.ok) {
+      setProfileError(result.error ?? t("dashboard.profileSaveError"));
+      return;
+    }
+    setProfileSuccess(t("dashboard.profileSaved"));
+  };
 
   const favoriteApps = localizedApps.filter((a) => favorites.includes(a.id));
   const historyApps = history
@@ -56,6 +79,47 @@ export default function DashboardPage() {
             </Button>
             </div>
           </div>
+        </ScrollReveal>
+
+        <ScrollReveal>
+          <section className="mb-12 p-5 sm:p-8 rounded-[24px] sm:rounded-[32px] bg-phantom-surface border border-phantom-dark/5">
+            <h2 className="text-xl font-semibold text-phantom-dark mb-2 flex items-center gap-2">
+              <User className="h-5 w-5" />
+              {t("dashboard.profileTitle")}
+            </h2>
+            <p className="text-sm text-phantom-gray mb-6">{t("dashboard.profileHint")}</p>
+            <div className="grid sm:grid-cols-2 gap-4 max-w-2xl">
+              <div>
+                <label className="text-sm font-medium text-phantom-dark mb-2 block">
+                  {t("dashboard.profileName")}
+                </label>
+                <Input
+                  value={nameDraft}
+                  onChange={(e) => setNameDraft(e.target.value)}
+                  placeholder={t("auth.firstNamePlaceholder")}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-phantom-dark mb-2 block">
+                  {t("dashboard.profileEmail")}
+                </label>
+                <Input value={user.email} readOnly disabled className="opacity-70" />
+              </div>
+            </div>
+            <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
+              <Button
+                type="button"
+                onClick={() => void handleSaveProfile()}
+                disabled={savingProfile || !nameDraft.trim() || nameDraft.trim() === user.name}
+                className="gap-2"
+              >
+                <Save className="h-4 w-4" />
+                {savingProfile ? t("dashboard.profileSaving") : t("dashboard.profileSave")}
+              </Button>
+              {profileSuccess && <p className="text-sm text-emerald-600">{profileSuccess}</p>}
+              {profileError && <p className="text-sm text-red-500">{profileError}</p>}
+            </div>
+          </section>
         </ScrollReveal>
 
         {notifications.filter((n) => !n.read).length > 0 && (

@@ -104,6 +104,12 @@ export async function getSiteMembersServer(): Promise<SiteMember[]> {
   return stored.data.members;
 }
 
+export async function getMemberProfileServer(email: string): Promise<SiteMember | null> {
+  const normalized = normalizeEmail(email);
+  const stored = await readStored();
+  return stored.data.members.find((m) => m.email === normalized) ?? null;
+}
+
 export async function getNotificationsForUserServer(email: string): Promise<SiteNotification[]> {
   const normalized = normalizeEmail(email);
   const stored = await readStored();
