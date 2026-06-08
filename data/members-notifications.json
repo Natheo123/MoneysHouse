@@ -9,6 +9,12 @@
   "inbox": {
     "naxnatheo@gmail.com": [
       {
+        "id": "6f14aefb-d297-4b50-91d1-027858bd1568",
+        "message": "test",
+        "read": false,
+        "createdAt": "2026-06-08T22:25:50.616Z"
+      },
+      {
         "id": "3b2a9a70-1fd9-40f5-b77e-3499cb3d8421",
         "message": "Bienvenue sur Money's House ! Découvrez nos applications.",
         "read": false,
