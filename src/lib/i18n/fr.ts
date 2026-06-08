@@ -269,6 +269,12 @@ export const fr = {
     appsEdit: "Modifier",
     appsDiscordPublish: "Publier sur Discord",
     appsDiscordRefresh: "Mettre à jour Discord",
+    appsDiscordResend: "Renvoyer",
+    appsDiscordPublishAll: "Envoyer toutes sur Discord",
+    appsDiscordPublishAllConfirm:
+      "Envoyer les {count} applications visibles sur Discord ? Les salons existants seront mis à jour.",
+    appsDiscordRefreshConfirm:
+      "Renvoyer cette application sur Discord ? Les salons existants seront mis à jour.",
     appsDiscordSending: "Envoi…",
     appsDiscordConfirm:
       "Créer les salons Discord FR et EN avec le guide d'installation ? Le bot doit être en ligne.",

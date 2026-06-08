@@ -268,6 +268,12 @@ export const en: Dictionary = {
     appsEdit: "Edit",
     appsDiscordPublish: "Publish on Discord",
     appsDiscordRefresh: "Refresh on Discord",
+    appsDiscordResend: "Resend",
+    appsDiscordPublishAll: "Send all to Discord",
+    appsDiscordPublishAllConfirm:
+      "Send all {count} visible apps to Discord? Existing channels will be updated.",
+    appsDiscordRefreshConfirm:
+      "Resend this app to Discord? Existing channels will be updated.",
     appsDiscordSending: "Sending…",
     appsDiscordConfirm:
       "Create FR and EN Discord channels with the install guide? The bot must be online.",

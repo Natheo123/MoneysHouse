@@ -42,6 +42,8 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
     deleteApp,
     restoreApp,
     requestDiscordPublish,
+    requestAllDiscordPublish,
+    getDiscordPublish,
     isCustomApp,
   } = useApps();
   const [sourceUrl, setSourceUrl] = useState("");
@@ -52,6 +54,7 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [discordLoadingId, setDiscordLoadingId] = useState<string | null>(null);
+  const [discordAllLoading, setDiscordAllLoading] = useState(false);
   const [deleteLoadingId, setDeleteLoadingId] = useState<string | null>(null);
   const [restoreLoadingId, setRestoreLoadingId] = useState<string | null>(null);
 
@@ -62,12 +65,32 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
     return t("admin.appsDiscordNone");
   };
 
+  const discordButtonLabel = (status?: string) => {
+    if (status === "pending") return t("admin.appsDiscordResend");
+    if (status === "published") return t("admin.appsDiscordRefresh");
+    return t("admin.appsDiscordPublish");
+  };
+
   const publishToDiscord = async (appId: string) => {
-    if (!window.confirm(t("admin.appsDiscordConfirm"))) return;
+    const record = getDiscordPublish(appId);
+    const confirmKey =
+      record?.discordStatus === "published" || record?.discordStatus === "pending"
+        ? "admin.appsDiscordRefreshConfirm"
+        : "admin.appsDiscordConfirm";
+    if (!window.confirm(t(confirmKey))) return;
     setDiscordLoadingId(appId);
     setError("");
     const result = await requestDiscordPublish(appId, userEmail);
     setDiscordLoadingId(null);
+    if (!result.ok) setError(result.error ?? t("admin.appsDiscordError"));
+  };
+
+  const publishAllToDiscord = async () => {
+    if (!window.confirm(t("admin.appsDiscordPublishAllConfirm", { count: apps.length }))) return;
+    setDiscordAllLoading(true);
+    setError("");
+    const result = await requestAllDiscordPublish(userEmail);
+    setDiscordAllLoading(false);
     if (!result.ok) setError(result.error ?? t("admin.appsDiscordError"));
   };
 
@@ -131,24 +154,23 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
     setError("");
   };
 
-  const renderAppActions = (app: App, custom?: StoredCustomApp) => (
+  const renderAppActions = (app: App, custom?: StoredCustomApp) => {
+    const discord = getDiscordPublish(app.id);
+
+    return (
     <div className="flex flex-wrap gap-2 shrink-0 justify-end">
-      {custom && custom.discordStatus !== "pending" ? (
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          disabled={discordLoadingId === app.id}
-          onClick={() => publishToDiscord(app.id)}
-        >
-          <MessageCircle className="h-4 w-4 mr-1" />
-          {discordLoadingId === app.id
-            ? t("admin.appsDiscordSending")
-            : custom.discordStatus === "published"
-              ? t("admin.appsDiscordRefresh")
-              : t("admin.appsDiscordPublish")}
-        </Button>
-      ) : null}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        disabled={discordLoadingId === app.id || discordAllLoading}
+        onClick={() => publishToDiscord(app.id)}
+      >
+        <MessageCircle className="h-4 w-4 mr-1" />
+        {discordLoadingId === app.id
+          ? t("admin.appsDiscordSending")
+          : discordButtonLabel(discord?.discordStatus)}
+      </Button>
       {custom ? (
         <Button type="button" variant="outline" size="sm" onClick={() => loadForEdit(custom)}>
           {t("admin.appsEdit")}
@@ -166,7 +188,8 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
         {t("admin.appsDelete")}
       </Button>
     </div>
-  );
+    );
+  };
 
   return (
     <section className="rounded-[32px] bg-phantom-surface border border-phantom-dark/5 p-6 md:p-8">
@@ -281,12 +304,27 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
 
       {apps.length > 0 && (
         <div className="mt-8">
-          <h3 className="font-medium text-phantom-dark mb-3">{t("admin.appsCatalogList")}</h3>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <h3 className="font-medium text-phantom-dark">{t("admin.appsCatalogList")}</h3>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={discordAllLoading || discordLoadingId !== null}
+              onClick={publishAllToDiscord}
+            >
+              <MessageCircle className="h-4 w-4 mr-1" />
+              {discordAllLoading
+                ? t("admin.appsDiscordSending")
+                : t("admin.appsDiscordPublishAll")}
+            </Button>
+          </div>
           <div className="space-y-2">
             {apps.map((app) => {
               const custom = isCustomApp(app.id)
                 ? ({ ...app, custom: true } as StoredCustomApp)
                 : undefined;
+              const discord = getDiscordPublish(app.id);
 
               return (
                 <div
@@ -303,15 +341,11 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
                         </span>
                       </p>
                       <p className="text-xs text-phantom-gray">/apps/{app.slug}</p>
-                      {custom && (
-                        <>
-                          <p className="text-xs text-phantom-purple mt-0.5">
-                            Discord : {discordStatusLabel(custom.discordStatus)}
-                          </p>
-                          {custom.discordError && (
-                            <p className="text-xs text-red-500 truncate">{custom.discordError}</p>
-                          )}
-                        </>
+                      <p className="text-xs text-phantom-purple mt-0.5">
+                        Discord : {discordStatusLabel(discord?.discordStatus)}
+                      </p>
+                      {discord?.discordError && (
+                        <p className="text-xs text-red-500 truncate">{discord.discordError}</p>
                       )}
                     </div>
                   </div>

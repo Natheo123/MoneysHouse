@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyDiscordBotSecret } from "@/lib/discord-app-shared";
-import { buildDiscordAppJobPayload } from "@/lib/discord-app-guide";
-import { getDiscordPendingAppsServer } from "@/lib/custom-apps-store";
+import { getDiscordPendingJobsServer } from "@/lib/discord-app-publish-store";
 
 export async function GET(request: NextRequest) {
   if (!verifyDiscordBotSecret(request.headers.get("authorization"))) {
     return NextResponse.json({ ok: false, error: "Non autorisé." }, { status: 401 });
   }
 
-  const pending = await getDiscordPendingAppsServer();
-  const apps = pending.map((app) => buildDiscordAppJobPayload(app));
+  const apps = await getDiscordPendingJobsServer();
   return NextResponse.json({ ok: true, apps });
 }

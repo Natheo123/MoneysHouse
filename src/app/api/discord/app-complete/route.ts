@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyDiscordBotSecret } from "@/lib/discord-app-shared";
-import { completeDiscordPublishServer } from "@/lib/custom-apps-store";
+import { completeDiscordPublishServer } from "@/lib/discord-app-publish-store";
 
 export async function POST(request: NextRequest) {
   if (!verifyDiscordBotSecret(request.headers.get("authorization"))) {

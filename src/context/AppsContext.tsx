@@ -11,6 +11,7 @@ import {
 } from "react";
 import { mergeCatalogApps, resolveAppById } from "@/lib/apps-merge";
 import type { StoredCustomApp } from "@/lib/custom-apps-shared";
+import type { DiscordPublishMap } from "@/lib/discord-app-publish-shared";
 import type { App } from "@/types";
 
 export const APPS_UPDATED_EVENT = "moneys-house-apps-updated";
@@ -36,6 +37,10 @@ interface AppsContextType {
     appId: string,
     requestedBy: string
   ) => Promise<{ ok: boolean; error?: string }>;
+  requestAllDiscordPublish: (
+    requestedBy: string
+  ) => Promise<{ ok: boolean; error?: string; queuedCount?: number }>;
+  getDiscordPublish: (appId: string) => DiscordPublishMap[string] | undefined;
   researchApp: (
     url: string,
     name: string,
@@ -52,20 +57,26 @@ const AppsContext = createContext<AppsContextType | undefined>(undefined);
 type CatalogPayload = {
   apps?: StoredCustomApp[];
   hiddenIds?: string[];
+  discordPublish?: DiscordPublishMap;
 };
 
 function applyCatalogPayload(
   data: CatalogPayload,
   setCustomApps: (apps: StoredCustomApp[]) => void,
-  setHiddenAppIds: (ids: string[]) => void
+  setHiddenAppIds: (ids: string[]) => void,
+  setDiscordPublish: (map: DiscordPublishMap) => void
 ) {
   if (Array.isArray(data.apps)) setCustomApps(data.apps);
   if (Array.isArray(data.hiddenIds)) setHiddenAppIds(data.hiddenIds);
+  if (data.discordPublish && typeof data.discordPublish === "object") {
+    setDiscordPublish(data.discordPublish);
+  }
 }
 
 export function AppsProvider({ children }: { children: ReactNode }) {
   const [customApps, setCustomApps] = useState<StoredCustomApp[]>([]);
   const [hiddenAppIds, setHiddenAppIds] = useState<string[]>([]);
+  const [discordPublish, setDiscordPublish] = useState<DiscordPublishMap>({});
   const [ready, setReady] = useState(false);
 
   const refreshApps = useCallback(async () => {
@@ -73,7 +84,7 @@ export function AppsProvider({ children }: { children: ReactNode }) {
       const res = await fetch("/api/apps?custom=1", { cache: "no-store" });
       if (res.ok) {
         const data = (await res.json()) as CatalogPayload;
-        applyCatalogPayload(data, setCustomApps, setHiddenAppIds);
+        applyCatalogPayload(data, setCustomApps, setHiddenAppIds, setDiscordPublish);
       }
     } finally {
       setReady(true);
@@ -117,6 +128,11 @@ export function AppsProvider({ children }: { children: ReactNode }) {
 
   const notify = () => window.dispatchEvent(new Event(APPS_UPDATED_EVENT));
 
+  const getDiscordPublish = useCallback(
+    (appId: string) => discordPublish[appId],
+    [discordPublish]
+  );
+
   const upsertCustomApp = useCallback(async (app: StoredCustomApp, requestedBy: string) => {
     const res = await fetch("/api/apps", {
       method: "POST",
@@ -125,7 +141,7 @@ export function AppsProvider({ children }: { children: ReactNode }) {
     });
     const data = (await res.json()) as { ok: boolean; error?: string } & CatalogPayload;
     if (data.ok) {
-      applyCatalogPayload(data, setCustomApps, setHiddenAppIds);
+      applyCatalogPayload(data, setCustomApps, setHiddenAppIds, setDiscordPublish);
       notify();
     }
     return { ok: data.ok, error: data.error };
@@ -139,7 +155,7 @@ export function AppsProvider({ children }: { children: ReactNode }) {
     });
     const data = (await res.json()) as { ok: boolean; error?: string } & CatalogPayload;
     if (data.ok) {
-      applyCatalogPayload(data, setCustomApps, setHiddenAppIds);
+      applyCatalogPayload(data, setCustomApps, setHiddenAppIds, setDiscordPublish);
       notify();
     }
     return { ok: data.ok, error: data.error };
@@ -153,7 +169,7 @@ export function AppsProvider({ children }: { children: ReactNode }) {
     });
     const data = (await res.json()) as { ok: boolean; error?: string } & CatalogPayload;
     if (data.ok) {
-      applyCatalogPayload(data, setCustomApps, setHiddenAppIds);
+      applyCatalogPayload(data, setCustomApps, setHiddenAppIds, setDiscordPublish);
       notify();
     }
     return { ok: data.ok, error: data.error };
@@ -167,10 +183,28 @@ export function AppsProvider({ children }: { children: ReactNode }) {
     });
     const data = (await res.json()) as { ok: boolean; error?: string } & CatalogPayload;
     if (data.ok) {
-      applyCatalogPayload(data, setCustomApps, setHiddenAppIds);
+      applyCatalogPayload(data, setCustomApps, setHiddenAppIds, setDiscordPublish);
       notify();
     }
     return { ok: data.ok, error: data.error };
+  }, []);
+
+  const requestAllDiscordPublish = useCallback(async (requestedBy: string) => {
+    const res = await fetch("/api/apps", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "request-discord-all", requestedBy }),
+    });
+    const data = (await res.json()) as {
+      ok: boolean;
+      error?: string;
+      queuedCount?: number;
+    } & CatalogPayload;
+    if (data.ok) {
+      applyCatalogPayload(data, setCustomApps, setHiddenAppIds, setDiscordPublish);
+      notify();
+    }
+    return { ok: data.ok, error: data.error, queuedCount: data.queuedCount };
   }, []);
 
   const researchApp = useCallback(async (url: string, name: string, requestedBy: string) => {
@@ -200,6 +234,8 @@ export function AppsProvider({ children }: { children: ReactNode }) {
       deleteApp,
       restoreApp,
       requestDiscordPublish,
+      requestAllDiscordPublish,
+      getDiscordPublish,
       researchApp,
       isCustomApp,
     }),
@@ -218,6 +254,8 @@ export function AppsProvider({ children }: { children: ReactNode }) {
       deleteApp,
       restoreApp,
       requestDiscordPublish,
+      requestAllDiscordPublish,
+      getDiscordPublish,
       researchApp,
       isCustomApp,
     ]
