@@ -2,7 +2,9 @@ import "server-only";
 
 import { siteConfig } from "@/lib/config";
 
-const WEBHOOK_URL = process.env.DISCORD_SITE_LOG_WEBHOOK_URL?.trim();
+function getWebhookUrl(): string | undefined {
+  return process.env.DISCORD_SITE_LOG_WEBHOOK_URL?.trim() || undefined;
+}
 
 interface DiscordEmbed {
   title: string;
@@ -13,10 +15,16 @@ interface DiscordEmbed {
   footer?: { text: string };
 }
 
-async function postDiscordLog(embed: DiscordEmbed): Promise<void> {
-  if (!WEBHOOK_URL) return;
+async function postDiscordLog(embed: DiscordEmbed): Promise<boolean> {
+  const webhookUrl = getWebhookUrl();
+  if (!webhookUrl) {
+    console.error(
+      "Discord log ignoré : DISCORD_SITE_LOG_WEBHOOK_URL n'est pas configurée sur le serveur."
+    );
+    return false;
+  }
 
-  const res = await fetch(WEBHOOK_URL, {
+  const res = await fetch(webhookUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -28,7 +36,10 @@ async function postDiscordLog(embed: DiscordEmbed): Promise<void> {
   if (!res.ok) {
     const detail = await res.text().catch(() => "");
     console.error("Discord log webhook failed:", res.status, detail.slice(0, 200));
+    return false;
   }
+
+  return true;
 }
 
 function clip(value: string, max = 900): string {
@@ -39,8 +50,8 @@ function clip(value: string, max = 900): string {
 export async function logSignupToDiscord(payload: {
   name: string;
   email: string;
-}): Promise<void> {
-  await postDiscordLog({
+}): Promise<boolean> {
+  return postDiscordLog({
     title: "🆕 Nouveau compte",
     color: 0x57f287,
     fields: [
@@ -48,6 +59,35 @@ export async function logSignupToDiscord(payload: {
       { name: "Email", value: clip(payload.email.trim().toLowerCase()), inline: true },
     ],
     footer: { text: siteConfig.url.replace(/^https?:\/\//, "") },
+  });
+}
+
+export async function logAppVisitToDiscord(payload: {
+  appId: string;
+  appName: string;
+  appSlug: string;
+  userName?: string;
+  userEmail?: string;
+}): Promise<boolean> {
+  const userLine =
+    payload.userEmail?.trim()
+      ? `${payload.userName?.trim() || "Utilisateur"} (${payload.userEmail.trim().toLowerCase()})`
+      : "Visiteur non connecté";
+
+  return postDiscordLog({
+    title: "👀 Visite fiche application",
+    color: 0x5865f2,
+    description: `Quelqu'un consulte **${payload.appName}** sur Money's House.`,
+    fields: [
+      { name: "Application", value: clip(payload.appName), inline: true },
+      { name: "Utilisateur", value: clip(userLine), inline: true },
+      {
+        name: "Fiche",
+        value: `${siteConfig.url}/apps/${payload.appSlug}`,
+        inline: false,
+      },
+    ],
+    footer: { text: `app:${payload.appId}` },
   });
 }
 
@@ -60,13 +100,13 @@ export async function logAppLinkClickToDiscord(payload: {
   platform?: string;
   userName?: string;
   userEmail?: string;
-}): Promise<void> {
+}): Promise<boolean> {
   const userLine =
     payload.userEmail?.trim()
       ? `${payload.userName?.trim() || "Utilisateur"} (${payload.userEmail.trim().toLowerCase()})`
       : "Visiteur non connecté";
 
-  await postDiscordLog({
+  return postDiscordLog({
     title: "🔗 Clic lien application",
     color: 0xab9ff2,
     description: `Quelqu'un part vers **${payload.appName}** via Money's House.`,

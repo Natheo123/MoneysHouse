@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAppBySlugServer } from "@/lib/apps-catalog-server";
 import {
   logAppLinkClickToDiscord,
+  logAppVisitToDiscord,
   logSignupToDiscord,
 } from "@/lib/discord-webhook-log";
 
@@ -26,8 +27,43 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: false, error: "Données invalides." }, { status: 400 });
     }
 
-    await logSignupToDiscord({ name, email });
-    return NextResponse.json({ ok: true });
+    const sent = await logSignupToDiscord({ name, email });
+    if (!sent) {
+      console.warn("Signup log non envoyé sur Discord (webhook absent ou refusé).");
+    }
+    return NextResponse.json({ ok: true, sent });
+  }
+
+  if (type === "app-visit") {
+    const appId = isNonEmptyString(body.appId) ? body.appId.trim() : "";
+    const appSlug = isNonEmptyString(body.appSlug) ? body.appSlug.trim() : "";
+    const appName = isNonEmptyString(body.appName) ? body.appName.trim() : "";
+
+    if (!appId || !appSlug || !appName) {
+      return NextResponse.json({ ok: false, error: "Données invalides." }, { status: 400 });
+    }
+
+    const catalogApp = await getAppBySlugServer(appSlug);
+    if (!catalogApp || catalogApp.id !== appId) {
+      return NextResponse.json({ ok: false, error: "Application introuvable." }, { status: 400 });
+    }
+
+    const userName = isNonEmptyString(body.userName) ? body.userName.trim() : undefined;
+    const userEmail = isNonEmptyString(body.userEmail) ? body.userEmail.trim().toLowerCase() : undefined;
+
+    const sent = await logAppVisitToDiscord({
+      appId,
+      appName,
+      appSlug,
+      userName,
+      userEmail,
+    });
+
+    if (!sent) {
+      console.warn("App visit log non envoyé sur Discord (webhook absent ou refusé).");
+    }
+
+    return NextResponse.json({ ok: true, sent });
   }
 
   if (type === "app-link") {
@@ -50,7 +86,7 @@ export async function POST(request: NextRequest) {
     const userName = isNonEmptyString(body.userName) ? body.userName.trim() : undefined;
     const userEmail = isNonEmptyString(body.userEmail) ? body.userEmail.trim().toLowerCase() : undefined;
 
-    await logAppLinkClickToDiscord({
+    const sent = await logAppLinkClickToDiscord({
       appId,
       appName,
       appSlug,
@@ -61,7 +97,11 @@ export async function POST(request: NextRequest) {
       userEmail,
     });
 
-    return NextResponse.json({ ok: true });
+    if (!sent) {
+      console.warn("App link log non envoyé sur Discord (webhook absent ou refusé).");
+    }
+
+    return NextResponse.json({ ok: true, sent });
   }
 
   return NextResponse.json({ ok: false, error: "Type inconnu." }, { status: 400 });

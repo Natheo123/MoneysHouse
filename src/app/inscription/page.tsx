@@ -8,7 +8,7 @@ import { useTranslation } from "@/context/LanguageContext";
 import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { logSiteEvent } from "@/lib/site-event-log-client";
+import { logSiteEventAsync } from "@/lib/site-event-log-client";
 
 export default function InscriptionPage() {
   const { t } = useTranslation();
@@ -23,10 +23,10 @@ export default function InscriptionPage() {
     return null;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     register(name, email, password);
-    logSiteEvent({
+    await logSiteEventAsync({
       type: "signup",
       name: name.trim(),
       email: email.trim().toLowerCase(),

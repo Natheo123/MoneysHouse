@@ -30,6 +30,7 @@ import { AppProofsGallery } from "@/components/apps/AppProofsGallery";
 import { useProofs } from "@/context/ProofContext";
 import { useAppReviews } from "@/hooks/useAppReviews";
 import { useLanguage, useTranslation } from "@/context/LanguageContext";
+import { logSiteEvent } from "@/lib/site-event-log-client";
 
 const platformLabels: Record<string, string> = {
   android: "Android",
@@ -59,6 +60,20 @@ export function AppDetailView({ app }: { app: App }) {
   useEffect(() => {
     addToHistory(localizedApp.id);
   }, [localizedApp.id, addToHistory]);
+
+  useEffect(() => {
+    const key = `mh-log-visit-${localizedApp.slug}`;
+    if (typeof sessionStorage !== "undefined" && sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+    logSiteEvent({
+      type: "app-visit",
+      appId: localizedApp.id,
+      appName: localizedApp.name,
+      appSlug: localizedApp.slug,
+      userName: user?.name,
+      userEmail: user?.email,
+    });
+  }, [localizedApp.id, localizedApp.name, localizedApp.slug, user?.email, user?.name]);
 
   const handleSubmitReview = async () => {
     if (!user || !newComment.trim()) return;
