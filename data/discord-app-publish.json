@@ -1,1 +1,18 @@
-{}
+{
+  "smsricher": {
+    "discordStatus": "published",
+    "discordFrChannelId": "1513631022007320718",
+    "discordEnChannelId": "1513631029041041630",
+    "discordPublishedAt": "2026-06-08T20:00:23.028Z"
+  },
+  "freecash": {
+    "discordStatus": "published",
+    "discordFrChannelId": "1513631049664565308",
+    "discordEnChannelId": "1513631057000403145",
+    "discordPublishedAt": "2026-06-08T20:00:28.402Z"
+  },
+  "earnapp": {
+    "discordStatus": "pending",
+    "requestedAt": "2026-06-08T20:07:52.915Z"
+  }
+}
