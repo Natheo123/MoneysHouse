@@ -33,7 +33,10 @@
     "requestedAt": "2026-06-08T20:07:57.621Z"
   },
   "money-sms": {
-    "discordStatus": "pending",
+    "discordStatus": "published",
+    "discordFrChannelId": "1513635910317641981",
+    "discordEnChannelId": "1513635924980793495",
+    "discordPublishedAt": "2026-06-08T20:08:49.660Z",
     "requestedAt": "2026-06-08T20:08:01.248Z"
   },
   "gamby": {
