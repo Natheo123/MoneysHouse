@@ -34,5 +34,9 @@
   "attapoll": {
     "discordStatus": "pending",
     "requestedAt": "2026-06-08T20:08:07.227Z"
+  },
+  "eureka": {
+    "discordStatus": "pending",
+    "requestedAt": "2026-06-08T20:08:12.229Z"
   }
 }
