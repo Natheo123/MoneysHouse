@@ -222,7 +222,7 @@ export const en: Dictionary = {
     title: "Administration",
     connectedAs: "Signed in as",
     editorHint:
-      "As an editor, you can manage referrals, the team page, payment proofs, and reviews. Adding other administrators is reserved for the owner and managers.",
+      "As an editor, you can add or remove apps, manage partners, referrals, team, proofs, reviews, and PayPal tips. Adding other administrators is reserved for the owner and managers.",
     backDashboard: "Back to dashboard",
     owner: "Owner",
     manager: "Manager",
@@ -286,6 +286,16 @@ export const en: Dictionary = {
     partnersNameRequired: "Partner name is required.",
     partnersEmpty: "No partners yet.",
     partnersEdit: "Edit",
+    manageAdminsTitle: "Administrator management",
+    manageAdminsHint:
+      "Owner: {owner}. Editors can access all admin sections except inviting other admins. Add a Discord ID to grant them permissions on app channels.",
+    manageAdminsEmailPlaceholder: "email@example.com",
+    manageAdminsDiscordPlaceholder: "Discord ID (optional)",
+    manageAdminsAdd: "Add",
+    manageAdminsAdding: "Adding…",
+    manageAdminsManagerHint: "As a manager, you can add editors only.",
+    manageAdminsSaveDiscord: "Save",
+    manageAdminsSavingDiscord: "…",
     tipsTitle: "Tips / Support",
     tipsHint:
       "Set a PayPal link so the community can support Money's House. The button appears on the site once enabled.",

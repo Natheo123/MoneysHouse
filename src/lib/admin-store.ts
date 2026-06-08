@@ -114,7 +114,8 @@ export async function canManageAdminsByEmail(email: string): Promise<boolean> {
 
 export async function addExtraAdmin(
   email: string,
-  role: AdminRole = "member"
+  role: AdminRole = "member",
+  discordId?: string
 ): Promise<{ ok: boolean; error?: string }> {
   const newEmail = normalizeEmail(email);
   if (!newEmail.includes("@")) {
@@ -127,6 +128,9 @@ export async function addExtraAdmin(
     return { ok: false, error: "Rôle invalide." };
   }
 
+  const normalizedDiscordId =
+    discordId?.trim() && discordId.trim().length > 0 ? discordId.trim() : undefined;
+
   const stored = await readStoredAdmins();
   const all = await getAllAdminEmails();
   if (all.includes(newEmail)) {
@@ -134,7 +138,10 @@ export async function addExtraAdmin(
   }
 
   try {
-    await writeStoredAdmins(stored, [...stored.admins, { email: newEmail, role }]);
+    await writeStoredAdmins(stored, [
+      ...stored.admins,
+      { email: newEmail, role, discordId: normalizedDiscordId },
+    ]);
     return { ok: true };
   } catch (error) {
     const hint = persistenceSetupHint();
@@ -199,7 +206,39 @@ export async function setExtraAdminRole(
 
   try {
     const next = [...stored.admins];
-    next[index] = { email: target, role };
+    next[index] = { ...next[index], role };
+    await writeStoredAdmins(stored, next);
+    return { ok: true };
+  } catch (error) {
+    const hint = persistenceSetupHint();
+    const detail = error instanceof Error ? error.message : "Erreur inconnue.";
+    return {
+      ok: false,
+      error: hint ? `${detail} ${hint}` : detail,
+    };
+  }
+}
+
+export async function setExtraAdminDiscordId(
+  email: string,
+  discordId?: string
+): Promise<{ ok: boolean; error?: string }> {
+  const target = normalizeEmail(email);
+  if (isOwnerEmail(target)) {
+    return { ok: false, error: "Le propriétaire n'est pas modifiable depuis cette liste." };
+  }
+
+  const stored = await readStoredAdmins();
+  const index = stored.admins.findIndex((m) => m.email === target);
+  if (index === -1) {
+    return { ok: false, error: "Cet administrateur n'est pas dans la liste." };
+  }
+
+  const nextDiscordId = discordId?.trim() ? discordId.trim() : undefined;
+
+  try {
+    const next = [...stored.admins];
+    next[index] = { ...next[index], discordId: nextDiscordId };
     await writeStoredAdmins(stored, next);
     return { ok: true };
   } catch (error) {

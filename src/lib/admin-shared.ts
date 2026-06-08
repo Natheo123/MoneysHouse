@@ -1,10 +1,12 @@
 import { normalizeEmail } from "@/lib/admin-utils";
+import { isValidDiscordId } from "@/lib/team-shared";
 
 export type AdminRole = "member" | "manager";
 
 export interface AdminMember {
   email: string;
   role: AdminRole;
+  discordId?: string;
 }
 
 export const ADMIN_ROLE_LABELS: Record<AdminRole, string> = {
@@ -22,7 +24,11 @@ export function parseAdminMember(value: unknown): AdminMember | null {
   if (typeof row.email !== "string" || !isAdminRole(row.role)) return null;
   const email = normalizeEmail(row.email);
   if (!email.includes("@")) return null;
-  return { email, role: row.role };
+  const discordId =
+    typeof row.discordId === "string" && isValidDiscordId(row.discordId.trim())
+      ? row.discordId.trim()
+      : undefined;
+  return { email, role: row.role, discordId };
 }
 
 /** Parse admins.json — supporte l'ancien format { emails: [] }. */
@@ -52,7 +58,11 @@ export function serializeStoredAdmins(admins: AdminMember[]): { admins: AdminMem
   for (const admin of admins) {
     const email = normalizeEmail(admin.email);
     if (!email.includes("@")) continue;
-    unique.set(email, { email, role: admin.role });
+    unique.set(email, {
+      email,
+      role: admin.role,
+      discordId: admin.discordId,
+    });
   }
   return { admins: [...unique.values()] };
 }

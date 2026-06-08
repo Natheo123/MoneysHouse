@@ -224,7 +224,7 @@ export const fr = {
     title: "Administration",
     connectedAs: "Connecté en tant que",
     editorHint:
-      "En tant qu'éditeur, vous pouvez gérer les parrainages, l'équipe, les preuves de paiement et les avis. L'ajout d'autres administrateurs est réservé au propriétaire et aux gestionnaires.",
+      "En tant qu'éditeur, vous pouvez ajouter ou supprimer des applications, gérer les partenaires, les parrainages, l'équipe, les preuves, les avis et les tips PayPal. L'ajout d'autres administrateurs est réservé au propriétaire et aux gestionnaires.",
     backDashboard: "Retour au dashboard",
     owner: "Propriétaire",
     manager: "Gestionnaire",
@@ -288,6 +288,16 @@ export const fr = {
     partnersNameRequired: "Le nom du partenaire est obligatoire.",
     partnersEmpty: "Aucun partenaire pour le moment.",
     partnersEdit: "Modifier",
+    manageAdminsTitle: "Gestion des administrateurs",
+    manageAdminsHint:
+      "Propriétaire : {owner}. Les éditeurs ont accès à toute l'administration sauf l'invitation d'autres admins. Renseignez l'ID Discord pour leur donner les permissions sur les salons d'apps.",
+    manageAdminsEmailPlaceholder: "email@exemple.com",
+    manageAdminsDiscordPlaceholder: "ID Discord (optionnel)",
+    manageAdminsAdd: "Ajouter",
+    manageAdminsAdding: "Ajout…",
+    manageAdminsManagerHint: "En tant que gestionnaire, vous pouvez ajouter des éditeurs uniquement.",
+    manageAdminsSaveDiscord: "Enregistrer",
+    manageAdminsSavingDiscord: "…",
     tipsTitle: "Tips / Soutien",
     tipsHint:
       "Configurez un lien PayPal pour permettre à la communauté de soutenir Money's House. Le bouton apparaît sur le site une fois activé.",

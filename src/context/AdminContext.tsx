@@ -31,12 +31,18 @@ interface AdminContextType {
   addAdmin: (
     email: string,
     requestedBy: string,
-    role?: AdminRole
+    role?: AdminRole,
+    discordId?: string
   ) => Promise<{ ok: boolean; error?: string }>;
   removeAdmin: (email: string, requestedBy: string) => Promise<{ ok: boolean; error?: string }>;
   setAdminRole: (
     email: string,
     role: AdminRole,
+    requestedBy: string
+  ) => Promise<{ ok: boolean; error?: string }>;
+  setAdminDiscordId: (
+    email: string,
+    discordId: string,
     requestedBy: string
   ) => Promise<{ ok: boolean; error?: string }>;
 }
@@ -151,7 +157,12 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   );
 
   const addAdmin = useCallback(
-    async (email: string, requestedBy: string, role: AdminRole = "member") => {
+    async (
+      email: string,
+      requestedBy: string,
+      role: AdminRole = "member",
+      discordId?: string
+    ) => {
       const res = await fetch("/api/admins", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -159,6 +170,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
           action: "add",
           email,
           role,
+          discordId,
           requestedBy: normalizeEmail(requestedBy),
         }),
       });
@@ -230,6 +242,33 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  const setAdminDiscordId = useCallback(
+    async (email: string, discordId: string, requestedBy: string) => {
+      const res = await fetch("/api/admins", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "setDiscordId",
+          email,
+          discordId,
+          requestedBy: normalizeEmail(requestedBy),
+        }),
+      });
+      const data = (await res.json()) as {
+        ok: boolean;
+        error?: string;
+        emails?: string[];
+        admins?: AdminMember[];
+      };
+      if (data.ok) {
+        if (data.emails) setAdminEmails(data.emails.map(normalizeEmail));
+        if (data.admins) setAdminMembers(data.admins);
+      }
+      return { ok: data.ok, error: data.error };
+    },
+    []
+  );
+
   const value = useMemo(
     () => ({
       adminEmails,
@@ -244,6 +283,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       addAdmin,
       removeAdmin,
       setAdminRole,
+      setAdminDiscordId,
     }),
     [
       adminEmails,
@@ -258,6 +298,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       addAdmin,
       removeAdmin,
       setAdminRole,
+      setAdminDiscordId,
     ]
   );
 
