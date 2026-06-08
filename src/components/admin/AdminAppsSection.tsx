@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Trash2, Save, Search } from "lucide-react";
+import { Sparkles, Trash2, Save, Search, MessageCircle } from "lucide-react";
 import { useApps } from "@/context/AppsContext";
 import { slugifyAppName, type StoredCustomApp } from "@/lib/custom-apps-shared";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,8 @@ interface AdminAppsSectionProps {
 
 export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
   const { t } = useTranslation();
-  const { customApps, researchApp, upsertCustomApp, removeCustomApp } = useApps();
+  const { customApps, researchApp, upsertCustomApp, removeCustomApp, requestDiscordPublish } =
+    useApps();
   const [sourceUrl, setSourceUrl] = useState("");
   const [nameHint, setNameHint] = useState("");
   const [draft, setDraft] = useState<StoredCustomApp | null>(null);
@@ -23,6 +24,23 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [discordLoadingId, setDiscordLoadingId] = useState<string | null>(null);
+
+  const discordStatusLabel = (status?: string) => {
+    if (status === "published") return t("admin.appsDiscordPublished");
+    if (status === "pending") return t("admin.appsDiscordPending");
+    if (status === "failed") return t("admin.appsDiscordFailed");
+    return t("admin.appsDiscordNone");
+  };
+
+  const publishToDiscord = async (appId: string) => {
+    if (!window.confirm(t("admin.appsDiscordConfirm"))) return;
+    setDiscordLoadingId(appId);
+    setError("");
+    const result = await requestDiscordPublish(appId, userEmail);
+    setDiscordLoadingId(null);
+    if (!result.ok) setError(result.error ?? t("admin.appsDiscordError"));
+  };
 
   const runResearch = async () => {
     setError("");
@@ -195,9 +213,29 @@ export function AdminAppsSection({ userEmail }: AdminAppsSectionProps) {
                   <div className="min-w-0">
                     <p className="font-medium text-phantom-dark truncate">{app.name}</p>
                     <p className="text-xs text-phantom-gray">/apps/{app.slug}</p>
+                    <p className="text-xs text-phantom-purple mt-0.5">
+                      Discord : {discordStatusLabel(app.discordStatus)}
+                    </p>
+                    {app.discordError && (
+                      <p className="text-xs text-red-500 truncate">{app.discordError}</p>
+                    )}
                   </div>
                 </div>
-                <div className="flex gap-2 shrink-0">
+                <div className="flex flex-wrap gap-2 shrink-0 justify-end">
+                  {app.discordStatus !== "published" && app.discordStatus !== "pending" ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={discordLoadingId === app.id}
+                      onClick={() => publishToDiscord(app.id)}
+                    >
+                      <MessageCircle className="h-4 w-4 mr-1" />
+                      {discordLoadingId === app.id
+                        ? t("admin.appsDiscordSending")
+                        : t("admin.appsDiscordPublish")}
+                    </Button>
+                  ) : null}
                   <Button type="button" variant="outline" size="sm" onClick={() => loadForEdit(app)}>
                     {t("admin.appsEdit")}
                   </Button>

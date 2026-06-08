@@ -1,6 +1,15 @@
 import type { App, Category, Difficulty, Platform } from "@/types";
+import type { DiscordPublishStatus } from "@/lib/discord-app-shared";
 
-export type StoredCustomApp = App & { custom?: true; sourceUrl?: string };
+export type StoredCustomApp = App & {
+  custom?: true;
+  sourceUrl?: string;
+  discordStatus?: DiscordPublishStatus;
+  discordFrChannelId?: string;
+  discordEnChannelId?: string;
+  discordPublishedAt?: string;
+  discordError?: string;
+};
 
 export function slugifyAppName(name: string): string {
   return name
@@ -79,6 +88,20 @@ export function normalizeCustomApp(raw: unknown): StoredCustomApp | null {
     featured: Boolean(o.featured),
     custom: true,
     sourceUrl: typeof o.sourceUrl === "string" ? o.sourceUrl : undefined,
+    discordStatus:
+      o.discordStatus === "pending" ||
+      o.discordStatus === "published" ||
+      o.discordStatus === "failed" ||
+      o.discordStatus === "none"
+        ? o.discordStatus
+        : undefined,
+    discordFrChannelId:
+      typeof o.discordFrChannelId === "string" ? o.discordFrChannelId.trim() : undefined,
+    discordEnChannelId:
+      typeof o.discordEnChannelId === "string" ? o.discordEnChannelId.trim() : undefined,
+    discordPublishedAt:
+      typeof o.discordPublishedAt === "string" ? o.discordPublishedAt : undefined,
+    discordError: typeof o.discordError === "string" ? o.discordError.trim() : undefined,
   };
 }
 

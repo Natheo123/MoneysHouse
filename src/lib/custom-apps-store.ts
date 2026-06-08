@@ -76,11 +76,28 @@ export async function upsertCustomAppServer(
   const app = normalizeCustomApp(raw);
   if (!app) return { ok: false, error: "Données d'application invalides." };
 
+  const rawObj = (raw && typeof raw === "object" ? raw : {}) as Partial<StoredCustomApp>;
+
   const result = await mutate((current) => {
     const idx = current.findIndex((a) => a.id === app.id);
     const next = [...current];
-    if (idx >= 0) next[idx] = app;
-    else next.unshift(app);
+    if (idx >= 0) {
+      const prev = current[idx];
+      next[idx] = {
+        ...app,
+        discordStatus:
+          rawObj.discordStatus !== undefined ? app.discordStatus : prev.discordStatus ?? "none",
+        discordFrChannelId:
+          rawObj.discordFrChannelId !== undefined ? app.discordFrChannelId : prev.discordFrChannelId,
+        discordEnChannelId:
+          rawObj.discordEnChannelId !== undefined ? app.discordEnChannelId : prev.discordEnChannelId,
+        discordPublishedAt:
+          rawObj.discordPublishedAt !== undefined ? app.discordPublishedAt : prev.discordPublishedAt,
+        discordError: rawObj.discordError !== undefined ? app.discordError : prev.discordError,
+      };
+    } else {
+      next.unshift({ ...app, discordStatus: app.discordStatus ?? "none" });
+    }
     return { apps: next };
   });
 
@@ -98,4 +115,77 @@ export async function removeCustomAppServer(
     }
     return { apps: current.filter((a) => a.id !== id) };
   });
+}
+
+export async function requestDiscordPublishServer(
+  appId: string
+): Promise<{ ok: boolean; error?: string; apps?: StoredCustomApp[]; app?: StoredCustomApp }> {
+  const id = appId.trim();
+  const result = await mutate((current) => {
+    const idx = current.findIndex((a) => a.id === id);
+    if (idx < 0) return { apps: current, error: "Application introuvable." };
+
+    const app = current[idx];
+    if (app.discordStatus === "published") {
+      return { apps: current, error: "Cette application est déjà publiée sur Discord." };
+    }
+    if (app.discordStatus === "pending") {
+      return { apps: current, error: "Publication Discord déjà en attente." };
+    }
+
+    const next = [...current];
+    next[idx] = {
+      ...app,
+      discordStatus: "pending",
+      discordError: undefined,
+    };
+    return { apps: next };
+  });
+
+  if (!result.ok) return result;
+  const app = result.apps?.find((a) => a.id === id);
+  return { ...result, app };
+}
+
+export async function completeDiscordPublishServer(
+  appId: string,
+  payload: {
+    ok: boolean;
+    frChannelId?: string;
+    enChannelId?: string;
+    error?: string;
+  }
+): Promise<{ ok: boolean; error?: string }> {
+  const id = appId.trim();
+  return mutate((current) => {
+    const idx = current.findIndex((a) => a.id === id);
+    if (idx < 0) return { apps: current, error: "Application introuvable." };
+
+    const app = current[idx];
+    const next = [...current];
+
+    if (payload.ok) {
+      next[idx] = {
+        ...app,
+        discordStatus: "published",
+        discordFrChannelId: payload.frChannelId,
+        discordEnChannelId: payload.enChannelId,
+        discordPublishedAt: new Date().toISOString(),
+        discordError: undefined,
+      };
+    } else {
+      next[idx] = {
+        ...app,
+        discordStatus: "failed",
+        discordError: payload.error ?? "Échec de publication Discord.",
+      };
+    }
+
+    return { apps: next };
+  });
+}
+
+export async function getDiscordPendingAppsServer(): Promise<StoredCustomApp[]> {
+  const apps = await getCustomAppsServer();
+  return apps.filter((a) => a.discordStatus === "pending");
 }

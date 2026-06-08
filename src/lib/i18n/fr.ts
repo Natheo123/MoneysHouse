@@ -256,6 +256,15 @@ export const fr = {
     appsSaving: "Publication…",
     appsCustomList: "Applications ajoutées manuellement",
     appsEdit: "Modifier",
+    appsDiscordPublish: "Publier sur Discord",
+    appsDiscordSending: "Envoi…",
+    appsDiscordConfirm:
+      "Créer les salons Discord FR et EN avec le guide d'installation ? Le bot doit être en ligne.",
+    appsDiscordError: "Impossible de demander la publication Discord.",
+    appsDiscordNone: "Non publié",
+    appsDiscordPending: "En attente du bot",
+    appsDiscordPublished: "Publié",
+    appsDiscordFailed: "Échec",
     partnersTitle: "Partenaires",
     partnersHint:
       "Gérez les partenaires affichés sur la page dédiée : site, Discord, offres et texte promotionnel.",

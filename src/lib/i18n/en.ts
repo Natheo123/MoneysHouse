@@ -254,6 +254,15 @@ export const en: Dictionary = {
     appsSaving: "Publishing…",
     appsCustomList: "Manually added applications",
     appsEdit: "Edit",
+    appsDiscordPublish: "Publish on Discord",
+    appsDiscordSending: "Sending…",
+    appsDiscordConfirm:
+      "Create FR and EN Discord channels with the install guide? The bot must be online.",
+    appsDiscordError: "Could not request Discord publication.",
+    appsDiscordNone: "Not published",
+    appsDiscordPending: "Waiting for bot",
+    appsDiscordPublished: "Published",
+    appsDiscordFailed: "Failed",
     partnersTitle: "Partners",
     partnersHint:
       "Manage partners shown on the dedicated page: website, Discord, offers, and promotional copy.",

@@ -5,6 +5,7 @@ import { getAllAppsServer } from "@/lib/apps-catalog-server";
 import {
   getCustomAppsServer,
   removeCustomAppServer,
+  requestDiscordPublishServer,
   upsertCustomAppServer,
 } from "@/lib/custom-apps-store";
 
@@ -44,6 +45,12 @@ export async function POST(request: NextRequest) {
 
   if (body.action === "remove") {
     const result = await removeCustomAppServer(body.appId ?? "");
+    if (!result.ok) return NextResponse.json(result, { status: 400 });
+    return NextResponse.json(result);
+  }
+
+  if (body.action === "request-discord") {
+    const result = await requestDiscordPublishServer(body.appId ?? "");
     if (!result.ok) return NextResponse.json(result, { status: 400 });
     return NextResponse.json(result);
   }

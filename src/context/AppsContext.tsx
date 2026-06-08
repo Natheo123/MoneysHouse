@@ -29,6 +29,10 @@ interface AppsContextType {
     requestedBy: string
   ) => Promise<{ ok: boolean; error?: string }>;
   removeCustomApp: (appId: string, requestedBy: string) => Promise<{ ok: boolean; error?: string }>;
+  requestDiscordPublish: (
+    appId: string,
+    requestedBy: string
+  ) => Promise<{ ok: boolean; error?: string }>;
   researchApp: (
     url: string,
     name: string,
@@ -116,6 +120,20 @@ export function AppsProvider({ children }: { children: ReactNode }) {
     return { ok: data.ok, error: data.error };
   }, []);
 
+  const requestDiscordPublish = useCallback(async (appId: string, requestedBy: string) => {
+    const res = await fetch("/api/apps", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "request-discord", appId, requestedBy }),
+    });
+    const data = (await res.json()) as { ok: boolean; error?: string; apps?: StoredCustomApp[] };
+    if (data.ok && data.apps) {
+      setCustomApps(data.apps);
+      notify();
+    }
+    return { ok: data.ok, error: data.error };
+  }, []);
+
   const researchApp = useCallback(async (url: string, name: string, requestedBy: string) => {
     const res = await fetch("/api/apps/research", {
       method: "POST",
@@ -139,6 +157,7 @@ export function AppsProvider({ children }: { children: ReactNode }) {
       getEasiestApps,
       upsertCustomApp,
       removeCustomApp,
+      requestDiscordPublish,
       researchApp,
     }),
     [
@@ -152,6 +171,7 @@ export function AppsProvider({ children }: { children: ReactNode }) {
       getEasiestApps,
       upsertCustomApp,
       removeCustomApp,
+      requestDiscordPublish,
       researchApp,
     ]
   );
