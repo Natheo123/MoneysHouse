@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/config";
-import { getAllAppsServer } from "@/lib/apps-catalog";
+import { getAllAppsServer } from "@/lib/apps-catalog-server";
 import { blogPosts } from "@/lib/data/blog";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

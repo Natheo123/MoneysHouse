@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getAllAppsServer, getAppBySlugServer } from "@/lib/apps-catalog";
+import { getAllAppsServer, getAppBySlugServer } from "@/lib/apps-catalog-server";
 import { AppDetailView } from "@/components/apps/AppDetailView";
 import { siteConfig } from "@/lib/config";
 

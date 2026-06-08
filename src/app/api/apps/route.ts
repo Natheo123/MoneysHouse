@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAllAdminEmails } from "@/lib/admin-store";
 import { normalizeEmail } from "@/lib/admin-utils";
-import { getAllAppsServer } from "@/lib/apps-catalog";
+import { getAllAppsServer } from "@/lib/apps-catalog-server";
 import {
   getCustomAppsServer,
   removeCustomAppServer,
