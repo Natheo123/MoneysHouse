@@ -17,6 +17,7 @@ import { AdminReviewsSection } from "@/components/admin/AdminReviewsSection";
 import { AdminAppsSection } from "@/components/admin/AdminAppsSection";
 import { AdminPartnersSection } from "@/components/admin/AdminPartnersSection";
 import { AdminTipsSection } from "@/components/admin/AdminTipsSection";
+import { AdminNotificationsSection } from "@/components/admin/AdminNotificationsSection";
 import { useTranslation } from "@/context/LanguageContext";
 
 export default function AdminPage() {
@@ -102,6 +103,12 @@ export default function AdminPage() {
         <GsapScrollReveal>
           <div className="mb-12">
             <AdminPartnersSection userEmail={user.email} />
+          </div>
+        </GsapScrollReveal>
+
+        <GsapScrollReveal>
+          <div className="mb-12">
+            <AdminNotificationsSection userEmail={user.email} />
           </div>
         </GsapScrollReveal>
 

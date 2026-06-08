@@ -74,7 +74,7 @@ export default function DashboardPage() {
                       className="p-4 rounded-[20px] bg-phantom-purple/10 border border-phantom-purple/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
                     >
                       <p className="text-phantom-dark text-sm flex-1 min-w-0">
-                        {n.id === "welcome" ? t("user.welcomeNotification") : n.message}
+                        {n.message}
                       </p>
                       <button
                         onClick={() => markNotificationRead(n.id)}
