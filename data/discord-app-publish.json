@@ -14,5 +14,9 @@
   "earnapp": {
     "discordStatus": "pending",
     "requestedAt": "2026-06-08T20:07:52.915Z"
+  },
+  "honeygain": {
+    "discordStatus": "pending",
+    "requestedAt": "2026-06-08T20:07:54.478Z"
   }
 }
