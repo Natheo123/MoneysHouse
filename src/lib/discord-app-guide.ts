@@ -10,8 +10,6 @@ export interface DiscordGuideContent {
   advantages?: string[];
   disadvantages?: string[];
   tutorial?: { step: number; title: string; description: string }[];
-  downloadLinks?: { label: string; url: string }[];
-  referralInstructions?: string;
   earningsText?: string;
 }
 
@@ -23,21 +21,50 @@ export interface DiscordAppJobPayload {
   guides: Record<Locale, DiscordGuideContent>;
 }
 
+function stripExternalUrls(text: string, siteHostname: string): string {
+  return text.replace(/https?:\/\/\S+/gi, siteHostname);
+}
+
+function sanitizeTutorialForDiscord(
+  tutorial: App["tutorial"],
+  locale: Locale,
+  siteHostname: string
+): DiscordGuideContent["tutorial"] {
+  if (!tutorial?.length) return tutorial;
+
+  return tutorial.map((step) => ({
+    ...step,
+    description: step.description
+      .replace(/https?:\/\/\S+/gi, siteHostname)
+      .replace(
+        /(?:Inscrivez-vous|Sign up) (?:sur|on) \S+\./gi,
+        locale === "fr"
+          ? `Consulte la fiche sur ${siteHostname} pour t'inscrire.`
+          : `Open the app page on ${siteHostname} to sign up.`
+      ),
+  }));
+}
+
 function toGuideContent(app: App, locale: Locale): DiscordGuideContent {
   const localized = localizeApp(app, locale);
+  const siteHostname = new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://moneys-house.vercel.app"
+  ).hostname.replace(/^www\./, "");
 
   return {
-    description: localized.description,
-    shortDescription: localized.shortDescription,
-    howItWorks: localized.howItWorks,
+    description: stripExternalUrls(localized.description, siteHostname),
+    shortDescription: stripExternalUrls(localized.shortDescription, siteHostname),
+    howItWorks: localized.howItWorks
+      ? stripExternalUrls(localized.howItWorks, siteHostname).replace(
+          /(?:Découvrez comment|Learn how) (.+?) (?:fonctionne sur|works on) \S+/i,
+          locale === "fr"
+            ? `Consulte la fiche $1 sur ${siteHostname} pour commencer.`
+            : `Open the $1 page on ${siteHostname} to get started.`
+        )
+      : localized.howItWorks,
     advantages: localized.advantages,
     disadvantages: localized.disadvantages,
-    tutorial: localized.tutorial,
-    downloadLinks: localized.downloadLinks?.map((link) => ({
-      label: link.label,
-      url: link.url,
-    })),
-    referralInstructions: localized.referralInstructions,
+    tutorial: sanitizeTutorialForDiscord(localized.tutorial, locale, siteHostname),
     earningsText:
       localized.earningsMin || localized.earningsMax
         ? formatEarningsLocalized(locale, localized.earningsMin, localized.earningsMax)
