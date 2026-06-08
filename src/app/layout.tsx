@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/lib/config";
@@ -20,6 +20,12 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   title: {
@@ -95,7 +101,9 @@ export default function RootLayout({
                       <ReviewProvider>
                         <SmoothScrollProvider>
                           <Header />
-                          <main className="min-h-screen">{children}</main>
+                          <main className="min-h-screen w-full min-w-0 overflow-x-clip">
+                            {children}
+                          </main>
                       <Footer />
                       <TipsSupport />
                     </SmoothScrollProvider>

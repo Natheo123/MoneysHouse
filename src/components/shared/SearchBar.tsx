@@ -60,7 +60,7 @@ export function SearchBar({ className }: { className?: string }) {
   };
 
   return (
-    <div className={`relative ${className ?? ""}`}>
+    <div className={`relative w-full min-w-0 ${className ?? ""}`}>
       <div className="relative">
         <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-phantom-gray" />
         <Input

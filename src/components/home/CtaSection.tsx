@@ -58,13 +58,13 @@ export function CtaSection() {
         </p>
         <h2
           data-cta
-          className="text-3xl sm:text-5xl md:text-7xl font-normal text-phantom-dark tracking-tight mb-4"
+          className="text-2xl sm:text-5xl md:text-7xl font-normal text-phantom-dark tracking-tight mb-4 px-2"
         >
           {t("home.ctaStart")}
         </h2>
         <h2
           data-cta
-          className="text-3xl sm:text-5xl md:text-7xl font-normal text-phantom-dark tracking-tight mb-8 sm:mb-12 flex items-center justify-center gap-3 sm:gap-4 flex-wrap"
+          className="text-2xl sm:text-5xl md:text-7xl font-normal text-phantom-dark tracking-tight mb-8 sm:mb-12 flex items-center justify-center gap-2 sm:gap-4 flex-wrap px-2"
         >
           {t("home.ctaJoin")}
           <span ref={logoRef} className="inline-block">

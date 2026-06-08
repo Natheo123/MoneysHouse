@@ -127,7 +127,7 @@ export function HeroSection() {
       <div className="max-w-7xl mx-auto">
         <div
           ref={heroRef}
-          className="relative rounded-[24px] sm:rounded-[40px] bg-phantom-charcoal overflow-hidden min-h-[62vh] sm:min-h-[75vh] flex flex-col items-center justify-center text-center px-4 sm:px-8 py-12 sm:py-20 will-change-transform"
+          className="relative rounded-[24px] sm:rounded-[40px] bg-phantom-charcoal overflow-hidden min-h-[52vh] sm:min-h-[62vh] md:min-h-[75vh] flex flex-col items-center justify-center text-center px-4 sm:px-8 py-10 sm:py-20 will-change-transform"
         >
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div
@@ -149,7 +149,7 @@ export function HeroSection() {
               {t("hero.tagline")}
             </p>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] font-normal text-phantom-cream leading-[1.08] tracking-[-0.02em] mb-8 perspective-[1000px]">
+            <h1 className="text-[1.85rem] leading-[1.12] sm:text-5xl md:text-6xl lg:text-[4.5rem] font-normal text-phantom-cream sm:leading-[1.08] tracking-[-0.02em] mb-6 sm:mb-8 perspective-[1000px]">
               {heroLines.map((line) => (
                 <span key={line} data-hero-line className="block overflow-hidden">
                   {line}

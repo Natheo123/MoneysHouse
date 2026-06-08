@@ -47,8 +47,8 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-phantom-surface border-t border-phantom-dark/5 pt-12 sm:pt-16 pb-6 sm:pb-8">
-      <div className="max-w-7xl mx-auto section-x">
+    <footer className="bg-phantom-surface border-t border-phantom-dark/5 pt-12 sm:pt-16 pb-8 sm:pb-10">
+      <div className="max-w-7xl mx-auto section-x w-full min-w-0">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 sm:gap-12 mb-12 sm:mb-16">
           <div className="sm:col-span-2 lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-6">

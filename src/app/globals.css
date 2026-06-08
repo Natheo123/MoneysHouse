@@ -33,11 +33,14 @@
 
 html {
   scroll-behavior: auto;
+  overflow-x: hidden;
+  max-width: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
 @utility page-shell {
-  padding-top: calc(5.5rem + env(safe-area-inset-top, 0px));
-  padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+  padding-top: calc(5rem + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
   padding-left: max(1rem, env(safe-area-inset-left, 0px));
   padding-right: max(1rem, env(safe-area-inset-right, 0px));
 
@@ -66,6 +69,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  max-width: 100%;
+  min-height: 100dvh;
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
 }
 
 ::selection {

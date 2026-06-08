@@ -112,7 +112,7 @@ export function AppDetailView({ app }: { app: App }) {
                   />
                 </button>
               </div>
-              <h1 className="text-4xl md:text-5xl font-normal text-phantom-cream tracking-tight mb-4">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-normal text-phantom-cream tracking-tight mb-4 break-words">
                 {localizedApp.name}
               </h1>
               <p className="text-phantom-cream/70 text-lg mb-6">{localizedApp.description}</p>

@@ -96,7 +96,7 @@ function StackGroup({ stack }: { stack: StackConfig }) {
           <div
             key={card.text}
             data-stack-card
-            className="sticky top-24 sm:top-28 md:top-32 mb-4 sm:mb-6 last:mb-0"
+            className="relative md:sticky md:top-28 lg:top-32 mb-4 sm:mb-6 last:mb-0"
             style={{ zIndex: i + 1 }}
           >
             <Link href={card.href} className="block group">

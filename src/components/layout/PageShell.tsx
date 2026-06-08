@@ -25,7 +25,7 @@ export function PageShell({
 }: PageShellProps) {
   return (
     <div className={cn("page-shell", className)}>
-      <div className={cn(maxWidthClass[maxWidth], "mx-auto w-full", innerClassName)}>
+      <div className={cn(maxWidthClass[maxWidth], "mx-auto w-full min-w-0", innerClassName)}>
         {children}
       </div>
     </div>

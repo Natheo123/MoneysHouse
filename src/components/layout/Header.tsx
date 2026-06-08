@@ -178,7 +178,7 @@ export function Header() {
           paddingTop: `calc(${scrolled || mobileOpen ? "0.75rem" : "0.75rem"} + env(safe-area-inset-top, 0px))`,
         }}
       >
-        <div className="max-w-[92rem] mx-auto section-x flex items-center justify-between gap-3 sm:gap-5 min-w-0">
+        <div className="max-w-[92rem] mx-auto section-x flex items-center justify-between gap-2 sm:gap-4 min-w-0 overflow-hidden">
           <Link href="/" className="flex items-center gap-2 shrink-0 min-w-0">
             <MoneyHouseLogo size={scrolled ? 34 : 38} className="transition-all duration-300 sm:hidden" />
             <MoneyHouseLogo size={scrolled ? 36 : 40} className="transition-all duration-300 hidden sm:block" />
@@ -245,13 +245,13 @@ export function Header() {
             </div>
           </nav>
 
-          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-            <LanguageSwitcher compact className="hidden sm:inline-flex xl:hidden" />
+          <div className="flex items-center gap-0.5 sm:gap-1.5 shrink-0 min-w-0">
+            <LanguageSwitcher compact className="hidden md:inline-flex xl:hidden" />
             <LanguageSwitcher className="hidden xl:inline-flex" />
             {user ? (
               <>
                 {adminAccess && (
-                  <Link href="/admin" className="inline-flex">
+                  <Link href="/admin" className="hidden lg:inline-flex">
                     <Button variant="ghost" size="sm" className="gap-1 px-2 sm:px-3">
                       <Shield className="h-4 w-4" />
                       <span className="hidden 2xl:inline">{t("nav.admin")}</span>
@@ -288,7 +288,7 @@ export function Header() {
                 <Link href="/connexion" className="lg:hidden p-2 rounded-full hover:bg-phantom-lavender/50" aria-label={t("nav.login")}>
                   <LogIn className="h-5 w-5 text-phantom-dark" />
                 </Link>
-                <Link href="/inscription">
+                <Link href="/inscription" className="hidden lg:inline-flex">
                   <Button size="sm" className="px-3 sm:px-4 text-sm">
                     {t("nav.signup")}
                   </Button>
@@ -321,7 +321,7 @@ export function Header() {
             style={{ top: "calc(4rem + env(safe-area-inset-top, 0px))" }}
           >
             <div className="section-x py-4 space-y-1">
-              <div className="px-4 pb-3 sm:hidden">
+              <div className="px-4 pb-3 md:hidden">
                 <LanguageSwitcher className="w-full justify-center" />
               </div>
               {adminAccess && (

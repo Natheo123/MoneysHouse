@@ -10,6 +10,7 @@ import {
 } from "@/lib/partners-shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { useTranslation } from "@/context/LanguageContext";
 
 interface AdminPartnersSectionProps {
@@ -103,10 +104,15 @@ export function AdminPartnersSection({ userEmail }: AdminPartnersSectionProps) {
             value={draft.discordUrl ?? ""}
             onChange={(e) => setDraft({ ...draft, discordUrl: e.target.value })}
           />
-          <Input
+          <ImageUploadField
+            kind="partner"
+            userEmail={userEmail}
+            value={draft.logoUrl}
+            nameHint={draft.slug || draft.name}
+            onChange={(url) => setDraft({ ...draft, logoUrl: url || undefined })}
+            hint={t("admin.partnersLogoHint")}
             placeholder={t("admin.partnersLogoPlaceholder")}
-            value={draft.logoUrl ?? ""}
-            onChange={(e) => setDraft({ ...draft, logoUrl: e.target.value })}
+            fallbackLabel={t("admin.uploadOrUrl")}
           />
           <textarea
             className="w-full p-3 rounded-[16px] border border-phantom-dark/10 bg-phantom-surface text-sm min-h-[80px]"
