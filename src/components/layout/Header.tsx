@@ -140,7 +140,7 @@ export function Header() {
   useEffect(() => {
     if (!moreOpen) return;
 
-    const onPointerDown = (event: MouseEvent) => {
+    const onPointerDown = (event: PointerEvent) => {
       if (!moreMenuRef.current?.contains(event.target as Node)) {
         setMoreOpen(false);
       }
@@ -150,10 +150,10 @@ export function Header() {
       if (event.key === "Escape") setMoreOpen(false);
     };
 
-    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
     return () => {
-      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [moreOpen]);
@@ -178,7 +178,7 @@ export function Header() {
           paddingTop: `calc(${scrolled || mobileOpen ? "0.75rem" : "0.75rem"} + env(safe-area-inset-top, 0px))`,
         }}
       >
-        <div className="max-w-[92rem] mx-auto section-x flex items-center justify-between gap-2 sm:gap-4 min-w-0 overflow-hidden">
+        <div className="max-w-[92rem] mx-auto section-x flex items-center justify-between gap-2 sm:gap-4 min-w-0">
           <Link href="/" className="flex items-center gap-2 shrink-0 min-w-0">
             <MoneyHouseLogo size={scrolled ? 34 : 38} className="transition-all duration-300 sm:hidden" />
             <MoneyHouseLogo size={scrolled ? 36 : 40} className="transition-all duration-300 hidden sm:block" />
@@ -191,7 +191,7 @@ export function Header() {
             </span>
           </Link>
 
-          <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center min-w-0 px-2">
+          <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center min-w-0 px-2 overflow-visible">
             {primaryNavLinkKeys.map((link) => (
               <NavLink
                 key={link.href}
@@ -201,10 +201,11 @@ export function Header() {
               />
             ))}
 
-            <div ref={moreMenuRef} className="relative shrink-0">
+            <div ref={moreMenuRef} className="relative shrink-0 z-[60]">
               <button
                 type="button"
                 onClick={() => setMoreOpen((open) => !open)}
+                onMouseDown={(e) => e.stopPropagation()}
                 className={`${linkClass} inline-flex items-center gap-1`}
                 aria-expanded={moreOpen}
                 aria-haspopup="menu"

@@ -36,6 +36,9 @@ export const en: Dictionary = {
     featuredTitle: "Popular apps",
     featuredSubtitle: "The best apps to start earning today",
     viewAllApps: "View all apps",
+    partnersTitle: "Our partners",
+    partnersSubtitle: "Exclusive offers for the Money's House community",
+    viewAllPartners: "View all partners",
     stackPassive: "Passive income",
     stackEasy: "Easy to start",
     stackTrusted: "Tested and approved",
@@ -265,7 +268,7 @@ export const en: Dictionary = {
     appsDiscordFailed: "Failed",
     partnersTitle: "Partners",
     partnersHint:
-      "Manage partners shown on the dedicated page: website, Discord, offers, and promotional copy.",
+      "Manage partners: website, Discord, offers, and promo text. Check « featured » to show them on the homepage.",
     partnersAdd: "Add partner",
     partnersNamePlaceholder: "Partner name",
     partnersTaglinePlaceholder: "Short tagline",

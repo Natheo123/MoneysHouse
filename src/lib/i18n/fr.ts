@@ -35,6 +35,9 @@ export const fr = {
     featuredTitle: "Applications populaires",
     featuredSubtitle: "Les meilleures apps pour commencer à gagner dès aujourd'hui",
     viewAllApps: "Voir toutes les applications",
+    partnersTitle: "Nos partenaires",
+    partnersSubtitle: "Offres exclusives pour la communauté Money's House",
+    viewAllPartners: "Voir tous les partenaires",
     stackPassive: "Revenus passifs",
     stackEasy: "Facile à démarrer",
     stackTrusted: "Testé et approuvé",
@@ -267,7 +270,7 @@ export const fr = {
     appsDiscordFailed: "Échec",
     partnersTitle: "Partenaires",
     partnersHint:
-      "Gérez les partenaires affichés sur la page dédiée : site, Discord, offres et texte promotionnel.",
+      "Gérez les partenaires : site, Discord, offres et texte promo. Cochez « mis en avant » pour les afficher sur l'accueil.",
     partnersAdd: "Ajouter un partenaire",
     partnersNamePlaceholder: "Nom du partenaire",
     partnersTaglinePlaceholder: "Accroche courte",
