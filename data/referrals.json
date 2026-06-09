@@ -62,7 +62,9 @@
     "bonusDescription": "Inscrivez-vous avec notre code parrain Eureka et recevez un bonus sur votre compte dès votre inscription."
   },
   "smsricher": {
-    "codes": [],
+    "codes": [
+      "bN39Rn"
+    ],
     "links": [
       "https://www.smsricher.com/guide?code=bN39Rn&lang=en"
     ],
