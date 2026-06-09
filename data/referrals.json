@@ -60,5 +60,11 @@
     "links": [],
     "bonusTitle": "0,80€ dès inscription Bonus de bienvenue Eureka",
     "bonusDescription": "Inscrivez-vous avec notre code parrain Eureka et recevez un bonus sur votre compte dès votre inscription."
+  },
+  "smsricher": {
+    "codes": [],
+    "links": [],
+    "bonusTitle": "recevez 0,30e en vous inscrivant",
+    "bonusDescription": ""
   }
 }
