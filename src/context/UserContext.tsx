@@ -16,6 +16,7 @@ interface Notification {
 
 interface UserContextType {
   user: User | null;
+  authReady: boolean;
   favorites: string[];
   history: string[];
   notifications: Notification[];
@@ -71,6 +72,7 @@ async function fetchNotificationsFromServer(email: string): Promise<Notification
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [authReady, setAuthReady] = useState(false);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [history, setHistory] = useState<string[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -110,6 +112,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         });
       }
     }
+    setAuthReady(true);
   }, [persist]);
 
   useEffect(() => {
@@ -220,6 +223,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     <UserContext.Provider
       value={{
         user,
+        authReady,
         favorites,
         history,
         notifications,

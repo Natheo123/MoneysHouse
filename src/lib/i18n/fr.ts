@@ -141,6 +141,8 @@ export const fr = {
   auth: {
     loginTitle: "Connexion",
     loginSubtitle: "Accédez à votre dashboard Money's House",
+    accountRequired: "Un compte gratuit est requis pour accéder au site.",
+    loading: "Chargement…",
     email: "Email",
     password: "Mot de passe",
     firstName: "Prénom",
@@ -152,7 +154,7 @@ export const fr = {
     signupLink: "S'inscrire",
     loginLink: "Se connecter",
     signupTitle: "Créer un compte",
-    signupSubtitle: "Rejoignez Money's House et commencez à gagner",
+    signupSubtitle: "Créez votre compte gratuit pour découvrir toutes nos applications",
     signupButton: "Commencer gratuitement",
   },
   ranking: {

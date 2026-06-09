@@ -15,6 +15,7 @@ import { TipsProvider } from "@/context/TipsContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { SmoothScrollProvider } from "@/components/animations/SmoothScrollProvider";
 import { TipsSupport } from "@/components/tips/TipsSupport";
+import { AuthGate } from "@/components/auth/AuthGate";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -102,7 +103,7 @@ export default function RootLayout({
                         <SmoothScrollProvider>
                           <Header />
                           <main className="min-h-screen w-full min-w-0 overflow-x-clip">
-                            {children}
+                            <AuthGate>{children}</AuthGate>
                           </main>
                       <Footer />
                       <TipsSupport />

@@ -141,6 +141,8 @@ export const en: Dictionary = {
   auth: {
     loginTitle: "Log in",
     loginSubtitle: "Access your Money's House dashboard",
+    accountRequired: "A free account is required to access the site.",
+    loading: "Loading…",
     email: "Email",
     password: "Password",
     firstName: "First name",
@@ -152,7 +154,7 @@ export const en: Dictionary = {
     signupLink: "Sign up",
     loginLink: "Log in",
     signupTitle: "Create an account",
-    signupSubtitle: "Join Money's House and start earning",
+    signupSubtitle: "Create your free account to discover all our apps",
     signupButton: "Start for free",
   },
   ranking: {

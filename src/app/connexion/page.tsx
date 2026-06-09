@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
@@ -8,23 +8,26 @@ import { PageShell } from "@/components/layout/PageShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "@/context/LanguageContext";
+import { sanitizeNextPath } from "@/lib/auth-routes";
 
 export default function ConnexionPage() {
   const { t } = useTranslation();
-  const { login, user } = useUser();
+  const { login } = useUser();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [nextPath, setNextPath] = useState("/");
 
-  if (user) {
-    router.push("/dashboard");
-    return null;
-  }
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setNextPath(sanitizeNextPath(params.get("next")));
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     login(email, password);
-    router.push("/dashboard");
+    const params = new URLSearchParams(window.location.search);
+    router.push(sanitizeNextPath(params.get("next")));
   };
 
   return (
@@ -37,6 +40,7 @@ export default function ConnexionPage() {
           <p className="text-phantom-gray text-sm sm:text-base">
             {t("auth.loginSubtitle")}
           </p>
+          <p className="text-xs text-phantom-purple mt-2">{t("auth.accountRequired")}</p>
         </div>
         <form
           onSubmit={handleSubmit}
@@ -67,7 +71,14 @@ export default function ConnexionPage() {
           </Button>
           <p className="text-center text-sm text-phantom-gray">
             {t("auth.noAccount")}{" "}
-            <Link href="/inscription" className="text-phantom-purple hover:underline">
+            <Link
+              href={
+                nextPath !== "/"
+                  ? `/inscription?next=${encodeURIComponent(nextPath)}`
+                  : "/inscription"
+              }
+              className="text-phantom-purple hover:underline"
+            >
               {t("auth.signupLink")}
             </Link>
           </p>

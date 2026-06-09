@@ -3,12 +3,16 @@
 import { Heart } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useTips } from "@/context/TipsContext";
+import { useUser } from "@/context/UserContext";
 import { useTranslation } from "@/context/LanguageContext";
 
 export function TipsSupport() {
   const { t } = useTranslation();
   const { ready, settings } = useTips();
+  const { user } = useUser();
   const pathname = usePathname();
+
+  if (!user) return null;
 
   if (!ready || !settings.enabled || !settings.paypalUrl) return null;
   if (pathname.startsWith("/admin")) return null;

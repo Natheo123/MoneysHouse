@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import { MoneyHouseLogo } from "@/components/icons/MoneyHouseLogo";
 import { useTranslation } from "@/context/LanguageContext";
 import { useTips } from "@/context/TipsContext";
+import { useUser } from "@/context/UserContext";
 
 export function Footer() {
   const { t } = useTranslation();
   const { settings: tipsSettings } = useTips();
+  const { user } = useUser();
 
   const footerSections = [
     {
@@ -49,6 +51,7 @@ export function Footer() {
   return (
     <footer className="bg-phantom-surface border-t border-phantom-dark/5 pt-12 sm:pt-16 pb-8 sm:pb-10">
       <div className="max-w-7xl mx-auto section-x w-full min-w-0">
+        {user ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 sm:gap-12 mb-12 sm:mb-16">
           <div className="sm:col-span-2 lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-6">
@@ -94,17 +97,32 @@ export function Footer() {
             </div>
           ))}
         </div>
+        ) : (
+          <div className="mb-12 sm:mb-16 text-center">
+            <Link href="/" className="inline-flex items-center gap-2 mb-4">
+              <MoneyHouseLogo size={40} />
+              <span className="text-lg sm:text-xl font-semibold text-phantom-dark">
+                {siteConfig.name}
+              </span>
+            </Link>
+            <p className="text-sm text-phantom-gray max-w-md mx-auto">{t("auth.accountRequired")}</p>
+          </div>
+        )}
         <div className="border-t border-phantom-dark/5 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-phantom-gray">
             © 2026 {siteConfig.name}. {t("footer.rights")}
           </p>
           <div className="flex flex-wrap justify-center md:justify-end gap-4 sm:gap-6 text-sm text-phantom-gray">
+            {user && (
+              <>
             <Link href="/conditions" className="hover:text-phantom-purple transition-colors">
               {t("footer.terms")}
             </Link>
             <Link href="/confidentialite" className="hover:text-phantom-purple transition-colors">
               {t("footer.privacy")}
             </Link>
+              </>
+            )}
             <a
               href={siteConfig.links.discord}
               target="_blank"

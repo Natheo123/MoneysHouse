@@ -192,15 +192,17 @@ export function Header() {
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center min-w-0 px-2 overflow-visible">
-            {primaryNavLinkKeys.map((link) => (
-              <NavLink
-                key={link.href}
-                href={link.href}
-                label={t(link.labelKey)}
-                className={linkClass}
-              />
-            ))}
+            {user &&
+              primaryNavLinkKeys.map((link) => (
+                <NavLink
+                  key={link.href}
+                  href={link.href}
+                  label={t(link.labelKey)}
+                  className={linkClass}
+                />
+              ))}
 
+            {user && (
             <div ref={moreMenuRef} className="relative shrink-0 z-[60]">
               <button
                 type="button"
@@ -244,6 +246,7 @@ export function Header() {
                 </div>
               )}
             </div>
+            )}
           </nav>
 
           <div className="flex items-center gap-0.5 sm:gap-1.5 shrink-0 min-w-0">
@@ -341,15 +344,16 @@ export function Header() {
                   className="flex items-center gap-2 px-4 py-3 rounded-[24px] text-phantom-dark hover:bg-phantom-lavender/50 font-medium lg:hidden"
                 />
               )}
-              {navLinkKeys.map((link) => (
-                <NavLink
-                  key={link.href}
-                  href={link.href}
-                  label={t(link.labelKey)}
-                  onClick={closeMobile}
-                  className="block px-4 py-3 rounded-[24px] text-phantom-dark hover:bg-phantom-lavender/50 font-medium"
-                />
-              ))}
+              {user &&
+                navLinkKeys.map((link) => (
+                  <NavLink
+                    key={link.href}
+                    href={link.href}
+                    label={t(link.labelKey)}
+                    onClick={closeMobile}
+                    className="block px-4 py-3 rounded-[24px] text-phantom-dark hover:bg-phantom-lavender/50 font-medium"
+                  />
+                ))}
               <a
                 href={siteConfig.links.discord}
                 target="_blank"
