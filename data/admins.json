@@ -2,7 +2,8 @@
   "admins": [
     {
       "email": "shosanun@gmail.com",
-      "role": "manager"
+      "role": "manager",
+      "discordId": "703802589611032597"
     },
     {
       "email": "baboudj17@gmail.com",
