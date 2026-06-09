@@ -36,7 +36,7 @@
       {
         "id": "353f7fa0-7a78-4a30-8bd5-45c6ab6c53fb",
         "message": "Bienvenue sur Money's House ! Découvrez nos applications.",
-        "read": false,
+        "read": true,
         "createdAt": "2026-06-09T06:12:02.920Z"
       }
     ]
