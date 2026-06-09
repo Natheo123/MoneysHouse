@@ -1,9 +1,10 @@
 {
   "smsricher": {
-    "discordStatus": "published",
+    "discordStatus": "pending",
     "discordFrChannelId": "1513631022007320718",
     "discordEnChannelId": "1513631029041041630",
-    "discordPublishedAt": "2026-06-08T20:00:23.028Z"
+    "discordPublishedAt": "2026-06-08T20:00:23.028Z",
+    "requestedAt": "2026-06-09T18:18:52.149Z"
   },
   "freecash": {
     "discordStatus": "pending",
