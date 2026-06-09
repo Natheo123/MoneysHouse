@@ -63,7 +63,9 @@
   },
   "smsricher": {
     "codes": [],
-    "links": [],
+    "links": [
+      "https://www.smsricher.com/guide?code=bN39Rn&lang=en"
+    ],
     "bonusTitle": "recevez 0,30e en vous inscrivant",
     "bonusDescription": "Utilisez notre code pour débloquer ce bonus à l'inscription."
   },
