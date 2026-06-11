@@ -6,6 +6,11 @@
       "registeredAt": "2026-06-08T22:17:34.975Z"
     },
     {
+      "email": "perez.dylan720@gmail.com",
+      "name": "DP",
+      "registeredAt": "2026-06-11T20:28:40.702Z"
+    },
+    {
       "email": "shosanun@gmail.com",
       "name": "shosanun",
       "registeredAt": "2026-06-09T06:12:02.903Z"
@@ -38,6 +43,14 @@
         "message": "Bienvenue sur Money's House ! Découvrez nos applications.",
         "read": true,
         "createdAt": "2026-06-09T06:12:02.920Z"
+      }
+    ],
+    "perez.dylan720@gmail.com": [
+      {
+        "id": "0de2b60b-0b71-49a5-9302-0bdeb4994a87",
+        "message": "Bienvenue sur Money's House ! Découvrez nos applications.",
+        "read": false,
+        "createdAt": "2026-06-11T20:28:40.702Z"
       }
     ]
   }
