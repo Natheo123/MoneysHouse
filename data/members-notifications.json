@@ -47,7 +47,7 @@
       {
         "id": "ac89e1b6-046e-4b39-8f26-cd0c315c1ea2",
         "message": "ca va ?",
-        "read": false,
+        "read": true,
         "createdAt": "2026-06-12T22:59:51.554Z"
       },
       {
