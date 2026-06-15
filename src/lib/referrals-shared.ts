@@ -135,3 +135,17 @@ export function getReferralBonusFromData(
       "Utilisez notre code ou lien parrain pour débloquer ce bonus à l'inscription.",
   };
 }
+
+/** Lien parrain admin en priorité, sinon le lien de téléchargement de base. */
+export function resolveOutboundAppUrl(
+  referralLinks: string[],
+  fallbackDownloadUrl: string
+): string {
+  const primaryReferral = normalizeLinks(referralLinks).find(isValidLink);
+  if (primaryReferral) return primaryReferral;
+
+  const fallback = fallbackDownloadUrl.trim();
+  if (!fallback) return "";
+  const normalized = normalizeLink(fallback);
+  return isValidLink(normalized) ? normalized : fallback;
+}

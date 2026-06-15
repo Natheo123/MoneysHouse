@@ -15,6 +15,7 @@ import { openDownloadUrl } from "@/lib/download-links";
 import { useUser } from "@/context/UserContext";
 import { logSiteEvent } from "@/lib/site-event-log-client";
 import { useReferrals, hasReferralProgram } from "@/context/ReferralContext";
+import { resolveOutboundAppUrl, normalizeLink } from "@/lib/referrals-shared";
 import { useLanguage, useTranslation } from "@/context/LanguageContext";
 import type { App } from "@/types";
 
@@ -66,19 +67,26 @@ export function ReferralReminderDialog({
     setTimeout(() => setCopiedValue(null), 2000);
   };
 
+  const primaryCode = referrals.codes[0];
+  const primaryLink = referrals.links[0];
+  const outboundUrl = resolveOutboundAppUrl(referrals.links, linkUrl);
+  const usesReferralLink = Boolean(primaryLink && outboundUrl === normalizeLink(primaryLink));
+
   const continueDownload = () => {
+    if (!outboundUrl) return;
+
     logSiteEvent({
       type: "app-link",
       appId: app.id,
       appName: app.name,
       appSlug: app.slug,
-      linkLabel,
-      linkUrl,
+      linkLabel: usesReferralLink ? t("referralDialog.directLink") : linkLabel,
+      linkUrl: outboundUrl,
       platform: linkPlatform,
       userName: user?.name,
       userEmail: user?.email,
     });
-    openDownloadUrl(linkUrl);
+    openDownloadUrl(outboundUrl);
     onOpenChange(false);
   };
 
@@ -86,9 +94,6 @@ export function ReferralReminderDialog({
     if (referrals.codes[0]) await copyValue(referrals.codes[0]);
     continueDownload();
   };
-
-  const primaryCode = referrals.codes[0];
-  const primaryLink = referrals.links[0];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -255,11 +260,9 @@ export function ReferralReminderDialog({
             </Button>
           )}
           {ready && showReferral && !primaryCode && primaryLink && (
-            <Button asChild className="w-full gap-2">
-              <a href={primaryLink} target="_blank" rel="noopener noreferrer" onClick={() => onOpenChange(false)}>
-                {t("referralDialog.useReferralLink")}
-                <ArrowRight className="h-4 w-4" />
-              </a>
+            <Button onClick={continueDownload} className="w-full gap-2">
+              {t("referralDialog.useReferralLink")}
+              <ArrowRight className="h-4 w-4" />
             </Button>
           )}
           <Button
