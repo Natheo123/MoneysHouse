@@ -10,4 +10,5 @@ export const siteConfig = {
     twitter: "https://twitter.com/moneyshouse",
     github: "https://github.com/moneyshouse",
   },
+  adsenseClientId: "ca-pub-4124460198437456",
 };
